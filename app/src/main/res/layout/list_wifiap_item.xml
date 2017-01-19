@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="SSID (NetworkName)\nFor a Long Long Name "
+        android:id="@+id/txtSSID"
+        android:textColor="@android:color/black"
+        android:layout_toLeftOf="@+id/txtLevel" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="BSSID (MAC)"
+        android:id="@+id/txtBSSID"
+        android:layout_below="@+id/txtSSID"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="-78.12"
+        android:id="@+id/txtLevel"
+        android:textColor="@android:color/black"
+        android:layout_toLeftOf="@+id/txtdBm" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="dBm"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="false"
+        android:layout_alignBaseline="@+id/txtLevel"
+        android:id="@+id/txtdBm"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="サンプル"
+        android:id="@+id/txtSampleText"
+        android:layout_alignRight="@+id/txtdBm"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/txtLevel"
+        android:textColor="@android:color/darker_gray" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="1234"
+        android:id="@+id/txtSampleCount"
+        android:layout_alignBaseline="@+id/txtSampleText"
+        android:layout_toLeftOf="@+id/txtSampleText"
+        android:textColor="@android:color/darker_gray" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="5.123"
+        android:id="@+id/txt_frequency"
+        android:textColor="@android:color/black"
+        android:layout_below="@+id/txtSSID"
+        android:layout_toLeftOf="@+id/txt_unit_freq"
+        android:layout_toStartOf="@+id/txt_unit_freq" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="GHz"
+        android:id="@+id/txt_unit_freq"
+        android:layout_below="@+id/txtSSID"
+        android:layout_alignRight="@+id/txtSSID"
+        android:layout_alignEnd="@+id/txtSSID"
+        android:textColor="@android:color/black" />
+
+</RelativeLayout>

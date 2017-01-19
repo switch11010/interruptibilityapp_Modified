@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/action_add" android:title="@string/action_add"
+        android:icon="@android:drawable/ic_menu_add"/>
+
+    <item android:id="@+id/action_dump" android:title="@string/action_dump"
+        android:icon="@android:drawable/ic_menu_save"/>
+
+    <item android:id="@+id/action_input" android:title="@string/action_input"
+        android:icon="@android:drawable/ic_input_get"/>
+
+    <item android:id="@+id/action_dumpcsv" android:title="@string/action_dump_csv"
+        android:icon="@android:drawable/ic_input_get"/>
+
+</menu>

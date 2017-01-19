@@ -1,0 +1,28 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/abc_dialog_padding_material"
+    android:orientation="horizontal"
+    style="@style/Theme.AppCompat.Light.Dialog"
+    android:gravity="center_horizontal">
+
+    <NumberPicker
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:id="@+id/minutes" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text=":"
+        android:id="@+id/colon"
+        android:layout_gravity="center_vertical" />
+
+    <NumberPicker
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/seconds"
+        android:layout_margin="5dp" />
+</LinearLayout>

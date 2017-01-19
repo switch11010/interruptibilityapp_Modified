@@ -1,0 +1,36 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="ac.tuat.fujitaken.kk.test.sensorapplication.fragments.MatchingFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Button"
+        android:id="@+id/matching_start"
+        android:layout_marginTop="65dp"
+        android:textSize="20sp"
+        android:textColor="#ff000000"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Export"
+        android:id="@+id/export"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/matching"
+        android:textColor="#ff000000"
+        android:textSize="15sp"
+        android:layout_below="@+id/matching_start"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>

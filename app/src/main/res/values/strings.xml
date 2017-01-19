@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">操作記録アプリケーション</string>
+    <string name="description">状態記録用アプリケーションです。</string>
+
+    <!-- 通知用文字 -->
+    <string name="positive_dialog_text">OK</string>
+    <string name="current_interruptibility">現在の割り込み拒否度は？</string>
+    <string name="current_task">現在のタスクは？</string>
+    <string name="current_location">現在の場所は？</string>
+    <string name="input_text">入力してください</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- ナビゲーションドロワー用 -->
+    <string name="title_section1">Setting</string>
+    <string name="title_section2">EventCounter</string>
+    <string name="title_section3">EvaluationCounter</string>
+    <string name="title_section4">Matching</string>
+    <string name="title_section5">Wifi Record</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <!-- メニュー用 -->
+    <string name="action_add">Add Spot</string>
+    <string name="action_dump">Dump DB</string>
+    <string name="action_input">Input DB</string>
+    <string name="action_dump_csv">Dump to CSV</string>
+    <string name="action_clear">Clear</string>
+</resources>

@@ -1,0 +1,132 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.fragments.SettingFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <SeekBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/volume"
+        android:indeterminate="false"
+        android:layout_marginTop="25dp"
+        android:layout_below="@+id/textView"
+        android:layout_alignLeft="@+id/noteSwitch"
+        android:layout_alignStart="@+id/noteSwitch"
+        android:layout_alignRight="@+id/noteSwitch"
+        android:layout_alignEnd="@+id/noteSwitch" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="設定画面へ移動"
+        android:id="@+id/moveSettings"
+        android:layout_marginTop="22dp"
+        android:layout_below="@+id/volume"
+        android:layout_centerHorizontal="true" />
+
+    <android.support.v7.widget.SwitchCompat
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="通知モード"
+        android:id="@+id/noteSwitch"
+        android:layout_marginTop="25dp"
+        android:checked="false"
+        android:textSize="25sp"
+        android:layout_below="@+id/saveSwitch"
+        android:layout_alignStart="@+id/saveSwitch" />
+
+    <android.support.v7.widget.SwitchCompat
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="加速度保存"
+        android:id="@+id/saveSwitch"
+        android:layout_marginTop="25dp"
+        android:textSize="25sp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="通知音量"
+        android:id="@+id/textView"
+        android:layout_marginTop="24dp"
+        android:textSize="25sp"
+        android:textColor="#000000"
+        android:layout_below="@+id/noteSwitch"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:text="スマホID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/sp_id_text"
+        android:textSize="20sp"
+        android:layout_alignBaseline="@+id/sp_id"
+        android:layout_alignBottom="@+id/sp_id"
+        android:layout_toStartOf="@+id/isExistService" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:id="@+id/sp_id"
+        android:layout_below="@+id/ip_address"
+        android:layout_alignStart="@+id/ip_address"
+        android:inputType="number" />
+
+    <TextView
+        android:text="通信相手IP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/ip_address_text"
+        android:textSize="20sp"
+        android:layout_alignBaseline="@+id/ip_address"
+        android:layout_alignBottom="@+id/ip_address"
+        android:layout_toStartOf="@+id/moveSettings" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:id="@+id/ip_address"
+        android:layout_marginTop="12dp"
+        android:layout_below="@+id/moveSettings"
+        android:layout_toEndOf="@+id/ip_address_text"
+        android:digits="0123456789."
+        android:inputType="numberDecimal" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="サービス実行中"
+        android:id="@+id/isExistService"
+        android:layout_marginBottom="31dp"
+        android:textColor="@color/colorAccent"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:layout_below="@+id/sp_id"
+        android:layout_alignStart="@+id/sp_id"
+        android:id="@+id/port_num"
+        android:inputType="number" />
+
+    <TextView
+        android:text="送信ポート"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView2"
+        android:textSize="20sp"
+        android:layout_alignBaseline="@+id/port_num"
+        android:layout_alignBottom="@+id/port_num"
+        android:layout_alignStart="@+id/ip_address_text" />
+
+</RelativeLayout>
