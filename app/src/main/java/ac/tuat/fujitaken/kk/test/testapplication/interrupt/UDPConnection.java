@@ -53,7 +53,7 @@ public class UDPConnection {
     public String receiveData(){
         String message = "";
         if(client != null) {
-            byte receivedBuff[] = new byte[64];
+            byte receivedBuff[] = new byte[128];
             DatagramPacket receivedPacket = new DatagramPacket(receivedBuff, receivedBuff.length);
 
             try {

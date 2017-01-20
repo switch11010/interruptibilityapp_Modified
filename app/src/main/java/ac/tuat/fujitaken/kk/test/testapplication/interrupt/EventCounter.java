@@ -3,10 +3,16 @@ package ac.tuat.fujitaken.kk.test.testapplication.interrupt;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
+
+import ac.tuat.fujitaken.kk.test.testapplication.interrupt.decision.Notify;
+import ac.tuat.fujitaken.kk.test.testapplication.interrupt.decision.PC;
+import ac.tuat.fujitaken.kk.test.testapplication.interrupt.decision.Screen;
+import ac.tuat.fujitaken.kk.test.testapplication.interrupt.decision.Walking;
 
 /**
  * イベントの検出回数・回答の回数を記録するクラス
@@ -32,21 +38,21 @@ public class EventCounter {
             PC_TO_SP_BY_NOTE = "PC_TO_SP_BY_NOTE";
 
     public static final int
-            WALK_START_FLAG = 1,
-            WALK_STOP_FLAG = 1 << 1,
+            WALK_START_FLAG = Walking.WALK_START,
+            WALK_STOP_FLAG = Walking.WALK_STOP,
 
-            SELF_SCREEN_ON_FLAG = 1 << 2,
-            NOTIFICATION_ON_FLAG = 1 << 3,
-            SELF_SCREEN_OFF_FLAG = 1 << 4,
-            NOTIFICATION_OFF_FLAG = 1 << 5,
+            SELF_SCREEN_ON_FLAG = Screen.SCREEN_ON,
+            NOTIFICATION_ON_FLAG = Screen.SCREEN_ON | Notify.NOTIFICATION,
+            SELF_SCREEN_OFF_FLAG = Screen.SCREEN_OFF,
+            NOTIFICATION_OFF_FLAG = Screen.SCREEN_OFF | Notify.NOTIFICATION,
 
-            WALK_TO_PC_FLAG = 1 << 6,
-            PC_TO_WALK_FLAG = 1 << 7,
+            WALK_TO_PC_FLAG = Walking.WALK_START | PC.FROM_PC,
+            PC_TO_WALK_FLAG = Walking.WALK_STOP | PC.FROM_PC,
 
-            SP_TO_PC_BY_SELF_FLAG = 1 << 8,
-            SP_TO_PC_BY_NOTE_FLAG = 1 << 9,
-            PC_TO_SP_BY_SELF_FLAG = 1 << 10,
-            PC_TO_SP_BY_NOTE_FLAG = 1 << 11;
+            SP_TO_PC_BY_SELF_FLAG = Screen.SCREEN_ON | PC.FROM_PC,
+            SP_TO_PC_BY_NOTE_FLAG = Screen.SCREEN_ON | Notify.NOTIFICATION | PC.FROM_PC,
+            PC_TO_SP_BY_SELF_FLAG = Screen.SCREEN_OFF | PC.FROM_PC,
+            PC_TO_SP_BY_NOTE_FLAG = Screen.SCREEN_OFF | Notify.NOTIFICATION | PC.FROM_PC;
 
     public static final HashMap<Integer, String> EVENT_KEYS_FROM_FLAGS = new HashMap<Integer, String>(){
         {
@@ -87,6 +93,7 @@ public class EventCounter {
 
         for(Map.Entry<Integer, String> entry: EVENT_KEYS_FROM_FLAGS.entrySet()){
             evaluations.put(entry.getKey(), preferences.getInt(entry.getValue(), 0));
+            Log.d("EVENTS_FLAG", entry.getValue() + " is " + Integer.toBinaryString(entry.getKey()));
         }
         calcEvaluation();
     }

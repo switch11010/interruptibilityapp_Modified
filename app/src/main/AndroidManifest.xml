@@ -47,15 +47,6 @@
             android:configChanges="orientation|screenSize"
             android:launchMode="singleInstance"
             android:theme="@style/Translucent" />
-
-        <service
-            android:name=".service.NotificationRecieveService"
-            android:enabled="true"
-            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
-            <intent-filter>
-                <action android:name="android.service.notification.NotificationListenerService" />
-            </intent-filter>
-            android:exported="false"></service>
     </application>
 
 </manifest>

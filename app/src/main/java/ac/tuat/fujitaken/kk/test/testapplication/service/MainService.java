@@ -39,10 +39,13 @@ public class MainService extends AccessibilityService {
     private AllData allData;
 
     @Override
+    protected void onServiceConnected() {
+        super.onServiceConnected();
+    }
+
+    @Override
     public void onCreate() {
         super.onCreate();
-
-
 
         //処理を続けるためにCPUのスリープをロックする
         wakeLock = ((PowerManager) getSystemService(Context.POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");

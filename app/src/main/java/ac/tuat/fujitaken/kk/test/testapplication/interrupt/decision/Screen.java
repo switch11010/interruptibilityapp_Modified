@@ -31,7 +31,7 @@ public class Screen {
     private boolean prevConnect = false;
 
     public Screen(Context context){
-        int screenOffTimeout = Settings.System.getInt(context.getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, 30 * 1000) * Constants.MAIN_LOOP_PERIOD - 1;
+        int screenOffTimeout = Settings.System.getInt(context.getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, 30 * 1000) / Constants.MAIN_LOOP_PERIOD - 1;
         sumOps = 1;
         for(int i = 0; i < screenOffTimeout -1; i++){
             buffer.add(0);
@@ -62,10 +62,10 @@ public class Screen {
         prevState = latestValue;
         int ret = 0;
         if(on){
-            ret = SCREEN_ON | 1;
+            ret = SCREEN_ON;
         }
         else if(off){
-            ret = SCREEN_OFF | 1;
+            ret = SCREEN_OFF;
         }
         return ret;
     }

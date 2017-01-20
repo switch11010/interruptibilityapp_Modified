@@ -30,7 +30,7 @@ public class Walking {
                 else if((++count >= Constants.NOT_WALK_THRESHOLD * 1000/Constants.MAIN_LOOP_PERIOD)){
                     count = 0;
                     walkState = NOT_WALK;
-                    return WALK_START | 1;
+                    return WALK_START;
                 }
                 else{
                     return 0;
@@ -40,7 +40,7 @@ public class Walking {
                     if(++count >= Constants.WALK_THRESHOLD * 1000/Constants.MAIN_LOOP_PERIOD){
                         count = 0;
                         walkState = WALKING;
-                        return WALK_STOP | 1;
+                        return WALK_STOP;
                     }
                 }
                 else {

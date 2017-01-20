@@ -10,6 +10,7 @@ import java.net.UnknownHostException;
 import ac.tuat.fujitaken.kk.test.testapplication.Constants;
 import ac.tuat.fujitaken.kk.test.testapplication.data.StringData;
 import ac.tuat.fujitaken.kk.test.testapplication.interrupt.decision.Notify;
+import ac.tuat.fujitaken.kk.test.testapplication.interrupt.decision.PC;
 import ac.tuat.fujitaken.kk.test.testapplication.ui.fragments.SettingFragment;
 import ac.tuat.fujitaken.kk.test.testapplication.data.BoolData;
 import ac.tuat.fujitaken.kk.test.testapplication.data.RowData;
@@ -35,11 +36,10 @@ public class InterruptTiming implements Loop.LoopListener {
     private Walking walking;
     private Screen screen;
     private Notify notify;
+    private PC pc;
 
     //通知モードになっているか
     boolean note;
-
-    String message = "";
 
     private UDPConnection udpConnection = null;
     private EventCounter counter;
@@ -64,6 +64,7 @@ public class InterruptTiming implements Loop.LoopListener {
         walking = new Walking();
         screen = new Screen(context);
         notify = new Notify(context);
+        pc = new PC();
     }
 
     public void release(){
@@ -89,7 +90,7 @@ public class InterruptTiming implements Loop.LoopListener {
 
         final int eventFlag = w | s | n;
 
-        if((eventFlag & 1) > 0) {
+        if((eventFlag & 30) > 0) {
             Log.d("EVENT_COUNTER", String.valueOf(eventFlag));
             eventTriggeredThread(eventFlag, line);
             allData.scan();
@@ -110,15 +111,20 @@ public class InterruptTiming implements Loop.LoopListener {
                                 && line.time - prevTime > Constants.NOTIFICATION_INTERVAL, //前の通知から一定時間経過
                         udpComm = (eventFlag & Screen.SCREEN_ON) > 0 || (eventFlag & Walking.WALK_START) > 0;   //UDP通信が必要かどうか
 
-                if (noteFlag) {
-                    if (udpConnection != null && udpComm) {
+                String message = "null";
+                if (udpConnection != null && udpComm) {
 
-                        udpConnection.sendRequest();
-                        message = udpConnection.receiveData();
-                        Log.d("UDP", "Received Time : " + (System.currentTimeMillis() - line.time));
-                    }
-                    event |= evalPC(message);
+                    udpConnection.sendRequest();
+                    message = udpConnection.receiveData();
+                    Log.d("UDP", "Received Time : " + (System.currentTimeMillis() - line.time));
+                }
+                event |= pc.judge(message);
+
+                Log.d("EVENT", "Num is " + Integer.toBinaryString(event));
+
+                if (noteFlag) {
                     double p = calcP(event);
+                    Log.d("P", "P is " + p);
                     if (Math.random() < p) {
                         notificationController.normalNotify(event, line);
                         eval = true;
@@ -131,26 +137,11 @@ public class InterruptTiming implements Loop.LoopListener {
         }).start();
     }
 
-    private int evalPC(String message){
-        if(message.equals("")){
-            return 0;
-        }
-        String[] params = message.split(":");
-
-        long clickInterval = Long.parseLong(params[params.length - 1]),
-                keyInterval = Long.parseLong(params[params.length - 2]);
-
-        long pcInterval = clickInterval < keyInterval ? clickInterval : keyInterval;
-
-        return (pcInterval < 60 * 1000)? 1 << 6: 0;
-    }
-
     private double calcP(int event){
         /**
          * 電話以外は確率を求めてから通知
          * ただし，評価数が平均の2倍or1/2の場合は補正
          */
-        /*
         if(counter.getEvaluations(event) == null){
             return 0;
         }
@@ -171,32 +162,16 @@ public class InterruptTiming implements Loop.LoopListener {
         }
         else {
             double t = 0;
-            switch (event) {
-                case EventCounter.WALK_STOP_FLAG:
-                    t = counter.getEvaluations(EventCounter.WALK_START_FLAG);
-                    break;
-                case EventCounter.NOTIFICATION_OFF_FLAG:
-                    t = counter.getEvaluations(EventCounter.NOTIFICATION_OFF_FLAG);
-                    break;
-                case EventCounter.SELF_SCREEN_OFF_FLAG:
-                    t = counter.getEvaluations(EventCounter.SELF_SCREEN_OFF_FLAG);
-                    break;
-                case EventCounter.WALK_TO_PC_FLAG:
-                    t = counter.getEvaluations(EventCounter.PC_TO_WALK_FLAG);
-                    break;
-                case EventCounter.SP_TO_PC_BY_SELF_FLAG:
-                    t = counter.getEvaluations(EventCounter.SP_TO_PC_BY_SELF_FLAG);
-                    break;
-                case EventCounter.SP_TO_PC_BY_NOTE_FLAG:
-                    t = counter.getEvaluations(EventCounter.SP_TO_PC_BY_NOTE_FLAG);
-                    break;
+            if((event & Walking.WALK_START) > 0){
+                t = counter.getEvaluations(event ^ 6);
+            }
+            else if((event & Screen.SCREEN_ON) > 0){
+                t = counter.getEvaluations(event ^ 24);
             }
             if (t != 0) {
                 p /= 1 - min / t;
             }
         }
         return p;
-        */
-        return 1;
     }
 }

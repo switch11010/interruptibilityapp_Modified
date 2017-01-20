@@ -5,19 +5,24 @@ package ac.tuat.fujitaken.kk.test.testapplication.interrupt.decision;
  */
 
 public class PC {
-    private static final int FROM_PC = 1 << 6;
-/*
-    private String appName = "";
+    public static final int FROM_PC = 1 << 6;
 
-    public int judge(int ){
+    private int isPrevFromPC = 0;
 
-        noteCount = (!"".equals(note) && !appName.equals(note))? 0: noteCount + 1;
-        if(noteCount < NOTE_TIME){
-            return NOTIFICATION;
+    public int judge(String message){
+        if (message.equals("")) {
+            return 0;
         }
-        return 0;
-    }
-    public void update(String message){
+        else if(message.equals("null")){
+            return isPrevFromPC;
+        }
+        String[] params = message.split(":");
 
-    }*/
+        long clickInterval = Long.parseLong(params[params.length - 1]),
+                keyInterval = Long.parseLong(params[params.length - 2]);
+
+        long pcInterval = clickInterval < keyInterval ? clickInterval : keyInterval;
+        isPrevFromPC = (pcInterval < 60 * 1000) ? FROM_PC : 0;
+        return isPrevFromPC;
+    }
 }
