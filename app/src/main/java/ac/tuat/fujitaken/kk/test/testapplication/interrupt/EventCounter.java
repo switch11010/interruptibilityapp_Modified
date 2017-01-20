@@ -48,7 +48,7 @@ public class EventCounter {
             PC_TO_SP_BY_SELF_FLAG = 1 << 10,
             PC_TO_SP_BY_NOTE_FLAG = 1 << 11;
 
-    public static final HashMap<Integer, String> EVENT_KEYS_FROM_FLAGS = new HashMap(){
+    public static final HashMap<Integer, String> EVENT_KEYS_FROM_FLAGS = new HashMap<Integer, String>(){
         {
             put(WALK_START_FLAG, WALK_START);
             put(WALK_STOP_FLAG, WALK_STOP);

@@ -39,7 +39,6 @@ public class NotificationController {
     private List<RowData> buf = new ArrayList<>();
     private EventCounter counter;
     private InterruptTiming timing;
-    private UDPConnection connection = null;
 
     /**
      * 通知への回答を受け取るレシーバ
@@ -125,11 +124,6 @@ public class NotificationController {
     }
 
     public NotificationController(Context context, EventCounter counter, AllData allData, InterruptTiming timing){
-        try {
-            connection = new UDPConnection(context);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
         this.counter = counter;
         this.timing = timing;
         evaluationSave = new SaveData("Evaluation", "AnswerTime,Evaluation,Task,Location,Comment,Event," + allData.getHeader());
@@ -185,12 +179,6 @@ public class NotificationController {
         bundle.putSerializable(EvaluationData.EVALUATION_DATA, answerData);
         interruptionNotification.normalNotify(bundle);
         hasNotification = true;
-
-        if(connection != null){
-            connection.sendRequest();
-            connection.receiveData();
-        }
-
     }
 
     //通知は出さないが，イベントを記録する

@@ -10,6 +10,9 @@ import ac.tuat.fujitaken.kk.test.testapplication.interrupt.EventCounter;
  */
 public class Walking {
 
+    public static final int WALK_START = 1 << 1,
+        WALK_STOP = 1 << 2;
+
     private final int
             NOT_WALK = 3,
             WALKING = 9;
@@ -27,7 +30,7 @@ public class Walking {
                 else if((++count >= Constants.NOT_WALK_THRESHOLD * 1000/Constants.MAIN_LOOP_PERIOD)){
                     count = 0;
                     walkState = NOT_WALK;
-                    return EventCounter.WALK_STOP_FLAG;
+                    return WALK_START | 1;
                 }
                 else{
                     return 0;
@@ -37,7 +40,7 @@ public class Walking {
                     if(++count >= Constants.WALK_THRESHOLD * 1000/Constants.MAIN_LOOP_PERIOD){
                         count = 0;
                         walkState = WALKING;
-                        return EventCounter.WALK_START_FLAG;
+                        return WALK_STOP | 1;
                     }
                 }
                 else {
