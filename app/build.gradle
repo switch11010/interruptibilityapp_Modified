@@ -7,7 +7,7 @@ android {
         applicationId "ac.tuat.fujitaken.kk.test.testapplication"
         minSdkVersion 19
         versionCode 1
-        versionName "1.7"
+        versionName "2.1"
     }
     buildTypes {
         release {
