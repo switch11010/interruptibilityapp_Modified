@@ -16,7 +16,7 @@ public interface DataReceiver {
                 PROXIMITY = "PROXIMITY",
                 LIGHT = "LIGHT",
 
-                NOTIFICATION = "NOTIFICATION",
+                NOTIFICATION = "NOTIFICATION_ON",
 
                 WINDOW_STATE_CHANGED = "WINDOW_STATE_CHANGED",
                 WINDOW_CONTENT_CHANGED = "WINDOW_CONTENT_CHANGED",

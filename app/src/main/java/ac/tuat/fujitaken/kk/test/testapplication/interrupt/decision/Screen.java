@@ -77,8 +77,8 @@ public class Screen {
                     prevNote = "";
                 }
                 else{
-                    prevOn = EventCounter.NOTIFICATION;
-                    ret = EventCounter.NOTIFICATION_FLAG;
+                    prevOn = EventCounter.NOTIFICATION_ON;
+                    ret = EventCounter.NOTIFICATION_ON_FLAG;
                 }
             }
             else if(!(prevConnect && !connect)){
@@ -91,8 +91,8 @@ public class Screen {
             noteCount = Constants.NOTIFICATION_THRESHOLD * 1000/Constants.MAIN_LOOP_PERIOD;
             if(sumOps > 0) {
                 switch (prevOn) {
-                    case EventCounter.NOTIFICATION:
-                        ret = EventCounter.EXT_SCREEN_OFF_FLAG;
+                    case EventCounter.NOTIFICATION_ON:
+                        ret = EventCounter.NOTIFICATION_OFF_FLAG;
                         break;
                     case EventCounter.SELF_SCREEN_ON:
                         ret = EventCounter.SELF_SCREEN_OFF_FLAG;

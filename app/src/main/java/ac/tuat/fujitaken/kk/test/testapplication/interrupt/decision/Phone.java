@@ -15,10 +15,10 @@ public class Phone {
     public int judge(int newState) {
         int ret = 0;
         if (phoneState == TelephonyManager.CALL_STATE_IDLE && newState == TelephonyManager.CALL_STATE_RINGING) {
-            ret = EventCounter.PHONE_START_FLAG;
+            ret = 1<<25;
 
         } else if (phoneState == TelephonyManager.CALL_STATE_OFFHOOK && newState== TelephonyManager.CALL_STATE_IDLE) {
-            ret = EventCounter.PHONE_STOP_FLAG;
+            ret = 1<<26;
         }
         phoneState = newState;
         return ret;

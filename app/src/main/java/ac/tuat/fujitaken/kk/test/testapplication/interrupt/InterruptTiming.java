@@ -162,8 +162,8 @@ public class InterruptTiming implements Loop.LoopListener {
             case EventCounter.WALK_STOP_FLAG:
                 t = 1 - denominator / counter.getEvaluations(EventCounter.WALK_START);
                 break;
-            case EventCounter.EXT_SCREEN_OFF_FLAG:
-                t = 1 - denominator / counter.getEvaluations(EventCounter.EXT_SCREEN_OFF);
+            case EventCounter.NOTIFICATION_OFF_FLAG:
+                t = 1 - denominator / counter.getEvaluations(EventCounter.NOTIFICATION_OFF);
                 break;
             case EventCounter.SELF_SCREEN_OFF_FLAG:
                 t = 1 - denominator / counter.getEvaluations(EventCounter.SELF_SCREEN_OFF);
