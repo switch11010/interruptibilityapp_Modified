@@ -10,9 +10,7 @@ import java.net.UnknownHostException;
 import ac.tuat.fujitaken.kk.test.testapplication.Constants;
 import ac.tuat.fujitaken.kk.test.testapplication.ui.fragments.SettingFragment;
 import ac.tuat.fujitaken.kk.test.testapplication.data.BoolData;
-import ac.tuat.fujitaken.kk.test.testapplication.data.IntData;
 import ac.tuat.fujitaken.kk.test.testapplication.data.RowData;
-import ac.tuat.fujitaken.kk.test.testapplication.interrupt.decision.Phone;
 import ac.tuat.fujitaken.kk.test.testapplication.interrupt.decision.Screen;
 import ac.tuat.fujitaken.kk.test.testapplication.receiver.AllData;
 import ac.tuat.fujitaken.kk.test.testapplication.receiver.DataReceiver;
@@ -34,7 +32,6 @@ public class InterruptTiming implements Loop.LoopListener {
     //通知イベント検出用
     private Walking walking;
     private Screen screen;
-    private Phone phone;
     //通知モードになっているか
     boolean note;
 
@@ -60,7 +57,6 @@ public class InterruptTiming implements Loop.LoopListener {
 
         walking = new Walking();
         screen = new Screen(context);
-        phone = new Phone();
     }
 
     public void release(){
@@ -78,63 +74,70 @@ public class InterruptTiming implements Loop.LoopListener {
      */
     @Override
     public void onLoop(Loop loop) {
-        allData.newLine();
-        final RowData line = allData.getLatestLine();
+        final RowData line = allData.newLine();
 
         final int eventFlag = walking.judge(((BoolData)allData.getData().get(DataReceiver.WALK)).value)
-                | screen.judge(allData.getData())
-                | phone.judge(((IntData)allData.getData().get(DataReceiver.PHONE)).value);
+                | screen.judge(allData.getData());
 
-        boolean eval = false;
         if(eventFlag > 0) {
-            final long currentTime = System.currentTimeMillis();
             Log.d("EVENT_COUNTER", String.valueOf(eventFlag));
             if (udpConnection != null) {
-                udpConnection.sendRequest();
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
+                        udpConnection.sendRequest();
                         String message = udpConnection.receiveData();
-                        Log.d("UDP", "Received Time : " + (System.currentTimeMillis() - currentTime));
-                        a(eventFlag, currentTime, line);
+                        Log.d("UDP", "Received Time : " + (System.currentTimeMillis() -line.time));
+                        eventTrigger(eventFlag, line, message);
                     }
                 }).start();
             }
             allData.scan();
         }
-
-        if(!eval){
+        else{
             notificationController.save(line);
         }
     }
 
-    private boolean a(int eventFlag, long currentTime, RowData line){
-        boolean eval = false;
-        if ((eventFlag & EventCounter.PHONE_START_FLAG) > 0) {
+    private void eventTrigger(int eventFlag, RowData line, String message){
+        boolean eval = false,
+                noteFlag = note    //通知モード
+                && !NotificationController.hasNotification  //待機状態の通知なし
+                && line.time - prevTime > Constants.NOTIFICATION_INTERVAL, //前の通知から一定時間経過
+                transFromPC = evalPC(message);  //PCからの遷移かどうか
+
+        if(noteFlag) {
+            if (transFromPC) {
+                double p = calcP(eventFlag);
+                if (Math.random() < p) {
                     notificationController.normalNotify(eventFlag, line);
-            eval = true;
-        } else if (note && !NotificationController.hasNotification && currentTime - prevTime > Constants.NOTIFICATION_INTERVAL){
-            for(int i = 0; i < EventCounter.EVENT_FLAGS.length; i++){
-                if((EventCounter.EVENT_FLAGS[i]&eventFlag) > 0){
-                    double p = calcP(EventCounter.EVENTS[i]);
-                    Log.d("EVENT",String.valueOf(eventFlag) + "\t" + String.valueOf(p));
-                    if (Math.random() < p) {
-                                notificationController.normalNotify(eventFlag,line);
-                        eval = true;
-                        break;
-                    }
+                    eval = true;
                 }
+            } else {
+
             }
         }
 
         if(!eval){
             notificationController.saveEvent(eventFlag, line);
-            eval = true;
         }
-        return eval;
     }
 
-    private double calcP(String event){
+    private boolean evalPC(String message){
+        if(message.equals("")){
+            return false;
+        }
+        String[] params = message.split(":");
+
+        long clickInterval = Long.parseLong(params[params.length - 1]),
+                keyInterval = Long.parseLong(params[params.length - 2]);
+
+        long pcInterval = clickInterval < keyInterval ? clickInterval : keyInterval;
+
+        return pcInterval < 60 * 1000;
+    }
+
+    private double calcP(int event){
         /**
          * 電話以外は確率を求めてから通知
          * ただし，評価数が平均の2倍or1/2の場合は補正
@@ -144,6 +147,9 @@ public class InterruptTiming implements Loop.LoopListener {
             min = 1;
         }
         double denominator = min;
+        if(counter.getEvaluations(event) == null){
+            return -1;
+        }
         int c = counter.getEvaluations(event);
         if (c == 0) {
             c = 1;
@@ -153,13 +159,13 @@ public class InterruptTiming implements Loop.LoopListener {
         double mean = counter.getEvaluationMean();
         double t = 1;
         switch (event) {
-            case EventCounter.WALK_STOP:
+            case EventCounter.WALK_STOP_FLAG:
                 t = 1 - denominator / counter.getEvaluations(EventCounter.WALK_START);
                 break;
-            case EventCounter.EXT_SCREEN_OFF:
+            case EventCounter.EXT_SCREEN_OFF_FLAG:
                 t = 1 - denominator / counter.getEvaluations(EventCounter.EXT_SCREEN_OFF);
                 break;
-            case EventCounter.SELF_SCREEN_OFF:
+            case EventCounter.SELF_SCREEN_OFF_FLAG:
                 t = 1 - denominator / counter.getEvaluations(EventCounter.SELF_SCREEN_OFF);
                 break;
         }
@@ -172,10 +178,6 @@ public class InterruptTiming implements Loop.LoopListener {
             } else if (c * 1.5 < mean) {
                 p = 1;
             }
-        }
-        //とりあえず歩行時の確率を2倍に
-        if(event == EventCounter.WALK_START || event == EventCounter.WALK_STOP){
-            p *= 2;
         }
         return p;
     }

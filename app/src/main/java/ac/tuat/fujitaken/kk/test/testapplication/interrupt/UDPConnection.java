@@ -12,6 +12,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
+import ac.tuat.fujitaken.kk.test.testapplication.Constants;
 import ac.tuat.fujitaken.kk.test.testapplication.ui.fragments.SettingFragment;
 
 /**
@@ -52,11 +53,11 @@ public class UDPConnection {
     public String receiveData(){
         String message = "";
         if(client != null) {
-            byte recievedBuff[] = new byte[64];
-            DatagramPacket receivedPacket = new DatagramPacket(recievedBuff, recievedBuff.length);
+            byte receivedBuff[] = new byte[64];
+            DatagramPacket receivedPacket = new DatagramPacket(receivedBuff, receivedBuff.length);
 
             try {
-                client.setSoTimeout(1000);
+                client.setSoTimeout(Constants.MAIN_LOOP_PERIOD);
                 client.receive(receivedPacket);
                 message = new String(receivedPacket.getData(), 0, receivedPacket.getLength());
                 Log.d("UDP", "Received : " + message + "(" +receivedPacket.getData().length + " Bytes)");

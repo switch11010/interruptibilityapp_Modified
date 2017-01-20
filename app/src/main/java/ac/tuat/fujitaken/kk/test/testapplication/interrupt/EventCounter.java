@@ -4,10 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.Set;
 
 /**
  * イベントの検出回数・回答の回数を記録するクラス
@@ -37,33 +36,20 @@ public class EventCounter {
             PHONE_START_FLAG = 1<<6,
             PHONE_STOP_FLAG = 1<<7;
 
-    public static final String[] EVENTS = {
-            WALK_START,
-            WALK_STOP,
-            SELF_SCREEN_ON,
-            NOTIFICATION,
-            SELF_SCREEN_OFF,
-            EXT_SCREEN_OFF,
-            PHONE_START,
-            PHONE_STOP};
+    public static final Map<Integer, String> EVENT_KEYS_FROM_FLAGS = new HashMap(){
+        {
+            put(WALK_START_FLAG, WALK_START);
+            put(WALK_STOP_FLAG, WALK_STOP);
+            put(SELF_SCREEN_ON_FLAG, SELF_SCREEN_ON);
+            put(NOTIFICATION_FLAG, NOTIFICATION);
+            put(SELF_SCREEN_OFF_FLAG, SELF_SCREEN_OFF);
+            put(EXT_SCREEN_OFF_FLAG, EXT_SCREEN_OFF);
+            put(PHONE_START_FLAG, PHONE_START);
+            put(PHONE_STOP_FLAG, PHONE_STOP);
+        }
+    };
 
-    public static final int[] EVENT_FLAGS = {
-            WALK_START_FLAG,
-            WALK_STOP_FLAG,
-            SELF_SCREEN_ON_FLAG ,
-            NOTIFICATION_FLAG,
-            SELF_SCREEN_OFF_FLAG,
-            EXT_SCREEN_OFF_FLAG,
-            PHONE_START_FLAG,
-            PHONE_STOP_FLAG};
-
-    private Map<String, Integer> evaluations;
-
-    /**
-     * treemap内でイベントを並び替えるためのハッシュマップ．
-     * (K, V) = (イベント名, 並び順)
-     */
-    private Map<String, Integer> names = new HashMap<>();
+    private Map<Integer, Integer> evaluations;
 
     private SharedPreferences preferences;
 
@@ -76,38 +62,38 @@ public class EventCounter {
      */
     public EventCounter(Context context){
 
-        evaluations = new TreeMap<>(new Comparator<String>() {
-            @Override
-            public int compare(String lhs, String rhs) {
-                return names.get(lhs).compareTo(names.get(rhs));
-            }
-        });
+        evaluations = new HashMap<>();
 
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
 
-        for(int i = 0; i < EVENTS.length; i++){
-            String e = EVENTS[i];
-            if(!PHONE_START.equals(e)) {
-                names.put(e, i);
-                evaluations.put(e, preferences.getInt(e + EVALUATION, 0));
-            }
+        for(Map.Entry<Integer, String> set: EVENT_KEYS_FROM_FLAGS.entrySet()){
+            evaluations.put(set.getKey(), preferences.getInt(set.getValue() + EVALUATION, 0));
         }
         calcEvaluation();
     }
 
-    public int getEvaluations(String e){
+    public Integer getEvaluations(String e){
+
+        for (Map.Entry<Integer, String> set: EVENT_KEYS_FROM_FLAGS.entrySet()){
+            if(set.getValue().equals(e)){
+                return evaluations.get(set.getKey());
+            }
+        }
+        return -1;
+    }
+
+    public Integer getEvaluations(int e){
         return evaluations.get(e);
     }
 
     public void addEvaluations(int e){
-        SharedPreferences.Editor editor = preferences.edit();
-        for(int i = 0; i < EVENT_FLAGS.length; i++){
-            if((EVENT_FLAGS[i]&e) > 0){
-                int t = evaluations.get(EVENTS[i])+1;
-                evaluations.put(EVENTS[i], t);
-                editor.putInt(EVENTS[i] + EVALUATION, t).apply();
-            }
+        Integer t = evaluations.get(EVENT_KEYS_FROM_FLAGS.get(e));
+        if(t == null ){
+            return;
         }
+        SharedPreferences.Editor editor = preferences.edit();
+        evaluations.put(e, t+1);
+        editor.putInt(EVENT_KEYS_FROM_FLAGS.get(e) + EVALUATION, t+1).apply();
         calcEvaluation();
     }
 
@@ -122,35 +108,42 @@ public class EventCounter {
     private void calcEvaluation(){
         min = evaluations.get(WALK_START);
         mean = 0;
-        for(Map.Entry<String, Integer> entry: evaluations.entrySet()){
-            String e = entry.getKey();
-            if(!(PHONE_START.equals(e) || PHONE_STOP.equals(e))) {
-                mean += entry.getValue();
-                if (entry.getValue() < min) {
-                    min = entry.getValue();
-                }
+        int cnt = 0;
+        for(Integer value: evaluations.values()){
+            cnt++;
+            mean += value;
+            if (value < min) {
+                min = value;
             }
         }
-        mean /= 6;
+        mean /= cnt;
     }
 
-    public Map<String, Integer> getEvaluations() {
+    public Map<Integer, Integer> getEvaluations() {
         return evaluations;
     }
 
     public void putEvaluation(String e, int c){
-        evaluations.put(e, c);
+        int event = 0;
+        for (Map.Entry<Integer, String> set: EVENT_KEYS_FROM_FLAGS.entrySet()){
+            if(set.getValue().equals(e)){
+                event = set.getKey();
+                break;
+            }
+        }
+        if(evaluations.get(event) == null){
+            return;
+        }
+        evaluations.put(event, c);
         preferences.edit().putInt(e + EVALUATION, c).apply();
         calcEvaluation();
     }
 
     public void initialize(){
         SharedPreferences.Editor editor = preferences.edit();
-        for(String e: EVENTS) {
-            if(!PHONE_START.equals(e)) {
-                evaluations.put(e, 0);
-                editor.putInt(e + EVALUATION, 0).apply();
-            }
+        for(Map.Entry<Integer, String> set: EVENT_KEYS_FROM_FLAGS.entrySet()){
+            evaluations.put(set.getKey(), 0);
+            editor.putInt(set.getValue() + EVALUATION, 0).apply();
         }
         editor.apply();
     }
