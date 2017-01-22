@@ -108,8 +108,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                 int event = eventFlag;
                 boolean eval = false,
                         noteFlag = note    //通知モード
-                                && !NotificationController.hasNotification  //待機状態の通知なし
-                                && line.time - prevTime > Constants.NOTIFICATION_INTERVAL, //前の通知から一定時間経過
+                                && !NotificationController.hasNotification,  //待機状態の通知なし
                         udpComm = (eventFlag & Screen.SCREEN_ON) > 0 || (eventFlag & Walking.WALK_START) > 0;   //UDP通信が必要かどうか
 
                 String message = "null";
@@ -126,7 +125,8 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                 if (noteFlag) {
                     double p = calcP(event);
                     Log.d("P", "P is " + p);
-                    if (Math.random() < p) {
+                    if (p >= 1  //評価数が他より1/2以下では時間に関係なく通知
+                            ||( Math.random() < p && line.time - prevTime > Constants.NOTIFICATION_INTERVAL)) {    //前の通知から一定時間経過
                         notificationController.normalNotify(event, line);
                         eval = true;
                     }
