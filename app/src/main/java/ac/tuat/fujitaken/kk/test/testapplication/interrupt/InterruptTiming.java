@@ -8,6 +8,7 @@ import android.util.Log;
 import java.net.UnknownHostException;
 
 import ac.tuat.fujitaken.kk.test.testapplication.Constants;
+import ac.tuat.fujitaken.kk.test.testapplication.data.EvaluationData;
 import ac.tuat.fujitaken.kk.test.testapplication.data.StringData;
 import ac.tuat.fujitaken.kk.test.testapplication.interrupt.decision.Notify;
 import ac.tuat.fujitaken.kk.test.testapplication.interrupt.decision.PC;
@@ -19,13 +20,13 @@ import ac.tuat.fujitaken.kk.test.testapplication.receiver.AllData;
 import ac.tuat.fujitaken.kk.test.testapplication.receiver.DataReceiver;
 import ac.tuat.fujitaken.kk.test.testapplication.interrupt.decision.Walking;
 import ac.tuat.fujitaken.kk.test.testapplication.save.SaveData;
-import ac.tuat.fujitaken.kk.test.testapplication.loop.Loop;
+import ac.tuat.fujitaken.kk.test.testapplication.loop.RegularThread;
 
 /**
  * 通知タイミング検出用
  * Created by hi on 2015/11/17.
  */
-public class InterruptTiming implements Loop.LoopListener {
+public class InterruptTiming implements RegularThread.ThreadListener {
 
     //前の通知が出た時間
     public long prevTime;
@@ -78,10 +79,9 @@ public class InterruptTiming implements Loop.LoopListener {
     /**
      * 1秒ごとに呼ばれる
      * データの更新，通知判定を行う
-     * @param loop 監視しているインスタンス
      */
     @Override
-    public void onLoop(Loop loop) {
+    public void run() {
         final RowData line = allData.newLine();
 
         int w = walking.judge(((BoolData)allData.getData().get(DataReceiver.WALK)).value);
@@ -90,17 +90,18 @@ public class InterruptTiming implements Loop.LoopListener {
 
         final int eventFlag = w | s | n;
 
+        EvaluationData evaluationData = new EvaluationData();
+        evaluationData.setValue(line);
+        notificationController.save(evaluationData);
+
         if((eventFlag & 30) > 0) {
             Log.d("EVENT_COUNTER", String.valueOf(eventFlag));
-            eventTriggeredThread(eventFlag, line);
+            eventTriggeredThread(eventFlag, evaluationData);
             allData.scan();
-        }
-        else{
-            notificationController.save(line);
         }
     }
 
-    private void eventTriggeredThread(final int eventFlag, final RowData line){
+    private void eventTriggeredThread(final int eventFlag, final EvaluationData line){
         new Thread(new Runnable() {
             @Override
             public void run() {

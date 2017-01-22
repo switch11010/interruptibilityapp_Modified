@@ -30,15 +30,16 @@ import ac.tuat.fujitaken.kk.test.testapplication.save.SaveData;
 public class NotificationController {
     private InterruptionNotification interruptionNotification;
     private ScheduledExecutorService schedule;
-    private SaveData evaluationSave;
+    public SaveData evaluationSave;
     private LocalBroadcastManager localBroadcastManager;
     public static boolean hasNotification = false;
     private EvaluationData answerData,
             lateData,
-            cancelData;
-    private List<RowData> buf = new ArrayList<>();
+            cancelData,
+            answerLine;
     private EventCounter counter;
     private InterruptTiming timing;
+    private RowData saveLine;
 
     /**
      * 通知への回答を受け取るレシーバ
@@ -61,8 +62,7 @@ public class NotificationController {
                     answerData = (EvaluationData)bundle.getSerializable(EvaluationData.EVALUATION_DATA);
                     timing.prevTime = System.currentTimeMillis();
                     if (answerData != null) {
-                        EvaluationData c = answerData.clone();
-                        evaluationSave.addLine(c);
+                        answerLine.setAnswer(answerData.clone());
                         counter.addEvaluations(answerData.event);
                         clearBuf();
                     }
@@ -71,8 +71,7 @@ public class NotificationController {
                 else if(QuestionFragment.BROADCAST_ASK_ACTION.equals(action)){
                     lateData = (EvaluationData)bundle.getSerializable(EvaluationData.EVALUATION_DATA);
                     if (lateData != null) {
-                        EvaluationData c = lateData.clone();
-                        evaluationSave.addLine(c);
+                        answerLine.setAnswer(lateData.clone());
                         clearBuf();
                     }
                 }
@@ -100,9 +99,7 @@ public class NotificationController {
         @Override
         public void run() {
             interruptionNotification.cancel();
-            cancelData.setValue(answerData);
-            EvaluationData c = cancelData.clone();
-            evaluationSave.addLine(c);
+            answerLine.setAnswer(cancelData.clone());
             clearBuf();
         }
     };
@@ -111,11 +108,7 @@ public class NotificationController {
      * 記録のバッファを開放する処理
      */
     private void clearBuf(){
-        List<RowData> t = buf;
-        buf = new ArrayList<>();
-        for(RowData line: t){
-            evaluationSave.addLine(line);
-        }
+        evaluationSave.rock = false;
         hasNotification = false;
     }
 
@@ -163,7 +156,7 @@ public class NotificationController {
      * 通知を出す
      * @param event 通知を出す要因のイベント
      */
-    public void normalNotify(int event, RowData line){
+    public void normalNotify(int event, EvaluationData line){
         if(hasNotification){
             schedule.shutdownNow();
             cancelTask.run();
@@ -173,39 +166,26 @@ public class NotificationController {
         schedule.schedule(askTask, delay, TimeUnit.MILLISECONDS);
         Bundle bundle = new Bundle();
 
-        answerData.event = event;
-        answerData.setValue(line);
+        line.event = event;
+        answerLine = line;
 
-        bundle.putSerializable(EvaluationData.EVALUATION_DATA, answerData);
+        line.setAnswer(answerData);
+
+        bundle.putSerializable(EvaluationData.EVALUATION_DATA, line);
         interruptionNotification.normalNotify(bundle);
         hasNotification = true;
+        evaluationSave.rock = true;
     }
 
     //通知は出さないが，イベントを記録する
-    public void saveEvent(int event, RowData line){
-        EvaluationData data = new EvaluationData();
+    public void saveEvent(int event, EvaluationData data){
         data.evaluation = -1;
         data.event = event;
         data.comment = "通知なし";
-
-        data.setValue(line);
-
-        if(hasNotification){
-            buf.add(data);
-        }
-        else {
-            evaluationSave.addLine(data);
-        }
     }
 
     //イベントがなかったときは，データのみを記録する
-    public void save(RowData line){
-        EvaluationData data = new EvaluationData();
-        data.setValue(line);
-        if(hasNotification){
-            buf.add(data);
-        }else{
-            evaluationSave.addLine(data);
-        }
+    public void save(EvaluationData line){
+        evaluationSave.addLine(line);
     }
 }

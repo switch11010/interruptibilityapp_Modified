@@ -50,4 +50,13 @@ public class EvaluationData extends RowData {
         this.event = setData.event;
         setValue((RowData)setData);
     }
+
+    public void setAnswer(EvaluationData setData){
+        this.answerTime = setData.answerTime;
+        this.task = setData.task;
+        this.location = setData.location;
+        this.comment = setData.comment;
+        this.evaluation = setData.evaluation;
+        this.event = setData.event;
+    }
 }
