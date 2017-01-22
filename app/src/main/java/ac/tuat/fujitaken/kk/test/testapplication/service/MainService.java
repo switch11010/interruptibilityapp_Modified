@@ -16,7 +16,7 @@ import ac.tuat.fujitaken.kk.test.testapplication.receiver.AllData;
 import ac.tuat.fujitaken.kk.test.testapplication.interrupt.InterruptTiming;
 import ac.tuat.fujitaken.kk.test.testapplication.save.SaveData;
 import ac.tuat.fujitaken.kk.test.testapplication.save.SaveTask;
-import ac.tuat.fujitaken.kk.test.testapplication.loop.Loop;
+import ac.tuat.fujitaken.kk.test.testapplication.loop.RegularThread;
 
 /**
  * AccessibilityService
@@ -29,7 +29,7 @@ public class MainService extends AccessibilityService {
     //CPUのスリープをロックする
     private PowerManager.WakeLock wakeLock;
     //一定時間でデータを更新する
-    private Loop loop_1, loop_50;
+    private RegularThread loop_1, loop_50;
     //データを保存する
     private SaveTask saveTask;
     //通知制御
@@ -54,8 +54,8 @@ public class MainService extends AccessibilityService {
         /**
          * 各インスタンスの初期化
          */
-        loop_50 = new Loop();
-        loop_1 = new Loop();
+        loop_50 = new RegularThread();
+        loop_1 = new RegularThread();
 
         accelerometerData = new AccelerometerData(getApplicationContext());
         allData = new AllData(getApplicationContext(), accelerometerData);
@@ -68,9 +68,9 @@ public class MainService extends AccessibilityService {
         final SaveData save_50;
         if (PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(SettingFragment.ACC_SAVE, false)) {
             save_50 = new SaveData("Acc", accelerometerData.getHeader());
-            loop_50.setListener(new Loop.LoopListener() {
+            loop_50.setListener(new RegularThread.ThreadListener() {
                 @Override
-                public void onLoop(Loop loop) {
+                public void run() {
                     save_50.addLine(accelerometerData.newLine());
                 }
             });

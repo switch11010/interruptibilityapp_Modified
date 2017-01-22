@@ -8,13 +8,13 @@ import java.util.Map;
 import ac.tuat.fujitaken.kk.test.testapplication.Constants;
 import ac.tuat.fujitaken.kk.test.testapplication.data.BoolData;
 import ac.tuat.fujitaken.kk.test.testapplication.data.Data;
-import ac.tuat.fujitaken.kk.test.testapplication.loop.Loop;
+import ac.tuat.fujitaken.kk.test.testapplication.loop.RegularThread;
 
 /**
  * 歩行検出用
  * Created by hi on 2015/11/12.
  */
-public class WalkDetection implements DataReceiver, Loop.LoopListener {
+public class WalkDetection implements DataReceiver, RegularThread.ThreadListener {
 
     private static final double _1G = 9.8;
 
@@ -205,7 +205,7 @@ public class WalkDetection implements DataReceiver, Loop.LoopListener {
     }
 
     @Override
-    public void onLoop(Loop loop) {
+    public void run() {
         double norm = acc.getNorm();
         buffer.add(norm);
         buffer.remove(0);

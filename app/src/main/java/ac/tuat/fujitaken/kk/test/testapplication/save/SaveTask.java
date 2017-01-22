@@ -214,56 +214,58 @@ public class SaveTask {
     /**
      * データの保存
      */
-    private void save(SaveData saveData){
-        int BUFFER = 500;
-        FileOutputStream fileOutputStream = null;
-        OutputStreamWriter outputStreamWriter = null;
-        BufferedWriter bufferedWriter = null;
+    private void save(SaveData saveData) {
+        if (!saveData.rock) {
+            int BUFFER = 500;
+            FileOutputStream fileOutputStream = null;
+            OutputStreamWriter outputStreamWriter = null;
+            BufferedWriter bufferedWriter = null;
 
-        //並列処理のためのデータの退避
-        List<RowData> temp = saveData.refresh();
-        File file = saveData.getFile();
+            //並列処理のためのデータの退避
+            List<RowData> temp = saveData.refresh();
+            File file = saveData.getFile();
 
-        if(temp.size() > 0) {
-            try {
-                fileOutputStream = new FileOutputStream(file, true);
-                outputStreamWriter = new OutputStreamWriter(fileOutputStream, "SHIFT-JIS");
-                bufferedWriter = new BufferedWriter(outputStreamWriter);
+            if (temp.size() > 0) {
+                try {
+                    fileOutputStream = new FileOutputStream(file, true);
+                    outputStreamWriter = new OutputStreamWriter(fileOutputStream, "SHIFT-JIS");
+                    bufferedWriter = new BufferedWriter(outputStreamWriter);
 
-                StringBuilder builder = new StringBuilder();
-                for (RowData line : temp) {
-                    builder.append(line.getLine()).append("\n");
-                    if (builder.length() >= BUFFER) {
-                        bufferedWriter.write(builder.toString());
-                        builder = new StringBuilder();
+                    StringBuilder builder = new StringBuilder();
+                    for (RowData line : temp) {
+                        builder.append(line.getLine()).append("\n");
+                        if (builder.length() >= BUFFER) {
+                            bufferedWriter.write(builder.toString());
+                            builder = new StringBuilder();
+                        }
                     }
-                }
-                bufferedWriter.write(builder.toString());
+                    bufferedWriter.write(builder.toString());
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
 
-                //ファイルのクローズ
-                if (bufferedWriter != null) {
-                    try {
-                        bufferedWriter.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    //ファイルのクローズ
+                    if (bufferedWriter != null) {
+                        try {
+                            bufferedWriter.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
-                if (outputStreamWriter != null) {
-                    try {
-                        outputStreamWriter.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    if (outputStreamWriter != null) {
+                        try {
+                            outputStreamWriter.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
-                if (fileOutputStream != null) {
-                    try {
-                        fileOutputStream.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    if (fileOutputStream != null) {
+                        try {
+                            fileOutputStream.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }

@@ -10,14 +10,14 @@ import java.util.TreeMap;
 
 import ac.tuat.fujitaken.kk.test.testapplication.data.Data;
 import ac.tuat.fujitaken.kk.test.testapplication.data.RowData;
-import ac.tuat.fujitaken.kk.test.testapplication.loop.Loop;
+import ac.tuat.fujitaken.kk.test.testapplication.loop.RegularThread;
 
 /**
  * 全データを統括するクラス
  * データの最新値をソートしてマップに保存している
  * Created by Komuro on 2015/11/29.
  */
-public class AllData implements DataReceiver, Loop.LoopListener {
+public class AllData implements DataReceiver, RegularThread.ThreadListener {
 
     //各データを保持しているクラス
     private AccessibilityData accessibilityEventReceiver;
@@ -108,7 +108,7 @@ public class AllData implements DataReceiver, Loop.LoopListener {
     }
 
     @Override
-    public void onLoop(Loop loop) {
+    public void run() {
         if(walkDetection.judge()){
             wifiReceiver.scan();
         }

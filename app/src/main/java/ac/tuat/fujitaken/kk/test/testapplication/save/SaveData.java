@@ -19,6 +19,7 @@ public class SaveData{
     private File file;      //保存ファイル
     protected List<RowData> data = new ArrayList<>();    //保存するデータ
     private String header, category;
+    public boolean rock = false;
 
     /**
      * コンストラクタ

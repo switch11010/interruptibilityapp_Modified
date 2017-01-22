@@ -7,36 +7,28 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import ac.tuat.fujitaken.kk.test.testapplication.Constants;
-
 /**
  * イベントを監視するクラス
  * Created by hi on 2015/11/11.
  */
-public class Loop {
+public class RegularThread {
 
     private ScheduledExecutorService schedule = null;
-    protected List<LoopListener> listeners = new ArrayList<>();
-
+    private List<ThreadListener> listeners = new ArrayList<>();
     private Runnable repeatTask = new Runnable() {
         @Override
         public void run() {
-            Loop.this.run();
+            for(int i = 0; i < listeners.size(); i++) {
+                ThreadListener listener = listeners.get(i);
+                if(listener == null){
+                    listeners.remove(i--);
+                }
+                else{
+                    listener.run();
+                }
+            }
         }
     };
-
-    public void run(){
-        for(int i = 0; i < listeners.size(); i++) {
-            LoopListener listener = listeners.get(i);
-            if(listener == null){
-                listeners.remove(i);
-                i--;
-            }
-            else{
-                listener.onLoop(this);
-            }
-        }
-    }
 
     /**
      * 監視スタート
@@ -48,7 +40,7 @@ public class Loop {
         }
     }
 
-    public void setListener(LoopListener listener){
+    public void setListener(ThreadListener listener){
         listeners.add(listener);
     }
 
@@ -62,7 +54,7 @@ public class Loop {
         }
     }
 
-    public interface LoopListener {
-        void onLoop(Loop loop);
+    public interface ThreadListener {
+        void run();
     }
 }
