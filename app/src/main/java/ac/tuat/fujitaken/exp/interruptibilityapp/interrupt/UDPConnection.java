@@ -38,10 +38,11 @@ public class UDPConnection {
         if(client == null) {
             try {
                 String sndStr = id + "," + data.getLine();
-                DatagramPacket sendPacket = new DatagramPacket(sndStr.getBytes(), sndStr.length(), ipAddress, port);
+                DatagramPacket sendPacket = new DatagramPacket(sndStr.getBytes("UTF-8"), sndStr.length(), ipAddress, port);
                 client = new DatagramSocket();
+                Log.d("UDP", "Sending : " + sndStr);
                 client.send(sendPacket);
-                Log.d("UDP", "Send : " + "(" +sendPacket.getData().length + " Bytes)");
+                Log.d("UDP", "Sent : " + "(" +sendPacket.getData().length + " Bytes)");
             } catch (SocketException e) {
                 e.printStackTrace();
                 return false;
@@ -57,14 +58,16 @@ public class UDPConnection {
     public String receiveData(){
         String message = "";
         if(client != null) {
-            byte receivedBuff[] = new byte[128];
+            byte receivedBuff[] = new byte[64];
             DatagramPacket receivedPacket = new DatagramPacket(receivedBuff, receivedBuff.length);
 
             try {
                 client.setSoTimeout(Constants.MAIN_LOOP_PERIOD);
+                Log.d("UDP", "Receiving... (Buffer size is " + receivedBuff.length + " Bytes)");
                 client.receive(receivedPacket);
-                message = new String(receivedPacket.getData(), 0, receivedPacket.getLength());
-                Log.d("UDP", "Received : " + message + "(" +receivedPacket.getData().length + " Bytes)");
+                message = new String(receivedPacket.getData(), "UTF-8");
+                message = message.substring(0, message.indexOf('\0'));
+                Log.d("UDP", "Received : " + message + "(" + message.getBytes("UTF-8").length + " Bytes)");
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {

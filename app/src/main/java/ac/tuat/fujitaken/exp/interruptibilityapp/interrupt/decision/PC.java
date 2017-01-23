@@ -17,9 +17,14 @@ public class PC {
             return isPrevFromPC;
         }
         String[] params = message.split(":");
-
-        long clickInterval = Long.parseLong(params[params.length - 1]),
-                keyInterval = Long.parseLong(params[params.length - 2]);
+        long clickInterval, keyInterval;
+        try {
+            clickInterval = Long.parseLong(params[params.length - 1]);
+            keyInterval = Long.parseLong(params[params.length - 2]);
+        }
+        catch (NumberFormatException e){
+            return 0;
+        }
 
         long pcInterval = clickInterval < keyInterval ? clickInterval : keyInterval;
         isPrevFromPC = (pcInterval < 60 * 1000) ? FROM_PC : 0;
