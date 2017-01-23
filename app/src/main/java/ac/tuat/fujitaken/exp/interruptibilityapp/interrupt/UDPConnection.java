@@ -13,6 +13,8 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.Constants;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.EvaluationData;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.RowData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.fragments.SettingFragment;
 
 /**
@@ -21,20 +23,22 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.ui.fragments.SettingFragment;
 
 public class UDPConnection {
     private InetAddress ipAddress;
-    private DatagramPacket sendPacket;
+    private int port, id;
     private DatagramSocket client = null;
 
     public UDPConnection(Context context) throws UnknownHostException {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
 
         ipAddress = InetAddress.getByName(preferences.getString(SettingFragment.IP_ADDRESS, ""));
-        String sndStr = preferences.getString(SettingFragment.SP_ID, "");
-        sendPacket = new DatagramPacket(sndStr.getBytes(), sndStr.length(), ipAddress, preferences.getInt(SettingFragment.PORT, 54613));
+        port = preferences.getInt(SettingFragment.PORT, 54613);
+        id = preferences.getInt(SettingFragment.SP_ID, 10);
     }
 
-    public boolean sendRequest(){
+    public boolean sendRequest(RowData data){
         if(client == null) {
             try {
+                String sndStr = id + "," + data.getLine();
+                DatagramPacket sendPacket = new DatagramPacket(sndStr.getBytes(), sndStr.length(), ipAddress, port);
                 client = new DatagramSocket();
                 client.send(sendPacket);
                 Log.d("UDP", "Send : " + "(" +sendPacket.getData().length + " Bytes)");

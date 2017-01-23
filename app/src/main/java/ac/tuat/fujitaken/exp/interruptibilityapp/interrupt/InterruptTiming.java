@@ -114,7 +114,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                 String message = "null";
                 if (udpConnection != null && udpComm) {
 
-                    udpConnection.sendRequest();
+                    udpConnection.sendRequest(line);
                     message = udpConnection.receiveData();
                     Log.d("UDP", "Received Time : " + (System.currentTimeMillis() - line.time));
                 }

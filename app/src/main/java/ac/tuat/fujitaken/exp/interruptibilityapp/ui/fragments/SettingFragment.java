@@ -106,7 +106,7 @@ public class SettingFragment extends Fragment {
         saveSwitch.setChecked(preferences.getBoolean(ACC_SAVE, true));
         noteSwitch.setChecked(preferences.getBoolean(NOTE, true));
         ipText.setText(preferences.getString(IP_ADDRESS, ""));
-        spText.setText(preferences.getString(SP_ID, ""));
+        spText.setText(String.valueOf(preferences.getInt(SP_ID, 10)));
         portText.setText(String.valueOf(preferences.getInt(PORT, 54613)));
 
         volume.setProgress(preferences.getInt(VOLUME, manager.getStreamVolume(AudioManager.STREAM_NOTIFICATION)));
@@ -140,7 +140,7 @@ public class SettingFragment extends Fragment {
                 .putBoolean(ACC_SAVE, saveSwitch.isChecked())
                 .putBoolean(NOTE, noteSwitch.isChecked())
                 .putString(IP_ADDRESS, ipText.getText().toString())
-                .putString(SP_ID, spText.getText().toString())
+                .putInt(SP_ID, Integer.parseInt(spText.getText().toString()))
                 .putInt(PORT, Integer.parseInt(portText.getText().toString()))
                 .putInt(VOLUME, volume.getProgress())
                 .apply();
