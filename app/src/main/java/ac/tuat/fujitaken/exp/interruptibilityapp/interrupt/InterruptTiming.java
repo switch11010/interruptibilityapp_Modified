@@ -121,6 +121,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                 event |= pc.judge(message);
 
                 Log.d("EVENT", "Num is " + Integer.toBinaryString(event));
+                Log.d("EVENT", notificationController.counter.getEventName(event));
 
                 if (noteFlag) {
                     double p = calcP(event);

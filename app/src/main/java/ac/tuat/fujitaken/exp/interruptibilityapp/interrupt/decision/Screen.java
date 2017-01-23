@@ -29,6 +29,7 @@ public class Screen {
     private List<Integer> buffer = new ArrayList<>();
     private int sumOps = 0;
     private boolean prevConnect = false;
+    private String appName = "";
 
     public Screen(Context context){
         int screenOffTimeout = Settings.System.getInt(context.getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, 30 * 1000) / Constants.MAIN_LOOP_PERIOD - 1;
@@ -37,12 +38,14 @@ public class Screen {
             buffer.add(0);
         }
         buffer.add(1);
+        appName = context.getString(R.string.app_name);
     }
 
     public int judge(Map<String, Data> data){
 
         boolean latestValue = ((BoolData)data.get(DataReceiver.SCREEN_ON)).value;
         boolean connect = ((BoolData)data.get(DataReceiver.POWER_CONNECTED)).value;
+        String noteApp = ((StringData)data.get(DataReceiver.NOTIFICATION)).value;
 
         int ops = (
         ((IntData)data.get(DataReceiver.VIEW_CLICKED)).value > 0
@@ -55,7 +58,7 @@ public class Screen {
         sumOps += ops;
         buffer.add(ops);
 
-        boolean on = latestValue && !prevState && !(prevConnect && !connect),
+        boolean on = latestValue && !prevState && !(prevConnect && !connect) && !appName.equals(noteApp),
         off = !latestValue && prevState && sumOps > 0;
 
         prevConnect = connect;

@@ -37,7 +37,7 @@ public class NotificationController {
             lateData,
             cancelData,
             answerLine;
-    private EventCounter counter;
+    public EventCounter counter;
     private InterruptTiming timing;
     private RowData saveLine;
 
