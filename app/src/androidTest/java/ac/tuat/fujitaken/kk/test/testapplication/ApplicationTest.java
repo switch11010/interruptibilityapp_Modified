@@ -1,4 +1,4 @@
-package ac.tuat.fujitaken.kk.test.testapplication;
+package ac.tuat.fujitaken.exp.interruptibilityapp;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

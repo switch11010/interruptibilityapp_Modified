@@ -4,7 +4,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion "23.0.2"
     defaultConfig {
-        applicationId "ac.tuat.fujitaken.kk.test.testapplication"
+        applicationId "ac.tuat.fujitaken.exp.interruptibilityapp"
         minSdkVersion 19
         versionCode 1
         versionName "2.2"
