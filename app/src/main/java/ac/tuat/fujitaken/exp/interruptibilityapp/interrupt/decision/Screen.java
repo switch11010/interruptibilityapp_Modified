@@ -60,6 +60,11 @@ public class Screen {
 
         boolean on = latestValue && !prevState && !(prevConnect && !connect) && !appName.equals(noteApp),
         off = !latestValue && prevState && sumOps > 0;
+        if(on){
+            sumOps -= buffer.remove(0);
+            sumOps += 1;
+            buffer.add(1);
+        }
 
         prevConnect = connect;
         prevState = latestValue;
