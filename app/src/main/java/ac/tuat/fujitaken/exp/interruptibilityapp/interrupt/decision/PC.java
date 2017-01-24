@@ -11,10 +11,13 @@ public class PC {
 
     public int judge(String message){
         if (message.equals("")) {
+            isPrevFromPC = 0;
             return 0;
         }
         else if(message.equals("null")){
-            return isPrevFromPC;
+            int ret = isPrevFromPC;
+            isPrevFromPC = 0;
+            return ret;
         }
         String[] params = message.split(":");
         long clickInterval, keyInterval;

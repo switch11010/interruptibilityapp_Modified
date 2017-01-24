@@ -57,6 +57,5 @@ public class EvaluationData extends RowData {
         this.location = setData.location;
         this.comment = setData.comment;
         this.evaluation = setData.evaluation;
-        this.event = setData.event;
     }
 }
