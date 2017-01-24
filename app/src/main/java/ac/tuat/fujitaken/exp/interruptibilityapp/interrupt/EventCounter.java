@@ -49,10 +49,10 @@ public class EventCounter {
             PC_TO_WALK_FLAG = Walking.WALK_START | PC.FROM_PC,
             WALK_TO_PC_FLAG = Walking.WALK_STOP | PC.FROM_PC,
 
-            SP_TO_PC_BY_SELF_FLAG = Screen.SCREEN_ON | PC.FROM_PC,
-            SP_TO_PC_BY_NOTE_FLAG = Screen.SCREEN_ON | Notify.NOTIFICATION | PC.FROM_PC,
-            PC_TO_SP_BY_SELF_FLAG = Screen.SCREEN_OFF | PC.FROM_PC,
-            PC_TO_SP_BY_NOTE_FLAG = Screen.SCREEN_OFF | Notify.NOTIFICATION | PC.FROM_PC;
+            PC_TO_SP_BY_SELF_FLAG = Screen.SCREEN_ON | PC.FROM_PC,
+            PC_TO_SP_BY_NOTE_FLAG = Screen.SCREEN_ON | Notify.NOTIFICATION | PC.FROM_PC,
+            SP_TO_PC_BY_SELF_FLAG = Screen.SCREEN_OFF | PC.FROM_PC,
+            SP_TO_PC_BY_NOTE_FLAG = Screen.SCREEN_OFF | Notify.NOTIFICATION | PC.FROM_PC;
 
     public static final HashMap<Integer, String> EVENT_KEYS_FROM_FLAGS = new HashMap<Integer, String>(){
         {
