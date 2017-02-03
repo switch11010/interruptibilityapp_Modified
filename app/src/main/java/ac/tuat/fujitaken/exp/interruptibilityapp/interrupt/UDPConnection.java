@@ -13,9 +13,8 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.Constants;
-import ac.tuat.fujitaken.exp.interruptibilityapp.data.EvaluationData;
-import ac.tuat.fujitaken.exp.interruptibilityapp.data.RowData;
-import ac.tuat.fujitaken.exp.interruptibilityapp.ui.fragments.SettingFragment;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.RowData;
+import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.SettingFragment;
 
 /**
  * Created by KKomuro on 2017/01/11.

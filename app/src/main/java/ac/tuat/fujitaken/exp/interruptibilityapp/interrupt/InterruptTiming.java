@@ -8,19 +8,20 @@ import android.util.Log;
 import java.net.UnknownHostException;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.Constants;
-import ac.tuat.fujitaken.exp.interruptibilityapp.data.EvaluationData;
-import ac.tuat.fujitaken.exp.interruptibilityapp.data.StringData;
-import ac.tuat.fujitaken.exp.interruptibilityapp.interrupt.decision.Notify;
-import ac.tuat.fujitaken.exp.interruptibilityapp.interrupt.decision.PC;
-import ac.tuat.fujitaken.exp.interruptibilityapp.ui.fragments.SettingFragment;
-import ac.tuat.fujitaken.exp.interruptibilityapp.data.BoolData;
-import ac.tuat.fujitaken.exp.interruptibilityapp.data.RowData;
-import ac.tuat.fujitaken.exp.interruptibilityapp.interrupt.decision.Screen;
-import ac.tuat.fujitaken.exp.interruptibilityapp.receiver.AllData;
-import ac.tuat.fujitaken.exp.interruptibilityapp.receiver.DataReceiver;
-import ac.tuat.fujitaken.exp.interruptibilityapp.interrupt.decision.Walking;
-import ac.tuat.fujitaken.exp.interruptibilityapp.save.SaveData;
-import ac.tuat.fujitaken.exp.interruptibilityapp.loop.RegularThread;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.EventCounter;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.EvaluationData;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.StringData;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.Notify;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.PC;
+import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.SettingFragment;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.BoolData;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.RowData;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.Screen;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.AllData;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.DataReceiver;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.Walking;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.SaveData;
+import ac.tuat.fujitaken.exp.interruptibilityapp.Flows.RegularThread;
 
 /**
  * 通知タイミング検出用

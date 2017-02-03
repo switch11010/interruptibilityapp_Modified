@@ -10,13 +10,13 @@ import android.widget.Toast;
 import java.util.concurrent.TimeUnit;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.Constants;
-import ac.tuat.fujitaken.exp.interruptibilityapp.ui.fragments.SettingFragment;
-import ac.tuat.fujitaken.exp.interruptibilityapp.receiver.AccelerometerData;
-import ac.tuat.fujitaken.exp.interruptibilityapp.receiver.AllData;
+import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.SettingFragment;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.AccelerometerData;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.AllData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.interrupt.InterruptTiming;
-import ac.tuat.fujitaken.exp.interruptibilityapp.save.SaveData;
-import ac.tuat.fujitaken.exp.interruptibilityapp.save.SaveTask;
-import ac.tuat.fujitaken.exp.interruptibilityapp.loop.RegularThread;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.SaveData;
+import ac.tuat.fujitaken.exp.interruptibilityapp.Flows.SaveTask;
+import ac.tuat.fujitaken.exp.interruptibilityapp.Flows.RegularThread;
 
 /**
  * AccessibilityService

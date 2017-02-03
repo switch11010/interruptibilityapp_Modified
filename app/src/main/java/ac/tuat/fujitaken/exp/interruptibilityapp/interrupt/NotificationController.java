@@ -7,20 +7,18 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import ac.tuat.fujitaken.exp.interruptibilityapp.data.EvaluationData;
-import ac.tuat.fujitaken.exp.interruptibilityapp.data.RowData;
-import ac.tuat.fujitaken.exp.interruptibilityapp.interrupt.question.InterruptionNotification;
-import ac.tuat.fujitaken.exp.interruptibilityapp.interrupt.question.QuestionActivity;
-import ac.tuat.fujitaken.exp.interruptibilityapp.interrupt.question.QuestionFragment;
-import ac.tuat.fujitaken.exp.interruptibilityapp.receiver.AllData;
-import ac.tuat.fujitaken.exp.interruptibilityapp.save.SaveData;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.EventCounter;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.EvaluationData;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.RowData;
+import ac.tuat.fujitaken.exp.interruptibilityapp.ui.questionnaire.InterruptionNotification;
+import ac.tuat.fujitaken.exp.interruptibilityapp.ui.questionnaire.QuestionActivity;
+import ac.tuat.fujitaken.exp.interruptibilityapp.ui.questionnaire.fragments.QuestionFragment;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.AllData;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.SaveData;
 
 /**
  * 通知制御くらす
