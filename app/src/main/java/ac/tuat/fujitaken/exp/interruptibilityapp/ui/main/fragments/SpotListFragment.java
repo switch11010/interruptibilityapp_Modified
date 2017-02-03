@@ -1,19 +1,21 @@
 package ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.List;
 
+import ac.tuat.fujitaken.exp.interruptibilityapp.Constants;
 import ac.tuat.fujitaken.exp.interruptibilityapp.R;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.MainActivity;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.wifi.data.Spot;
@@ -30,19 +32,13 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.wifi.database.WiP
  */
 public class SpotListFragment extends ListFragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-
-    // TODO: Rename and change types of parameters
-
     private SpotAdapter adapter;
 
-    // TODO: Rename and change types of parameters
-    public static SpotListFragment newInstance(int param1) {
+    @SuppressWarnings("UnusedDeclaration")
+    public static SpotListFragment newInstance(int position) {
         SpotListFragment fragment = new SpotListFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_PARAM1, param1);
+        args.putInt(Constants.POSITION_ARG, position);
         fragment.setArguments(args);
         return fragment;
     }
@@ -57,19 +53,21 @@ public class SpotListFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((MainActivity) getActivity()).onSectionAttached(getArguments().getInt(ARG_PARAM1));
+        Bundle bundle = getArguments();
+        int position = bundle.getInt(Constants.POSITION_ARG);
+        ((MainActivity) getActivity()).onSectionAttached(position);
         setHasOptionsMenu(true);
 
-        // TODO: Change Adapter to display your content
         adapter = new SpotAdapter(getActivity(), R.layout.spot_layout);
 
         setListAdapter(adapter);
     }
 
+    @SuppressWarnings("unchecked")
     private void update(){
         WiPSDBHelper helper = ((MainActivity) getActivity()).getDbHelper();
 
-        List<Spot> spots =  helper.allSpot();
+        List<Spot> spots = helper.allSpot();
 
         adapter.clear();
         adapter.addAll(spots);
@@ -83,53 +81,51 @@ public class SpotListFragment extends ListFragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        FragmentActivity main = getActivity();
+        AlertDialog.Builder dialog;
         switch(item.getItemId()) {
             case R.id.action_add:
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.container, RecordFragment.newInstance(-1))
-                        .addToBackStack(null)
-                        .commit();
+                FragmentManager fm = main.getSupportFragmentManager();
+                FragmentTransaction ft = fm.beginTransaction();
+                ft.replace(R.id.container, RecordFragment.newInstance(-1));
+                ft.addToBackStack(null);
+                ft.commit();
                 break;
             case R.id.action_dump:
-                new AlertDialog.Builder(getActivity()).setTitle("Dump")
-                        .setMessage("\"" + WiPSDBContract.DATABASE_NAME + "\"" + "を\"WIPS\"フォルダに出力します。")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                WiPSDBHelper helper = ((MainActivity) getActivity()).getDbHelper();
-                                helper.dumpDatabase("WIPS/dumped.db");
-                            }
-                        })
-                        .setCancelable(true)
-                        .show();
+                dialog = new AlertDialog.Builder(getActivity());
+                dialog.setTitle("Dump");
+                dialog.setMessage("\"" + WiPSDBContract.DATABASE_NAME + "\"" + "を\"WIPS\"フォルダに出力します。");
+                dialog.setPositiveButton("OK",
+                        (dialogInterface, which) ->{
+                            WiPSDBHelper helper = ((MainActivity) getActivity()).getDbHelper();
+                            helper.dumpDatabase("WIPS/dumped.db");
+                        });
+                dialog.setCancelable(true);
+                dialog.show();
                 break;
             case R.id.action_input:
-                new AlertDialog.Builder(getActivity())
-                        .setTitle("Input")
-                        .setMessage("\"" + WiPSDBContract.DATABASE_NAME + "\"" + "に\"dumped.db\"を上書きします。")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                WiPSDBHelper helper = ((MainActivity) getActivity()).getDbHelper();
-                                helper.inputDBFile(Environment.getExternalStorageDirectory() + "/WIPS/dumped.db");
-                            }
-                        })
-                        .setCancelable(true)
-                        .show();
+                dialog = new AlertDialog.Builder(getActivity());
+                dialog.setTitle("Input");
+                dialog.setMessage("\"" + WiPSDBContract.DATABASE_NAME + "\"" + "に\"dumped.db\"を上書きします。");
+                dialog.setPositiveButton("OK",
+                        (dialogInterface, which) ->{
+                            WiPSDBHelper helper = ((MainActivity) getActivity()).getDbHelper();
+                            helper.inputDBFile(Environment.getExternalStorageDirectory() + "/WIPS/dumped.db");
+                        });
+                dialog.setCancelable(true);
+                dialog.show();
                 break;
             case R.id.action_dumpcsv:
-                new AlertDialog.Builder(getActivity())
-                        .setTitle("Input")
-                        .setMessage("\"" + WiPSDBContract.DATABASE_NAME + "\"" + "を\"dumped.csv\"に出力します。")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                WiPSDBHelper helper = ((MainActivity) getActivity()).getDbHelper();
-                                helper.dumpToCsv();
-                            }
-                        })
-                        .setCancelable(true)
-                        .show();
+                dialog = new AlertDialog.Builder(getActivity());
+                dialog.setTitle("Input");
+                dialog.setMessage("\"" + WiPSDBContract.DATABASE_NAME + "\"" + "を\"dumped.csv\"に出力します。");
+                dialog.setPositiveButton("OK",
+                        (dialogInterface, which)->{
+                            WiPSDBHelper helper = ((MainActivity) getActivity()).getDbHelper();
+                            helper.dumpToCsv();
+                        });
+                dialog.setCancelable(true);
+                dialog.show();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -138,37 +134,34 @@ public class SpotListFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         Spot item = (Spot)l.getItemAtPosition(position);
-        getActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, RecordFragment.newInstance(item.id))
-                .addToBackStack(null)
-                .commit();
+        FragmentActivity activity = getActivity();
+        FragmentManager fm = activity.getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.container, RecordFragment.newInstance(item.id));
+        ft.addToBackStack(null);
+        ft.commit();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         update();
-        getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+        ListView list = getListView();
+        list.setOnItemLongClickListener((adapterView, view, i, l)->{
+            final Spot spot = (Spot) adapterView.getItemAtPosition(i);
 
-                final Spot spot = (Spot) adapterView.getItemAtPosition(i);
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle("Delete Spot");
-                builder.setMessage(spot.name + "を削除します");
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("Delete Spot");
+            builder.setMessage(spot.name + "を削除します");
+            builder.setPositiveButton("OK",
+                    (dialogInterface, which)-> {
                         WiPSDBHelper helper = ((MainActivity) getActivity()).getDbHelper();
                         helper.deleteSpot(spot.id);
                         update();
-                    }
-                });
-                builder.setCancelable(true);
-                builder.show();
-                return true;
-            }
+                    });
+            builder.setCancelable(true);
+            builder.show();
+            return true;
         });
     }
 
@@ -182,9 +175,9 @@ public class SpotListFragment extends ListFragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
+    @SuppressWarnings("UnusedDeclaration")
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(String id);
+        void onFragmentInteraction(String id);
     }
 
 }

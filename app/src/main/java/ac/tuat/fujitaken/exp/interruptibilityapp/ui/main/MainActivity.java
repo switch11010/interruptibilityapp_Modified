@@ -2,11 +2,15 @@ package ac.tuat.fujitaken.exp.interruptibilityapp.ui.main;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -51,8 +55,8 @@ public class MainActivity extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
+        FragmentManager fm = getSupportFragmentManager();
+        mNavigationDrawerFragment = (NavigationDrawerFragment) fm.findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
 
         // Set up the drawer.
@@ -72,24 +76,25 @@ public class MainActivity extends ActionBarActivity
 
     /**
      * 画面を追加するときはここでフラグメントを作成
-     * @param position
+     * @param position 表示順番
      */
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // run the wifi content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction ft;
         if(fragmentManager.getBackStackEntryCount() > 0){
             fragmentManager.popBackStack();
         }
 
         if(position == 0){
-            fragmentManager.beginTransaction()
-                    .replace(R.id.container, SettingFragment.newInstance(position + 1))
-                    .commit();
+            ft = fragmentManager.beginTransaction();
+            ft.replace(R.id.container, SettingFragment.newInstance(position + 1));
+            ft.commit();
         } else if (position == 1) {
-            fragmentManager.beginTransaction()
-                    .replace(R.id.container, ItemFragment.newInstance(position + 1))
-                    .commit();
+            ft = fragmentManager.beginTransaction();
+            ft.replace(R.id.container, ItemFragment.newInstance(position + 1));
+            ft.commit();
         }
         /*
         else if (position == 2) {
@@ -113,18 +118,20 @@ public class MainActivity extends ActionBarActivity
 
     /**
      * 画面を追加するときはここに名前を追記
-     * @param number
+     * @param position 表示される順番
      */
-    public void onSectionAttached(int number) {
-        if(!SettingFragment.isServiceActive(getApplicationContext())) {
-            switch (number) {
+    public void onSectionAttached(int position) {
+        if(SettingFragment.isServiceActive(getApplicationContext())) {
+            return;
+        }
+        switch (position) {
 
-                case 1:
-                    mTitle = getString(R.string.title_section1);
-                    break;
-                case 2:
-                    mTitle = getString(R.string.title_section3);
-                    break;
+            case 1:
+                mTitle = getString(R.string.title_section1);
+                break;
+            case 2:
+                mTitle = getString(R.string.title_section3);
+                break;
                 /*
                 case 3:
                     mTitle = getString(R.string.title_section2);
@@ -136,7 +143,6 @@ public class MainActivity extends ActionBarActivity
                     mTitle = getString(R.string.title_section5);
                     break;
                  */
-            }
         }
     }
 
@@ -146,7 +152,6 @@ public class MainActivity extends ActionBarActivity
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -173,6 +178,7 @@ public class MainActivity extends ActionBarActivity
     /**
      * A placeholder fragment containing a simple view.
      */
+    @SuppressWarnings("UnusedDeclaration")
     public static class PlaceholderFragment extends Fragment {
         /**
          * The fragment argument representing the section number for this
@@ -198,15 +204,27 @@ public class MainActivity extends ActionBarActivity
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            return rootView;
+            return inflater.inflate(R.layout.fragment_main, container, false);
         }
 
         @Override
         public void onAttach(Activity activity) {
             super.onAttach(activity);
-            ((MainActivity) activity).onSectionAttached(
-                    getArguments().getInt(ARG_SECTION_NUMBER));
+            if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+                return;
+            }
+            Bundle bundle = getArguments();
+            int section = bundle.getInt(ARG_SECTION_NUMBER);
+            ((MainActivity) activity).onSectionAttached(section);
+        }
+
+        @Override
+        public void onAttach(Context context) {
+            super.onAttach(context);
+            Bundle bundle = getArguments();
+            int section = bundle.getInt(ARG_SECTION_NUMBER);
+            FragmentActivity activity = getActivity();
+            ((MainActivity) activity).onSectionAttached(section);
         }
     }
 
@@ -223,12 +241,14 @@ public class MainActivity extends ActionBarActivity
         List<String> p = new ArrayList<>();
 
         for(String s: permissions){
-            if(check(s)) p.add(s);
+            if(check(s)) {
+                p.add(s);
+            }
         }
 
         if(p.size() > 0) {
-            permissions = p.toArray(new String[p.size()]);
-            ActivityCompat.requestPermissions(this, permissions, PERMISSION_REQUEST);
+            String[] authenticatedPermissions = p.toArray(new String[p.size()]);
+            ActivityCompat.requestPermissions(this, authenticatedPermissions, PERMISSION_REQUEST);
         }
         else{
             checkUsage();
@@ -243,7 +263,8 @@ public class MainActivity extends ActionBarActivity
     }
 
     private void checkUsage(){
-        if(!ApplicationData.checkPermission(getApplicationContext())) {
+
+        if(!ApplicationData.checkPermission(getApplicationContext()) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Intent intent = new Intent();
             intent.setAction(Settings.ACTION_USAGE_ACCESS_SETTINGS);
             startActivity(intent);

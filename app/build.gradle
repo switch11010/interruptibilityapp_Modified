@@ -5,9 +5,13 @@ android {
     buildToolsVersion "23.0.2"
     defaultConfig {
         applicationId "ac.tuat.fujitaken.exp.interruptibilityapp"
-        minSdkVersion 19
+        minSdkVersion 16
         versionCode 1
         versionName "2.4"
+
+        jackOptions {
+            enabled true
+        }
     }
     buildTypes {
         release {
@@ -17,7 +21,10 @@ android {
     }
     productFlavors {
     }
-    return void
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 repositories {
     maven { url "https://jitpack.io" }
@@ -25,7 +32,7 @@ repositories {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:25.1.0'
-    compile 'com.android.support:support-v13:25.1.0'
-    compile 'com.android.support:recyclerview-v7:25.1.0'
+    compile 'com.android.support:appcompat-v7:25.1.1'
+    compile 'com.android.support:support-v13:25.1.1'
+    compile 'com.android.support:recyclerview-v7:25.1.1'
 }
