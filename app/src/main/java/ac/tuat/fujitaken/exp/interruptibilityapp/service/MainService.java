@@ -87,7 +87,7 @@ public class MainService extends AccessibilityService {
         //処理をスタート
         loop_50.start(Constants.ACC_LOOP_PERIOD, TimeUnit.MILLISECONDS);
         loop_1.start(Constants.MAIN_LOOP_PERIOD, TimeUnit.MILLISECONDS);
-        saveTask.start(Constants.SAVE_LOOP_PERIOD, TimeUnit.MINUTES);
+        saveTask.couldStart(Constants.SAVE_LOOP_PERIOD, TimeUnit.MINUTES);
 
         Toast.makeText(getApplicationContext(), "Service Start", Toast.LENGTH_SHORT).show();
     }

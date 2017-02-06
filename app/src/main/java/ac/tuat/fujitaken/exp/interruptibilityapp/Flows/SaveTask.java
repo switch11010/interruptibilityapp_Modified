@@ -18,12 +18,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import ac.tuat.fujitaken.exp.interruptibilityapp.Constants;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.RowData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.SaveData;
 
@@ -34,29 +33,36 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.SaveData;
 public class SaveTask {
 
     private ScheduledExecutorService schedule = null;
-    private Timer fileUpdateSchedule = null;
     private List<SaveData> data = new ArrayList<>();
     private Context context;
 
-    private Runnable saveTask = new Runnable() {
-        @Override
-        public void run() {
-            save();
+    private Runnable saveTask = ()->{
+        List<String> files = new ArrayList<>();
+        File storage = Environment.getExternalStorageDirectory();
+
+        if(storage.getFreeSpace() > Constants.STORAGE_FREE_SPACE_LIMITATION) {
+            for (int i = 0; i < data.size(); i++) {
+                SaveData saveData = data.get(i);
+                if (saveData == null) {
+                    data.remove(i);
+                    i--;
+                } else {
+                    File saveDataFile = saveData.getFile();
+                    files.add(saveDataFile.getPath());
+                    save(saveData);
+                }
+            }
+
+            MediaScannerConnection.scanFile(context, files.toArray(new String[files.size()]), null, null);
         }
     };
 
-    private TimerTask updateTask = new TimerTask() {
-        @Override
-        public void run() {
-            fileUpdate();
-        }
-    };
-
-    public SaveTask(Context context){
-        this.context = context;
+    public SaveTask(Context appContext){
+        this.context = appContext;
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-            if (context.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(context, "ファイル書き込みの権限がありません。", Toast.LENGTH_LONG).show();
+            if (appContext.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                Toast toast = Toast.makeText(appContext, "ファイル書き込みの権限がありません。", Toast.LENGTH_LONG);
+                toast.show();
             }
         }
     }
@@ -65,17 +71,16 @@ public class SaveTask {
         data.add(saveData);
     }
 
-    public boolean start(int period, TimeUnit timeUnit) {
+    public boolean couldStart(int period, TimeUnit timeUnit) {
         if(schedule == null){
             for(SaveData saveData: data){
-                if(!initialize(saveData)){
+                if(!couldInitialize(saveData)){
                     return false;
                 }
             }
             schedule = Executors.newSingleThreadScheduledExecutor();
             schedule.scheduleAtFixedRate(saveTask, period, period, timeUnit);
 
-            fileUpdateSchedule = new Timer();
             Calendar dateTime = Calendar.getInstance();
             dateTime.setTime(new Date());
             dateTime.add(Calendar.DAY_OF_MONTH, 1);
@@ -87,27 +92,6 @@ public class SaveTask {
             dateTime.clear(Calendar.SECOND);
             dateTime.clear(Calendar.MILLISECOND);
 
-            fileUpdateSchedule.schedule(updateTask, dateTime.getTime());
-
-            return true;
-        }
-        return false;
-    }
-
-    private boolean fileUpdate(){
-        if(schedule != null) {
-            schedule.shutdownNow();
-            schedule = null;
-            fileUpdateSchedule.cancel();
-            save();
-
-            for (SaveData saveData : data) {
-                saveData.updateFile();
-                if (!initialize(saveData)) {
-                    return false;
-                }
-            }
-            start(3, TimeUnit.MINUTES);
             return true;
         }
         return false;
@@ -116,16 +100,16 @@ public class SaveTask {
     public void stop(){
         if(schedule != null){
             schedule.shutdownNow();
-            new Thread(saveTask).start();
+            Thread thread = new Thread(saveTask);
+            thread.start();
             schedule = null;
-            fileUpdateSchedule.cancel();
         }
     }
 
-    protected boolean initialize(SaveData data) {
+    private boolean couldInitialize(SaveData saveData) {
         boolean success = false;
 
-        File file = data.getFile();
+        File file = saveData.getFile();
 
         //ファイル位置のディレクトリが存在していなければ作成
         File parent = file.getParentFile();
@@ -135,139 +119,111 @@ public class SaveTask {
             }
         }
 
-        if (file.exists()) {
-            if (file.canWrite()) {
-                success = true;
+        FileOutputStream fileOutputStream = null;
+        OutputStreamWriter outputStreamWriter = null;
+        BufferedWriter bufferedWriter = null;
+        try {
+
+            /**
+             * ファイルの作成と，書き込み可能か判定
+             * 可能ならヘッダを書き込んで初期化
+             */
+            if (file.createNewFile()) {
+                if(file.canWrite()) {
+                    fileOutputStream = new FileOutputStream(file, false);
+                    outputStreamWriter = new OutputStreamWriter(fileOutputStream, "SHIFT-JIS");
+                    bufferedWriter = new BufferedWriter(outputStreamWriter);
+                    bufferedWriter.write(saveData.getHeader());
+                    bufferedWriter.newLine();
+                    success = true;
+                }
             }
-        }
-        else {
-            FileOutputStream fileOutputStream = null;
-            OutputStreamWriter outputStreamWriter = null;
-            BufferedWriter bufferedWriter = null;
-            try {
 
-                /**
-                 * ファイルの作成と，書き込み可能か判定
-                 * 可能ならヘッダを書き込んで初期化
-                 */
-                if (file.createNewFile()) {
-                    if(file.canWrite()) {
-                        fileOutputStream = new FileOutputStream(file, false);
-                        outputStreamWriter = new OutputStreamWriter(fileOutputStream, "SHIFT-JIS");
-                        bufferedWriter = new BufferedWriter(outputStreamWriter);
-                        bufferedWriter.write(data.getHeader());
-                        bufferedWriter.newLine();
-                        success = true;
-                    }
-                }
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e("SAVEDATA", e.getMessage());
+        } finally {
 
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e("SAVEDATA", e.getMessage());
-            } finally {
-
-                //ファイルのクローズ処理
-                if (bufferedWriter != null) {
-                    try {
-                        bufferedWriter.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+            //ファイルのクローズ処理
+            if (bufferedWriter != null) {
+                try {
+                    bufferedWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                if (outputStreamWriter != null) {
-                    try {
-                        outputStreamWriter.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+            }
+            if (outputStreamWriter != null) {
+                try {
+                    outputStreamWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                if (fileOutputStream != null) {
-                    try {
-                        fileOutputStream.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+            }
+            if (fileOutputStream != null) {
+                try {
+                    fileOutputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }
+
         return success;
-    }
-
-    private void save(){
-        List<String> files = new ArrayList<>();
-
-        if(Environment.getExternalStorageDirectory().getFreeSpace() > 500000000) {
-            for (int i = 0; i < data.size(); i++) {
-                SaveData saveData = data.get(i);
-                if (saveData == null) {
-                    data.remove(i);
-                    i--;
-                } else {
-                    files.add(saveData.getFile().getPath());
-                    save(saveData);
-                }
-            }
-
-            MediaScannerConnection.scanFile(context, files.toArray(new String[files.size()]), null, null);
-        }
     }
 
     /**
      * データの保存
      */
     private void save(SaveData saveData) {
-        if (!saveData.rock) {
-            int BUFFER = 500;
-            FileOutputStream fileOutputStream = null;
-            OutputStreamWriter outputStreamWriter = null;
-            BufferedWriter bufferedWriter = null;
+        if(saveData.rock){
+            return;
+        }
 
-            //並列処理のためのデータの退避
-            List<RowData> temp = saveData.refresh();
-            File file = saveData.getFile();
+        FileOutputStream fileOutputStream = null;
+        OutputStreamWriter outputStreamWriter = null;
+        BufferedWriter bufferedWriter = null;
 
-            if (temp.size() > 0) {
+        //並列処理のためのデータの退避
+        List<RowData> temp = saveData.refresh();
+        File file = saveData.getFile();
+        if(temp.size() <= 0){
+            return;
+        }
+
+        try {
+            fileOutputStream = new FileOutputStream(file, true);
+            outputStreamWriter = new OutputStreamWriter(fileOutputStream, "SHIFT-JIS");
+            bufferedWriter = new BufferedWriter(outputStreamWriter);
+
+            for (RowData line : temp) {
+                bufferedWriter.write(line.getLine());
+                bufferedWriter.newLine();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+
+            //ファイルのクローズ
+            if (bufferedWriter != null) {
                 try {
-                    fileOutputStream = new FileOutputStream(file, true);
-                    outputStreamWriter = new OutputStreamWriter(fileOutputStream, "SHIFT-JIS");
-                    bufferedWriter = new BufferedWriter(outputStreamWriter);
-
-                    StringBuilder builder = new StringBuilder();
-                    for (RowData line : temp) {
-                        builder.append(line.getLine()).append("\n");
-                        if (builder.length() >= BUFFER) {
-                            bufferedWriter.write(builder.toString());
-                            builder = new StringBuilder();
-                        }
-                    }
-                    bufferedWriter.write(builder.toString());
-
+                    bufferedWriter.close();
                 } catch (IOException e) {
                     e.printStackTrace();
-                } finally {
-
-                    //ファイルのクローズ
-                    if (bufferedWriter != null) {
-                        try {
-                            bufferedWriter.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    if (outputStreamWriter != null) {
-                        try {
-                            outputStreamWriter.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    if (fileOutputStream != null) {
-                        try {
-                            fileOutputStream.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                }
+            }
+            if (outputStreamWriter != null) {
+                try {
+                    outputStreamWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (fileOutputStream != null) {
+                try {
+                    fileOutputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }

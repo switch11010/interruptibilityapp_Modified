@@ -26,14 +26,16 @@ public class SaveData{
     public SaveData(String category, String header) {
         this.header = header;
         this.category = category;
-        updateFile();
+        updateFile(0);
     }
 
-    public void updateFile(){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.JAPAN);
-        String fileName = sdf.format(System.currentTimeMillis()) + "_" + category;
-        String fileName1 = Environment.getExternalStorageDirectory().getPath() + "/EventLog/" + fileName;
-        file = new File(fileName1 + ".csv");
+    public void updateFile(int number){
+        do {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.JAPAN);
+            String fileName = sdf.format(System.currentTimeMillis()) + "_" + category + "_" + number;
+            String fileName1 = Environment.getExternalStorageDirectory().getPath() + "/EventLog/" + fileName;
+            file = new File(fileName1 + ".csv");
+        }while(file.exists());
     }
 
     public File getFile() {

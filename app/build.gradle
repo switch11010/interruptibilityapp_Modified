@@ -7,7 +7,7 @@ android {
         applicationId "ac.tuat.fujitaken.exp.interruptibilityapp"
         minSdkVersion 16
         versionCode 1
-        versionName "2.4"
+        versionName "2.5"
 
         jackOptions {
             enabled true

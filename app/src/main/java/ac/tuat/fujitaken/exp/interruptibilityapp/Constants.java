@@ -11,7 +11,8 @@ public interface Constants {
 
             NOTIFICATION_THRESHOLD = 30, //通知遷移と判断するまで時間（s）
 
-            NOTIFICATION_INTERVAL = 7 * 60 * 1000;  //最低通知間隔（ms）
+            NOTIFICATION_INTERVAL = 7 * 60 * 1000,  //最低通知間隔（ms）
+            STORAGE_FREE_SPACE_LIMITATION = 500*1000*1000;  //ログ保存のために最低確保するストレージサイズ
 
     double WALK_THRESHOLD = 1.5,    //歩行開始判定までの時間（s）
             NOT_WALK_THRESHOLD = 5; //歩行終了判定までの時間（s）
