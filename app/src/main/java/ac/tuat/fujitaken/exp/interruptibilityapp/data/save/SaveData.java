@@ -32,7 +32,7 @@ public class SaveData{
     public void updateFile(int number){
         do {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.JAPAN);
-            String fileName = sdf.format(System.currentTimeMillis()) + "_" + category + "_" + number;
+            String fileName = sdf.format(System.currentTimeMillis()) + "_" + category + "_" + (number++);
             String fileName1 = Environment.getExternalStorageDirectory().getPath() + "/EventLog/" + fileName;
             file = new File(fileName1 + ".csv");
         }while(file.exists());

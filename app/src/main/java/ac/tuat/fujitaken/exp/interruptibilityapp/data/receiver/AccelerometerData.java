@@ -6,6 +6,8 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
+import org.apache.commons.math3.util.FastMath;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,9 +61,9 @@ public class AccelerometerData implements DataReceiver, SensorEventListener{
     public double getNorm(){
         double norm = 0;
         for(float v: acc.values){
-            norm += Math.pow(v, 2);
+            norm += FastMath.pow(v, 2);
         }
-        return Math.sqrt(norm);
+        return FastMath.sqrt(norm);
     }
 
     public void release(){
