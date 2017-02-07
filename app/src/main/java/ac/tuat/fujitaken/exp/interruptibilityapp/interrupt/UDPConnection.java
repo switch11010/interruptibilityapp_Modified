@@ -17,6 +17,7 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.RowData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.SettingFragment;
 
 /**
+ *
  * Created by KKomuro on 2017/01/11.
  */
 

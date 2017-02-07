@@ -15,17 +15,14 @@ public class RegularThread {
 
     private ScheduledExecutorService schedule = null;
     private List<ThreadListener> listeners = new ArrayList<>();
-    private Runnable repeatTask = new Runnable() {
-        @Override
-        public void run() {
-            for(int i = 0; i < listeners.size(); i++) {
-                ThreadListener listener = listeners.get(i);
-                if(listener == null){
-                    listeners.remove(i--);
-                }
-                else{
-                    listener.run();
-                }
+    private Runnable repeatTask = ()->{
+        for(int i = 0; i < listeners.size(); i++) {
+            ThreadListener listener = listeners.get(i);
+            if(listener == null){
+                listeners.remove(i--);
+            }
+            else{
+                listener.run();
             }
         }
     };

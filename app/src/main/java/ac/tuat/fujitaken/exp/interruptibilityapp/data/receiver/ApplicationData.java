@@ -6,6 +6,7 @@ import android.app.AppOpsManager;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.*;
 import android.os.Process;
@@ -17,6 +18,7 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import ac.tuat.fujitaken.exp.interruptibilityapp.Constants;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.Data;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.StringData;
 
@@ -56,8 +58,9 @@ public class ApplicationData implements DataReceiver {
             version = NOT_HAVE_PERMISSION;
         }
         if(version == NOT_HAVE_PERMISSION){
-            Toast.makeText(context, "使用履歴にアクセスする権限がありません。", Toast.LENGTH_LONG).show();
-    }
+            Toast toast = Toast.makeText(context, "使用履歴にアクセスする権限がありません。", Toast.LENGTH_LONG);
+            toast.show();
+        }
     }
 
     @Override
@@ -89,7 +92,7 @@ public class ApplicationData implements DataReceiver {
         }
 
         long endTime = System.currentTimeMillis();
-        long beginTime = endTime - 7 * 24 * 60 * 60 * 1000;
+        long beginTime = endTime - Constants.USAGE_TIME_LIMITATION;
         String packageName = "";
         List<UsageStats> list = statsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST, beginTime, endTime);
         if (list != null && list.size() > 0) {
@@ -98,7 +101,8 @@ public class ApplicationData implements DataReceiver {
                 map.put(usageStats.getLastTimeUsed(), usageStats);
             }
             if (!map.isEmpty()) {
-                packageName = map.get(map.lastKey()).getPackageName();
+                UsageStats stats = map.get(map.lastKey());
+                packageName = stats.getPackageName();
             }
         }
         return packageName;
@@ -109,7 +113,9 @@ public class ApplicationData implements DataReceiver {
         String key;
         switch (version){
             case OLD:
-                key = activityManager.getRunningTasks(1).get(0).topActivity.getPackageName();
+                List<ActivityManager.RunningTaskInfo> tasks = activityManager.getRunningTasks(1);
+                ActivityManager.RunningTaskInfo info = tasks.get(0);
+                key = info.topActivity.getPackageName();
                 break;
             case HAVE_PERMISSION:
                 key = getForegroundApp();
@@ -118,7 +124,11 @@ public class ApplicationData implements DataReceiver {
                 key = "";
         }
         try {
-            value = packageManager.getPackageInfo(key, PackageManager.GET_ACTIVITIES).applicationInfo.loadLabel(packageManager).toString().replace(",", "，").replace("\n", "，");
+            PackageInfo info = packageManager.getPackageInfo(key, PackageManager.GET_ACTIVITIES);
+            CharSequence label = info.applicationInfo.loadLabel(packageManager);
+            value = label.toString();
+            value = value.replace(",", "，");
+            value = value.replace("\n", "，");
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
             value = "";

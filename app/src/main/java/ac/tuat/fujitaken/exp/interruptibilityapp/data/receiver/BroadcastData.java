@@ -39,7 +39,7 @@ public class BroadcastData extends BroadcastReceiver implements DataReceiver {
         //noinspection deprecation
         data.put(HEADSET_PLUG, new BoolData(hasHeadset(context)));
         data.put(POWER_CONNECTED, new BoolData(status == BatteryManager.BATTERY_STATUS_CHARGING ||  status == BatteryManager.BATTERY_STATUS_FULL));
-        data.put(SCREEN_ON, new BoolData(isActive(context)));
+        data.put(SCREEN_ON, new BoolData(true));
         data.put(RINGER_MODE, new IntData(getRingerMode(context)));
 
         IntentFilter filter =  new IntentFilter();
@@ -66,11 +66,11 @@ public class BroadcastData extends BroadcastReceiver implements DataReceiver {
             switch (action) {
                 case Intent.ACTION_SCREEN_ON:
                     val = (BoolData) data.get(SCREEN_ON);
-                    val.value = isActive(context);
+                    val.value = true;
                     break;
                 case Intent.ACTION_SCREEN_OFF:
                     val = (BoolData) data.get(SCREEN_ON);
-                    val.value = isActive(context);
+                    val.value = false;
                     break;
                 case Intent.ACTION_POWER_CONNECTED:
                     val = (BoolData) data.get(POWER_CONNECTED);
@@ -107,14 +107,5 @@ public class BroadcastData extends BroadcastReceiver implements DataReceiver {
         AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         //noinspection deprecation
         return audioManager.isWiredHeadsetOn();
-    }
-
-    private static boolean isActive(Context context){
-        PowerManager powerManager = (PowerManager)context.getSystemService(Context.POWER_SERVICE);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH){
-            return powerManager.isInteractive();
-        }
-        //noinspection deprecation
-        return powerManager.isScreenOn();
     }
 }
