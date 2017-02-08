@@ -2,7 +2,6 @@ package ac.tuat.fujitaken.exp.interruptibilityapp.data;
 
 import android.Manifest;
 import android.app.AppOpsManager;
-import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.wifi.WifiManager;

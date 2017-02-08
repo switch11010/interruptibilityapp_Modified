@@ -14,7 +14,9 @@ public interface Constants {
 
             NOTIFICATION_INTERVAL = 7 * 60 * 1000,  //最低通知間隔（ms）
             STORAGE_FREE_SPACE_LIMITATION = 500*1000*1000,  //ログ保存のために最低確保するストレージサイズ
-            USAGE_TIME_LIMITATION = 60 * 60 * 1000;    //アプリ使用履歴を遡って参照する最大時間
+            USAGE_TIME_LIMITATION = 60 * 60 * 1000,    //アプリ使用履歴を遡って参照する最大時間
+            DEFAULT_PORT = 54613,       //通信ポート番号の初期値
+            DEFAULT_SP_ID = 10;         //通信相手IDの初期値
 
     double WALK_THRESHOLD = 1.5,    //歩行開始判定までの時間（s）
             NOT_WALK_THRESHOLD = 5; //歩行終了判定までの時間（s）
