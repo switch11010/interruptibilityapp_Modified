@@ -42,7 +42,7 @@ public class ApplicationData implements DataReceiver {
 
     private StringData currentApp = new StringData("");
 
-    public ApplicationData(Context context){
+    ApplicationData(Context context){
 
         packageManager = context.getPackageManager();
 
@@ -92,7 +92,7 @@ public class ApplicationData implements DataReceiver {
         }
 
         long endTime = System.currentTimeMillis();
-        long beginTime = endTime - Constants.USAGE_TIME_LIMITATION;
+        long beginTime = endTime - Constants.APP_TIME_LIMITATION;
         String packageName = "";
         List<UsageStats> list = statsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST, beginTime, endTime);
         if (list != null && list.size() > 0) {
@@ -108,7 +108,8 @@ public class ApplicationData implements DataReceiver {
         return packageName;
     }
 
-    public void getCurrentApplication(){
+    @SuppressWarnings("deprecation")
+    void getCurrentApplication(){
         String value;
         String key;
         switch (version){

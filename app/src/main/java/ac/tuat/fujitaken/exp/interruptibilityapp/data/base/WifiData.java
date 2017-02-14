@@ -10,8 +10,8 @@ import java.util.List;
 public class WifiData extends Data {
     public List<RSSI> value;
 
-    public WifiData(List<RSSI> value){
-        this.value = value;
+    public WifiData(List<RSSI> rssiList){
+        this.value = rssiList;
     }
 
     @Override
@@ -26,7 +26,8 @@ public class WifiData extends Data {
     public String getString() {
         StringBuilder builder = new StringBuilder();
         for (RSSI ap: value){
-            builder.append(ap.getString()).append(",");
+            builder.append(ap.getString());
+            builder.append(",");
         }
         return builder.toString();
     }

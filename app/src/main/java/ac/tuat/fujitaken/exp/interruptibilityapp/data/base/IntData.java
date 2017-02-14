@@ -8,8 +8,8 @@ public class IntData extends Data {
     public int value;   //保存データ
     private static final IntData ZERO = new IntData(0);
 
-    public IntData(int value){
-        this.value = value;
+    public IntData(int i){
+        this.value = i;
     }
 
     @Override

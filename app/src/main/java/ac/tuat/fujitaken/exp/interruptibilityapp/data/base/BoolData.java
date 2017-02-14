@@ -10,8 +10,8 @@ public class BoolData extends Data {
                             FALSE = new BoolData(false);
 
 
-    public BoolData(boolean value){
-        this.value = value;
+    public BoolData(boolean b){
+        this.value = b;
     }
 
     @SuppressWarnings("CloneDoesntCallSuperClone")

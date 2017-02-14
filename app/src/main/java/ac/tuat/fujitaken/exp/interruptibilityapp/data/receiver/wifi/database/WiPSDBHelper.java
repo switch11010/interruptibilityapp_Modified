@@ -8,33 +8,33 @@ import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.media.MediaScannerConnection;
-import android.net.Uri;
 import android.os.Environment;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.wifi.data.AccessPoint;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.wifi.data.Pattern;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.wifi.data.Spot;
 
+import static android.os.Environment.getExternalStorageDirectory;
+
 /**
  * 場所、WiFi アクセスポイントと各場所でのアクセスポイントの電波強度パターンデータベースの管理と操作
  * を行うクラス
  */
+@SuppressWarnings("UnusedDeclaration")
 public class WiPSDBHelper extends SQLiteOpenHelper {
 
     private Context mContext;
@@ -100,7 +100,7 @@ public class WiPSDBHelper extends SQLiteOpenHelper {
     }
 
     //TODO:未テスト  一気にたくさん挿入する場合はこれのほうが速い。
-    public void insertAccessPoints(SQLiteDatabase db, AccessPoint[] aps) {
+    private void insertAccessPoints(SQLiteDatabase db, AccessPoint[] aps) {
         SQLiteStatement insertStatement = db.compileStatement
                 ("INSERT OR IGNORE INTO " + WiPSDBContract.AccessPoints.TABLE_NAME + " ( " +
                     WiPSDBContract.AccessPoints.MAC_ADDRESS + "," +
@@ -115,7 +115,7 @@ public class WiPSDBHelper extends SQLiteOpenHelper {
                 insertStatement.bindString(1, ap.mac);
                 insertStatement.bindString(2, ap.ssid);
                 insertStatement.bindLong(3, ap.frequency);
-                hasFail = insertStatement.executeInsert() == -1;
+//                hasFail = insertStatement.executeInsert() == -1;
             }
 //            if(hasFail)
 //                throw new RuntimeException("Something is wrong with insert!");
@@ -133,18 +133,19 @@ public class WiPSDBHelper extends SQLiteOpenHelper {
     public void insertSpot(SQLiteDatabase db, Spot s) {
         ContentValues values = new ContentValues();
         //IDが設定されていたら場所を追加ではなく更新するようにする
-        if(s.id >= 0)
+        if(s.id >= 0) {
             values.put(WiPSDBContract.Spots.ID, s.id);
+        }
         values.put(WiPSDBContract.Spots.NAME, s.name);
         values.put(WiPSDBContract.Spots.LATITUDE, s.latitude);
         values.put(WiPSDBContract.Spots.LONGITUDE, s.longitude);
 
         long insertedRowId = db.insertWithOnConflict(WiPSDBContract.Spots.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
 
-        int spotid = (int)db.compileStatement("SELECT " + WiPSDBContract.Spots.ID + " FROM " + WiPSDBContract.Spots.TABLE_NAME +
-            " WHERE rowid = " + insertedRowId).simpleQueryForLong();
+        SQLiteStatement statement = db.compileStatement("SELECT " + WiPSDBContract.Spots.ID + " FROM " + WiPSDBContract.Spots.TABLE_NAME +
+            " WHERE rowid = " + insertedRowId);
 
-        s.id = spotid;
+        s.id = (int)statement.simpleQueryForLong();
     }
 
     public void insertPattern(SQLiteDatabase db, Pattern p) {
@@ -159,7 +160,8 @@ public class WiPSDBHelper extends SQLiteOpenHelper {
 
     public void insertAPPatternMap(SQLiteDatabase db, Spot spot, Map<AccessPoint, Pattern> apMap) {
         //アクセスポイントのリストを書き込む
-        AccessPoint [] aps = apMap.keySet().toArray(new AccessPoint[apMap.size()]);
+        Set<AccessPoint> set = apMap.keySet();
+        AccessPoint [] aps = set.toArray(new AccessPoint[apMap.size()]);
         insertAccessPoints(db, aps);
 
         //パターン挿入SQL文を予めコンパイルしておく
@@ -189,8 +191,9 @@ public class WiPSDBHelper extends SQLiteOpenHelper {
 
                 hasFail = insertPatternStatement.executeInsert() == -1;
             }
-            if(hasFail)
+            if(hasFail) {
                 throw new RuntimeException("Something is wrong with insert pattern!");
+            }
             db.setTransactionSuccessful();
         }
         finally {
@@ -199,31 +202,31 @@ public class WiPSDBHelper extends SQLiteOpenHelper {
     }
 
     private List<Map.Entry<AccessPoint, Pattern>> sortToList(Map<AccessPoint, Pattern> apMap) {
-        List<Map.Entry<AccessPoint, Pattern>> list = new ArrayList<Map.Entry<AccessPoint, Pattern>>(apMap.entrySet());
-        Collections.sort(list, new Comparator<Map.Entry<AccessPoint, Pattern>>() {
-            @Override
-            public int compare(Map.Entry<AccessPoint, Pattern> lhs, Map.Entry<AccessPoint, Pattern> rhs) {
-                return Double.compare(rhs.getValue().averageLevel, lhs.getValue().averageLevel);
-            }
-        });
+        List<Map.Entry<AccessPoint, Pattern>> list = new ArrayList<>(apMap.entrySet());
+        Collections.sort(list, (lhs, rhs) -> Double.compare(rhs.getValue().averageLevel, lhs.getValue().averageLevel));
         return list;
     }
 
     public void dumpDatabase(String filepath) {
-        File sddir = Environment.getExternalStorageDirectory();
+        File sddir = getExternalStorageDirectory();
         File dbfile = mContext.getDatabasePath(WiPSDBContract.DATABASE_NAME);
 
         try {
-            if(!sddir.canWrite())
+            if(!sddir.canWrite()) {
                 return; //sdカードに書き込めない
+            }
 
             if(dbfile.exists()) {
-                new File(sddir.getPath() + filepath).mkdirs();
-                FileChannel src = new FileInputStream(dbfile).getChannel();
-                FileChannel dst = new FileOutputStream(new File(sddir, filepath)).getChannel();
-                dst.transferFrom(src, 0, src.size());
-                src.close();
-                dst.close();
+                File dirs = new File(sddir.getPath() + filepath);
+                if(dirs.mkdirs()) {
+                    FileInputStream dbStream = new FileInputStream(dbfile);
+                    FileChannel src = dbStream.getChannel();
+                    FileOutputStream dstStream = new FileOutputStream(new File(sddir, filepath));
+                    FileChannel dst = dstStream.getChannel();
+                    dst.transferFrom(src, 0, src.size());
+                    src.close();
+                    dst.close();
+                }
             }
 
         } catch (IOException e) {
@@ -233,15 +236,17 @@ public class WiPSDBHelper extends SQLiteOpenHelper {
 
     /**
      * 既存のDBファイルを読み取ってDBを書き換える。
-     * @param filepath
+     * @param filepath 書き込み対象
      */
     public void inputDBFile(String filepath){
         File dbfile = mContext.getDatabasePath(WiPSDBContract.DATABASE_NAME);
 
         try {
             if(dbfile.exists()) {
-                FileChannel dst = new FileOutputStream(dbfile).getChannel();
-                FileChannel src = new FileInputStream(new File(filepath)).getChannel();
+                FileOutputStream dstStream = new FileOutputStream(dbfile);
+                FileChannel dst = dstStream.getChannel();
+                FileInputStream dbStream = new FileInputStream(new File(filepath));
+                FileChannel src = dbStream.getChannel();
                 dst.transferFrom(src, 0, src.size());
                 src.close();
                 dst.close();
@@ -252,17 +257,18 @@ public class WiPSDBHelper extends SQLiteOpenHelper {
         }
     }
 
-    public Spot selectSpot(SQLiteDatabase db, int spotid) {
+    public Spot selectSpot(SQLiteDatabase db, int spotId) {
         Cursor cursor = db.query(WiPSDBContract.Spots.TABLE_NAME,
                 new String[]{WiPSDBContract.Spots.NAME, WiPSDBContract.Spots.LONGITUDE, WiPSDBContract.Spots.LATITUDE},
-                WiPSDBContract.Spots.ID + " = " + spotid, null, null, null, null);
+                WiPSDBContract.Spots.ID + " = " + spotId, null, null, null, null);
 
-        if(cursor.getCount() <= 0)
+        if(cursor.getCount() <= 0) {
             return null;
-
+        }
         cursor.moveToFirst();
-        Spot spot = new Spot(spotid, cursor.getString(0), cursor.getDouble(2), cursor.getDouble(1));
-        return spot;
+        Spot ret = new Spot(spotId, cursor.getString(0), cursor.getDouble(2), cursor.getDouble(1));
+        cursor.close();
+        return ret;
     }
 
     public List<Integer> selectSpotIDFromApID(SQLiteDatabase db, Pattern[] patterns) {
@@ -277,16 +283,17 @@ public class WiPSDBHelper extends SQLiteOpenHelper {
                 "apid IN " + inValues, null, null, null, null, null);
 
         cursor.moveToFirst();
-        List<Integer> spotIds = new ArrayList<Integer>(cursor.getCount());
+        List<Integer> spotIds = new ArrayList<>(cursor.getCount());
         for(int i = 0; i < cursor.getCount(); i++) {
             spotIds.add( cursor.getInt(0) );
             cursor.moveToNext();
         }
+        cursor.close();
         return spotIds;
     }
 
     public HashMap<AccessPoint, Pattern> selectPatternFromSpotID(SQLiteDatabase db, int spotid) {
-        HashMap<AccessPoint, Pattern> apMap = new HashMap<AccessPoint, Pattern>();
+        HashMap<AccessPoint, Pattern> apMap = new HashMap<>();
 
         final String ap_id = "ap." + WiPSDBContract.AccessPoints.ID;
         final String ap_mac = "ap." + WiPSDBContract.AccessPoints.MAC_ADDRESS;
@@ -342,7 +349,7 @@ public class WiPSDBHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void deleteSpot(SQLiteDatabase db, long[] spotids) {
+    private void deleteSpot(SQLiteDatabase db, long[] spotids) {
         db.beginTransaction();
         for (long id : spotids) {
             db.delete(WiPSDBContract.Spots.TABLE_NAME, WiPSDBContract.Spots.ID + " = ? ", new String[]{Long.toString(id)});
@@ -358,13 +365,15 @@ public class WiPSDBHelper extends SQLiteOpenHelper {
                null, null, null, null, null);
 
         cursor.moveToFirst();
-        List<Spot> result = new ArrayList<Spot>();
-        if(cursor.getCount() <= 0)
+        List<Spot> result = new ArrayList<>();
+        if(cursor.getCount() <= 0) {
             return result;
+        }
 
         do {
             result.add(new Spot(cursor.getInt(0), cursor.getString(1), -1, -1));
         }while (cursor.moveToNext());
+        cursor.close();
         db.close();
         return result;
     }
@@ -376,8 +385,12 @@ public class WiPSDBHelper extends SQLiteOpenHelper {
 
     public void dumpToCsv(){
         List<Spot> spotList = allSpot();
-        File file = new File(Environment.getExternalStorageDirectory().getPath() + "/WIPS/dumped.csv");
-        file.getParentFile().mkdir();
+        File exRoot = Environment.getExternalStorageDirectory();
+        File file = new File(exRoot.getPath() + "/WIPS/dumped.csv");
+        File parent = file.getParentFile();
+        if(!parent.mkdirs()){
+            return;
+        }
         FileOutputStream fos;
         try {
             fos = new FileOutputStream(file, false);
@@ -393,23 +406,18 @@ public class WiPSDBHelper extends SQLiteOpenHelper {
                 builder = new StringBuilder(spot.name + ",");
                 Map<AccessPoint, Pattern> patternMap = selectPatternFromSpotID(getReadableDatabase(), spot.id);
                 for(Map.Entry<AccessPoint, Pattern> entry: patternMap.entrySet()){
-                    builder.append(entry.getKey().mac + "," + entry.getValue().averageLevel + ",");
+                    builder.append(entry.getKey().mac);
+                    builder.append(",");
+                    builder.append(entry.getValue().averageLevel);
+                    builder.append(",");
                 }
                 builder.append("\n");
                 bw.write(builder.toString());
             }
             bw.close();
             MediaScannerConnection.scanFile(mContext, new String[]{file.getPath()}, null,
-                    new MediaScannerConnection.OnScanCompletedListener() {
-                        @Override
-                        public void onScanCompleted(String path, Uri uri) {
-                        }
-                    });
+                    (path, uri) -> {});
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

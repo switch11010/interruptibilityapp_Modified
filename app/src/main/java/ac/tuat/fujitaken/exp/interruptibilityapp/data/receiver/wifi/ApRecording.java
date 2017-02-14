@@ -5,7 +5,6 @@ import android.net.wifi.ScanResult;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,24 +19,25 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.wifi.data.Pattern
  * Created by seuo on 15/06/30.
  */
 public class ApRecording implements WifiWatching.ScanEventAction{
+    private static final double RECORDING_RATIO_THRESHOLD = 0.8;
 
     private Map<AccessPoint, Pattern> record;
     private Map<AccessPoint, WifiCounter> counter;
-    public WifiWatching watching;
+    private WifiWatching watching;
     private WifiWatching.ScanEventAction action;
-    int count = 0;
+    private int count = 0;
 
     public ApRecording(Context context){
-        this(context, new HashMap<AccessPoint, Pattern>());
+        this(context, new HashMap<>());
     }
 
-    public ApRecording(Context context, Map<AccessPoint, Pattern> record){
+    public ApRecording(Context context, Map<AccessPoint, Pattern> patternMap){
         counter = new HashMap<>();
-        this.record = record;
+        this.record = patternMap;
         watching = new WifiWatching(context);
     }
 
-    public List<ListItem> update(List<ScanResult> results){
+    private List<ListItem> update(List<ScanResult> results){
         for(ScanResult s: results) {
             AccessPoint ap = new AccessPoint(s.BSSID, s.SSID, s.frequency);
             Pattern p = record.get(ap);
@@ -62,7 +62,7 @@ public class ApRecording implements WifiWatching.ScanEventAction{
     public Map<AccessPoint, Pattern> getRecordMap(){
         for (AccessPoint ap: counter.keySet()){
             WifiCounter c = counter.get(ap);
-            if(c.getCount() <= count*0.8){
+            if(c.getCount() <= count * RECORDING_RATIO_THRESHOLD){
                 record.remove(ap);
             }
         }
@@ -71,15 +71,11 @@ public class ApRecording implements WifiWatching.ScanEventAction{
 
     public List<ListItem> toList(){
         List<ListItem> list = new ArrayList<>();
+        //noinspection Convert2streamapi
         for(Map.Entry<AccessPoint, Pattern> pattern: record.entrySet()){
             list.add(new ListItem(pattern.getKey(), pattern.getValue()));
         }
-        Collections.sort(list, new Comparator<ListItem>() {
-            @Override
-            public int compare(ListItem t1, ListItem t2) {
-                return Double.compare(t2.pattern.averageLevel, t1.pattern.averageLevel);
-            }
-        });
+        Collections.sort(list, (t1, t2) -> Double.compare(t2.pattern.averageLevel, t1.pattern.averageLevel));
         return list;
     }
 
@@ -95,8 +91,8 @@ public class ApRecording implements WifiWatching.ScanEventAction{
         watching.stop();
     }
 
-    public void setAction(WifiWatching.ScanEventAction action){
-        this.action = action;
+    public void setAction(WifiWatching.ScanEventAction eventAction){
+        this.action = eventAction;
     }
 
     @Override

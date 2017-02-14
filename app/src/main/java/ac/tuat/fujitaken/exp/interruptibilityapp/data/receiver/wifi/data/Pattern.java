@@ -9,10 +9,10 @@ public class Pattern {
     public double averageLevel;
     public int sampleCount;
 
-    public Pattern(int apid, int spotid, double averageLevel, int sampleCount) {
-        this.apid = apid;
-        this.spotid = spotid;
-        this.averageLevel = averageLevel;
-        this.sampleCount = sampleCount;
+    public Pattern(int i, int i1, double v, int i2) {
+        this.apid = i;
+        this.spotid = i1;
+        this.averageLevel = v;
+        this.sampleCount = i2;
     }
 }

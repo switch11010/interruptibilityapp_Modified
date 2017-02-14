@@ -1,16 +1,17 @@
 package ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.wifi;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.wifi.ScanResult;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.wifi.data.AccessPoint;
@@ -29,15 +30,14 @@ public class SpotSearch implements WifiWatching.ScanEventAction {
 
     private HashMap<Integer, Pattern[]> dbPatternArrayMap;
     private HashMap<Integer, Pattern> herePatternMap;
-    private HashMap<Integer, Integer> apMap;
     private List<Integer> spotIDList;
     private List<Map<Integer, Pattern>> buf = new ArrayList<>();
     private Map<Integer, Map<Integer, Pattern>> dbMap;
 
     public volatile boolean searching = false;
 
-    public SpotSearch(Context context, WiPSDBHelper helper){
-        this.helper = helper;
+    public SpotSearch(Context context, WiPSDBHelper wiPSDBHelper){
+        this.helper = wiPSDBHelper;
         watching = new WifiWatching(context);
     }
 
@@ -53,10 +53,11 @@ public class SpotSearch implements WifiWatching.ScanEventAction {
         searching = false;
     }
 
-    public void setAction(WifiWatching.ScanEventAction action){
-        this.action = action;
+    public void setAction(WifiWatching.ScanEventAction eventAction){
+        this.action = eventAction;
     }
 
+    @SuppressLint("UseSparseArrays")
     @Override
     public void onScanResultAvailable() {
         Map<AccessPoint, Pattern> record = new HashMap<>();
@@ -72,21 +73,23 @@ public class SpotSearch implements WifiWatching.ScanEventAction {
         //メンバのマップの作成
         dbPatternArrayMap = new HashMap<>();
         herePatternMap = new HashMap<>();
-        apMap = new HashMap<>();
+        @SuppressWarnings("MismatchedQueryAndUpdateOfCollection") HashMap<Integer, Integer> apMap = new HashMap<>();
         dbMap = new HashMap<>();
 
         //引数のマップをapidで参照できるように変換
-        for (Pattern pattern : record.values())
+        for (Pattern pattern : record.values()) {
             herePatternMap.put(pattern.apid, pattern);
+        }
 
         //対応するapをもつspotidを取り出す
-        spotIDList = helper.selectSpotIDFromApID(db, herePatternMap.values().toArray(new Pattern[herePatternMap.size()]));
+        Collection<Pattern> spots = herePatternMap.values();
+        spotIDList = helper.selectSpotIDFromApID(db, spots.toArray(new Pattern[herePatternMap.size()]));
 
         //dbから対応するspotidのパターンを取り出す
         for (int n = 0; n < spotIDList.size(); n++) {
             HashMap<AccessPoint, Pattern> patterns = helper.selectPatternFromSpotID(db, spotIDList.get(n));
 
-            Map temp = new HashMap();
+            Map<Integer, Pattern> temp = new HashMap<>();
             for(Map.Entry<AccessPoint, Pattern> entry: patterns.entrySet()){
                 temp.put(entry.getKey().id, entry.getValue());
             }
@@ -98,15 +101,10 @@ public class SpotSearch implements WifiWatching.ScanEventAction {
             }
 
             //パターンをマップに格納する
-            dbPatternArrayMap.put(spotIDList.get(n), patterns.values().toArray(new Pattern[patterns.size()]));
+            Collection<Pattern> c = patterns.values();
+            dbPatternArrayMap.put(spotIDList.get(n), c.toArray(new Pattern[patterns.size()]));
             //電波の強さでソート
-            Arrays.sort(dbPatternArrayMap.get(spotIDList.get(n)), new Comparator<Pattern>() {
-                @Override
-                public int compare(Pattern lhs, Pattern rhs) {
-                    return -Double.compare(lhs.averageLevel, rhs.averageLevel);
-                }
-            });
-
+            Arrays.sort(dbPatternArrayMap.get(spotIDList.get(n)), (lhs, rhs) -> -Double.compare(lhs.averageLevel, rhs.averageLevel));
         }
         buf.add(herePatternMap);
         if(buf.size() > 3){
@@ -128,7 +126,7 @@ public class SpotSearch implements WifiWatching.ScanEventAction {
         for (Integer spotID: spotIDList) {
 
             Map<Integer, Pattern> tempDB = dbMap.get(spotID);
-            HashSet<Integer> keys = new HashSet();
+            HashSet<Integer> keys = new HashSet<>();
             keys.addAll(tempDB.keySet());
             keys.addAll(herePatternMap.keySet());
 
@@ -155,12 +153,7 @@ public class SpotSearch implements WifiWatching.ScanEventAction {
         }
 
         //リストをソート
-        Collections.sort(resultSpotList, new Comparator<SpotAndDist>() {
-            @Override
-            public int compare(SpotAndDist lhs, SpotAndDist rhs) {
-                return Double.compare(rhs.getDist(), lhs.getDist());
-            }
-        });
+        Collections.sort(resultSpotList, (lhs, rhs) -> Double.compare(rhs.getDist(), lhs.getDist()));
 
         return resultSpotList;
     }
@@ -173,7 +166,7 @@ public class SpotSearch implements WifiWatching.ScanEventAction {
         for (Integer spotID: spotIDList) {
 
             Map<Integer, Pattern> tempDB = dbMap.get(spotID);
-            HashSet<Integer> keys = new HashSet();
+            HashSet<Integer> keys = new HashSet<>();
             keys.addAll(tempDB.keySet());
             keys.addAll(herePatternMap.keySet());
 
@@ -200,72 +193,65 @@ public class SpotSearch implements WifiWatching.ScanEventAction {
         }
 
         //リストをソート
-        Collections.sort(resultSpotList, new Comparator<SpotAndDist>() {
-            @Override
-            public int compare(SpotAndDist lhs, SpotAndDist rhs) {
-                return Double.compare(rhs.getDist(), lhs.getDist());
-            }
-        });
+        Collections.sort(resultSpotList, (lhs, rhs) -> Double.compare(rhs.getDist(), lhs.getDist()));
 
         return resultSpotList;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public List<SpotAndDist> matching2(){
         //結果を保存するためのリスト
         List<SpotAndDist> resultSpotList = new ArrayList<>();
 
-        if(herePatternMap.size() > 5) {
+        if(herePatternMap.size() < 5) {
+            return resultSpotList;
+        }
 
-            //距離を計算する
-            for (int n = 0; n < spotIDList.size(); n++) {
+        //距離を計算する
+        for (int n = 0; n < spotIDList.size(); n++) {
 
-                //DBのパターンの配列
-                Pattern[] dbPattern = dbPatternArrayMap.get(spotIDList.get(n));
+            //DBのパターンの配列
+            Pattern[] dbPattern = dbPatternArrayMap.get(spotIDList.get(n));
 
-                if(dbPattern.length > 5) {
+            if(dbPattern.length < 5) {
+                continue;
+            }
 
-                    double distance = 0;
-                    int size = 0;
+            double distance = 0;
+            int size = 0;
 
-                    //DBから取り出したパターンと現在位置のパターンを比較する
-                    for (Pattern tempDBPattern : dbPattern) {
+            //DBから取り出したパターンと現在位置のパターンを比較する
+            for (Pattern tempDBPattern : dbPattern) {
 
-                        //一時的な変数
-                        Pattern tempHerePattern;
-                        double t = 0;
-                        int i = 0;
-                        for (Map<Integer, Pattern> map : buf) {
-                            tempHerePattern = map.get(tempDBPattern.apid);
-                            if (tempHerePattern != null) {
-                                t += tempHerePattern.averageLevel;
-                                i++;
-                            }
-                        }
+                //一時的な変数
+                Pattern tempHerePattern;
+                double t = 0;
+                int i = 0;
+                for (Map<Integer, Pattern> map : buf) {
+                    tempHerePattern = map.get(tempDBPattern.apid);
+                    t += tempHerePattern == null? 0: tempHerePattern.averageLevel;
+                    i += tempHerePattern == null? 0: 1;
+                }
 
-                        if (i > 0) {
-                            t /= i;
-                            distance += Math.pow(tempDBPattern.averageLevel - t, 2);
-                            size++;
-                        }
-                    }
-
-                    if (size > 5) {
-                        resultSpotList.add(new SpotAndDist(Math.sqrt(distance)*dbPattern.length/size, spotIDList.get(n)));
-                    }
+                if (i > 0) {
+                    t /= i;
+                    distance += Math.pow(tempDBPattern.averageLevel - t, 2);
+                    size++;
                 }
             }
 
-            //リストをソート
-            Collections.sort(resultSpotList, new Comparator<SpotAndDist>() {
-                @Override
-                public int compare(SpotAndDist lhs, SpotAndDist rhs) {
-                    return -Double.compare(rhs.getDist(), lhs.getDist());
-                }
-            });
+            if (size > 5) {
+                resultSpotList.add(new SpotAndDist(Math.sqrt(distance)*dbPattern.length/size, spotIDList.get(n)));
+            }
         }
-        return resultSpotList;
+
+        //リストをソート
+        Collections.sort(resultSpotList, (lhs, rhs) -> -Double.compare(rhs.getDist(), lhs.getDist()));
+
+    return resultSpotList;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     private double correlation(List<Double> list1, List<Double> list2){
         double mean1 = 0,
                 mean2 = 0,

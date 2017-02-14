@@ -9,10 +9,10 @@ public class Spot {
     public double latitude;
     public double longitude;
 
-    public Spot(int id, String name, double latitude, double longitude) {
-        this.id = id;
-        this.name = name;
-        this.latitude = latitude;
-        this.longitude = longitude;
+    public Spot(int i, String s, double v, double v1) {
+        this.id = i;
+        this.name = s;
+        this.latitude = v;
+        this.longitude = v1;
     }
 }

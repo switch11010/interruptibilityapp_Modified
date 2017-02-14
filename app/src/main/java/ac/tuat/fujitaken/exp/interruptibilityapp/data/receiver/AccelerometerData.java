@@ -58,7 +58,7 @@ public class AccelerometerData implements DataReceiver, SensorEventListener{
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {}
 
-    public double getNorm(){
+    double getNorm(){
         double norm = 0;
         for(float v: acc.values){
             norm += FastMath.pow(v, 2);

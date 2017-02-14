@@ -14,12 +14,12 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.IntData;
  * 電話の着信状態
  * Created by hi on 2015/11/27.
  */
-public class PhoneState extends PhoneStateListener implements DataReceiver {
+class PhoneState extends PhoneStateListener implements DataReceiver {
 
     private TelephonyManager telephonyManager;
     private IntData phoneState = new IntData(TelephonyManager.CALL_STATE_IDLE);
 
-    public PhoneState(Context context){
+    PhoneState(Context context){
         telephonyManager = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
         telephonyManager.listen(this, LISTEN_CALL_STATE);
     }

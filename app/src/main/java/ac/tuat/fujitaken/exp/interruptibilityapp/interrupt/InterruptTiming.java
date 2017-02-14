@@ -6,22 +6,24 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.net.UnknownHostException;
+import java.util.Map;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.Constants;
+import ac.tuat.fujitaken.exp.interruptibilityapp.Flows.RegularThread;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.EventCounter;
-import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.EvaluationData;
-import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.StringData;
-import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.Notify;
-import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.PC;
-import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.SettingFragment;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.BoolData;
-import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.RowData;
-import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.Screen;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.Data;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.StringData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.AllData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.DataReceiver;
-import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.Walking;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.EvaluationData;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.RowData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.SaveData;
-import ac.tuat.fujitaken.exp.interruptibilityapp.Flows.RegularThread;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.Notify;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.PC;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.Screen;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.Walking;
+import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.SettingFragment;
 
 /**
  * 通知タイミング検出用
@@ -30,7 +32,7 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.Flows.RegularThread;
 public class InterruptTiming implements RegularThread.ThreadListener {
 
     //前の通知が出た時間
-    public long prevTime;
+    long prevTime;
     //通知コントローラ．
     private NotificationController notificationController;
 
@@ -41,15 +43,15 @@ public class InterruptTiming implements RegularThread.ThreadListener {
     private PC pc;
 
     //通知モードになっているか
-    boolean note;
+    private boolean note;
 
     private UDPConnection udpConnection = null;
     private EventCounter counter;
-    private AllData allData;
+    private AllData mAllData;
 
     //コンストラクタ
     public InterruptTiming(Context context, AllData allData){
-        this.allData = allData;
+        this.mAllData = allData;
         //設定ファイルからモードを確認
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         note = preferences.getBoolean(SettingFragment.NOTE, true);
@@ -83,11 +85,12 @@ public class InterruptTiming implements RegularThread.ThreadListener {
      */
     @Override
     public void run() {
-        final RowData line = allData.newLine();
+        final RowData line = mAllData.newLine();
+        Map<String, Data> map = mAllData.getData();
 
-        int w = walking.judge(((BoolData)allData.getData().get(DataReceiver.WALK)).value);
-        int s = screen.judge(allData.getData());
-        int n = notify.judge(((StringData)allData.getData().get(DataReceiver.NOTIFICATION)).value);
+        int w = walking.judge(((BoolData)map.get(DataReceiver.WALK)).value);
+        int s = screen.judge(mAllData.getData());
+        int n = notify.judge(((StringData)map.get(DataReceiver.NOTIFICATION)).value);
 
         final int eventFlag = w | s | n;
 
@@ -95,17 +98,15 @@ public class InterruptTiming implements RegularThread.ThreadListener {
         evaluationData.setValue(line);
         notificationController.save(evaluationData);
 
-        if((eventFlag & 30) > 0) {
+        if((eventFlag & (Walking.WALK_START | Walking.WALK_STOP | Screen.SCREEN_ON | Screen.SCREEN_OFF)) > 0) {
             Log.d("EVENT_COUNTER", String.valueOf(eventFlag));
             eventTriggeredThread(eventFlag, evaluationData);
-            allData.scan();
+            mAllData.scan();
         }
     }
 
     private void eventTriggeredThread(final int eventFlag, final EvaluationData line){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+        Thread thread = new Thread(()->{
                 int event = eventFlag;
                 boolean eval = false,
                         noteFlag = note    //通知モード
@@ -127,7 +128,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                 if (noteFlag) {
                     double p = calcP(event);
                     Log.d("P", "P is " + p);
-                    if (p >= 1  //評価数が他より1/2以下では時間に関係なく通知
+                    if (p >= 2  //評価数が他より1/2以下では時間に関係なく通知
                             ||( Math.random() < p && line.time - prevTime > Constants.NOTIFICATION_INTERVAL)) {    //前の通知から一定時間経過
                         notificationController.normalNotify(event, line);
                         eval = true;
@@ -136,8 +137,8 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                 if(!eval){
                     notificationController.saveEvent(event, line);
                 }
-            }
-        }).start();
+            });
+        thread.start();
     }
 
     private double calcP(int event){
@@ -156,24 +157,19 @@ public class InterruptTiming implements RegularThread.ThreadListener {
         double p = min / c;
         double mean = counter.getEvaluationMean();
 
-        if (mean > 1) {
-            if (c > mean * 1.5) {
-                p = 0;
-            } else if (c * 1.5 < mean) {
-                p = 1;
-            }
+        if (mean > 1 && c >= mean + 10) {
+            return 0;
         }
-        else {
-            double t = 0;
-            if((event & Walking.WALK_START) > 0){
-                t = counter.getEvaluations(event ^ 6);
-            }
-            else if((event & Screen.SCREEN_ON) > 0){
-                t = counter.getEvaluations(event ^ 24);
-            }
-            if (t != 0) {
-                p /= 1 - min / t;
-            }
+
+        double t = 0;
+        if((event & Walking.WALK_START) > 0){
+            t = counter.getEvaluations(event ^ (Walking.WALK_START | Walking.WALK_STOP));
+        }
+        else if((event & Screen.SCREEN_ON) > 0){
+            t = counter.getEvaluations(event ^ (Screen.SCREEN_ON | Screen.SCREEN_OFF));
+        }
+        if (t != 0) {
+            p /= 1 - min / t;
         }
         return p;
     }

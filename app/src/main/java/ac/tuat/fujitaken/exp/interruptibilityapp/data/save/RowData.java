@@ -14,7 +14,7 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.Data;
  * Created by hi on 2015/11/10.
  */
 public class RowData implements Cloneable, Serializable{
-    protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm:ss.SSS", Locale.JAPAN);
+    static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm:ss.SSS", Locale.JAPAN);
     public List<Data> data;
     public long time;
 
@@ -25,11 +25,11 @@ public class RowData implements Cloneable, Serializable{
 
     public String getLine(){
         StringBuilder builder = new StringBuilder();
-        builder.append(DATE_FORMAT.format(time))
-                .append(",");
+        builder.append(DATE_FORMAT.format(time));
+        builder.append(",");
         for(Data d: data){
-            builder.append(d.getString())
-                    .append(",");
+            builder.append(d.getString());
+            builder.append(",");
         }
         return builder.substring(0, builder.length()-1);
     }

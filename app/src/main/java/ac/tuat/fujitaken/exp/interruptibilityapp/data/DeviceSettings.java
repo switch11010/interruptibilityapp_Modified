@@ -13,12 +13,15 @@ import android.support.annotation.RequiresApi;
  *
  * Created by hi on 2017/02/07.
  */
-
+@SuppressWarnings("UnusedDeclaration")
 public class DeviceSettings {
 
+    @SuppressWarnings("WeakerAccess")
     public static final int ABOVE_6 = 1, UNDER_6 = 2;
 
+    @SuppressWarnings("WeakerAccess")
     public final int VERSION;
+    @SuppressWarnings("WeakerAccess")
     public final boolean isUsagePermissionGranted,
             isStoragePermissionGranted,
             isPhonePermissionGranted,

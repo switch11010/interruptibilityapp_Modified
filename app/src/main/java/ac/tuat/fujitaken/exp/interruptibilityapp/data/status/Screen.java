@@ -31,7 +31,7 @@ public class Screen {
     private String appName = "";
 
     public Screen(Context context){
-        int screenOffTimeout = Settings.System.getInt(context.getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, 30 * 1000) / Constants.MAIN_LOOP_PERIOD - 1;
+        int screenOffTimeout = Settings.System.getInt(context.getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, Constants.SCREEN_OFF_TIME) / Constants.MAIN_LOOP_PERIOD - 1;
         sumOps = 1;
         for(int i = 0; i < screenOffTimeout -1; i++){
             buffer.add(0);

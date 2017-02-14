@@ -21,19 +21,20 @@ public class SaveData{
 
     /**
      * コンストラクタ
-     * @param category  ファイルのカテゴリー
+     * @param s  ファイルのカテゴリー
      */
-    public SaveData(String category, String header) {
-        this.header = header;
-        this.category = category;
+    public SaveData(String s, String s1) {
+        this.header = s1;
+        this.category = s;
         updateFile(0);
     }
 
-    public void updateFile(int number){
+    private void updateFile(int number){
         do {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.JAPAN);
             String fileName = sdf.format(System.currentTimeMillis()) + "_" + category + "_" + (number++);
-            String fileName1 = Environment.getExternalStorageDirectory().getPath() + "/EventLog/" + fileName;
+            File externalStorageDirectory = Environment.getExternalStorageDirectory();
+            String fileName1 = externalStorageDirectory.getPath() + "/EventLog/" + fileName;
             file = new File(fileName1 + ".csv");
         }while(file.exists());
     }

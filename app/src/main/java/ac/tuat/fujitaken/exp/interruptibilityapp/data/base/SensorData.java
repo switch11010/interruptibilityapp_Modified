@@ -8,15 +8,16 @@ public class SensorData extends Data {
 
     public float[] values;
 
-    public SensorData(float[] values){
-        this.values = values;
+    public SensorData(float[] floats){
+        this.values = floats;
     }
 
     @Override
     public String getString() {
         StringBuilder builder = new StringBuilder();
         for(float v: values) {
-            builder.append(v).append(",");
+            builder.append(v);
+            builder.append(",");
         }
         return builder.substring(0, builder.length()-1);
     }

@@ -12,9 +12,9 @@ public class Walking {
     public static final int WALK_START = 1 << 1,
         WALK_STOP = 1 << 2;
 
-    private final int
-            NOT_WALK = 3,
-            WALKING = 9;
+    private static final int
+            NOT_WALK = 3,   //非歩行状態
+            WALKING = 9;    //歩行状態
 
     private int walkState = NOT_WALK,
             count = 0;

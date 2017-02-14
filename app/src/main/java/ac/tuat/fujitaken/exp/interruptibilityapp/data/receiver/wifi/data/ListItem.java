@@ -1,15 +1,16 @@
 package ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.wifi.data;
 
 /**
+ * APリストアイテム
  * Created by seuo on 15/06/30.
  */
 public class ListItem {
 
-    public AccessPoint ap;
+    AccessPoint ap;
     public Pattern pattern;
 
-    public ListItem(AccessPoint ap, Pattern pattern){
-        this.ap = ap;
-        this.pattern = pattern;
+    public ListItem(AccessPoint accessPoint, Pattern p){
+        this.ap = accessPoint;
+        this.pattern = p;
     }
 }

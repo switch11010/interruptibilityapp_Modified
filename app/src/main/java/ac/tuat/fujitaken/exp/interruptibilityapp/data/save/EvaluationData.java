@@ -28,16 +28,23 @@ public class EvaluationData extends RowData {
     @Override
     public String getLine() {
         StringBuilder builder = new StringBuilder();
-        builder.append(DATE_FORMAT.format(time)).append(",")
-                .append(answerTime == 0 ? "" : (answerTime- time)/1000).append(",")
-                .append(evaluation == 0? "": evaluation).append(",")
-                .append(task.replaceAll(",", "，")).append(",")
-                .append(location.replaceAll(",", "，")).append(",")
-                .append(comment.replaceAll(",", "，")).append(",")
-                .append(event == 0? "": event).append(",");
+        builder.append(DATE_FORMAT.format(time));
+        builder.append(",");
+        builder.append(answerTime == 0 ? "" : (answerTime- time)/1000);
+        builder.append(",");
+        builder.append(evaluation == 0? "": evaluation);
+        builder.append(",");
+        builder.append(task.replaceAll(",", "，"));
+        builder.append(",");
+        builder.append(location.replaceAll(",", "，"));
+        builder.append(",");
+        builder.append(comment.replaceAll(",", "，"));
+        builder.append(",");
+        builder.append(event == 0? "": event);
+        builder.append(",");
         for(Data d: data){
-            builder.append(d.getString())
-                    .append(",");
+            builder.append(d.getString());
+            builder.append(",");
         }
 
         return builder.substring(0, builder.length()-1);

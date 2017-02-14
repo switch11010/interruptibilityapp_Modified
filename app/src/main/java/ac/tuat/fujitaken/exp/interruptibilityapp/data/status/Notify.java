@@ -6,6 +6,7 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.Constants;
 import ac.tuat.fujitaken.exp.interruptibilityapp.R;
 
 /**
+ * 通知の有無
  * Created by hi on 2017/01/20.
  */
 

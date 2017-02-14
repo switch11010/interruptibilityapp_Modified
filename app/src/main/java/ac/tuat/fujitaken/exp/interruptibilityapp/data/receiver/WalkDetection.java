@@ -14,7 +14,7 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.Flows.RegularThread;
  * 歩行検出用
  * Created by hi on 2015/11/12.
  */
-public class WalkDetection implements DataReceiver, RegularThread.ThreadListener {
+class WalkDetection implements DataReceiver, RegularThread.ThreadListener {
 
     private static final double _1G = 9.8;
 
@@ -44,8 +44,8 @@ public class WalkDetection implements DataReceiver, RegularThread.ThreadListener
     private BoolData val = new BoolData(false);
     private AccelerometerData acc;
 
-    public WalkDetection(AccelerometerData acc){
-        this.acc = acc;
+    WalkDetection(AccelerometerData accelerometerData){
+        this.acc = accelerometerData;
         for(int i = 0; i < sampleIn4S; i++){
             buffer.add(_1G);
         }
@@ -59,7 +59,8 @@ public class WalkDetection implements DataReceiver, RegularThread.ThreadListener
         }
     }
 
-    public boolean getValue(){
+    @SuppressWarnings("UnusedDeclaration")
+    public boolean isWalking(){
         return val.value;
     }
 
@@ -70,7 +71,7 @@ public class WalkDetection implements DataReceiver, RegularThread.ThreadListener
         return data;
     }
 
-    public boolean judge(){
+    boolean isWalkingNext(){
         double maxDiff = (prevMax[m] - _1G)/(max[m] - _1G),
                 minDiff = (_1G - prevMin[m])/(_1G - min[m]),
                 crossDiff = prevCross[m]/cross[m];
@@ -84,6 +85,7 @@ public class WalkDetection implements DataReceiver, RegularThread.ThreadListener
         return val.value;
     }
 
+    @SuppressWarnings("MagicNumber")
     private void normalJudge(double maxDiff, double minDiff, double crossDiff){
         if(cross[m] >= 2 && cross[m] <= 11){
             if(maxDiff >= 0.6 && maxDiff <= 1.9 &&
@@ -96,6 +98,7 @@ public class WalkDetection implements DataReceiver, RegularThread.ThreadListener
         val.value = false;
     }
 
+    @SuppressWarnings("MagicNumber")
     private void walkingJudge(double maxDiff, double minDiff, double crossDiff){
         if(cross[m] >= 2 && cross[m] <= 14){
             if(maxDiff >= 0.4 && maxDiff <= 2.5 &&
@@ -121,7 +124,14 @@ public class WalkDetection implements DataReceiver, RegularThread.ThreadListener
     private void gCross(double value) {
         double belowThreshold = _1G - 1,
                 upperThreshold = _1G + 1;
-        if (crossState != stable) {
+        if (crossState == stable) {
+            if (value > upperThreshold) {
+                crossState = up;
+            } else if (value < belowThreshold) {
+                crossState = below;
+            }
+        }
+        else {
             count++;
             switch (crossState) {
                 case up:
@@ -142,14 +152,6 @@ public class WalkDetection implements DataReceiver, RegularThread.ThreadListener
             if (count >= sampleIn4S) {
                 crossState = stable;
                 count = 0;
-            }
-        }
-        else {
-            if (value > upperThreshold) {
-                crossState = up;
-            }
-            else if (value < belowThreshold) {
-                crossState = below;
             }
         }
     }

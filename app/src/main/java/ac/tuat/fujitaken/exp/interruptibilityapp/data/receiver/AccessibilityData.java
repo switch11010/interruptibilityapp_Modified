@@ -1,5 +1,6 @@
 package ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -10,6 +11,7 @@ import android.view.accessibility.AccessibilityEvent;
 import java.util.HashMap;
 import java.util.Map;
 
+import ac.tuat.fujitaken.exp.interruptibilityapp.Constants;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.Data;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.IntData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.StringData;
@@ -18,17 +20,19 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.StringData;
  * UIイベントを受け取るクラス
  * Created by hi on 2015/11/10.
  */
-public class AccessibilityData implements DataReceiver {
+class AccessibilityData implements DataReceiver {
 
+    @SuppressLint("UseSparseArrays")
     private Map<Integer, Data> current = new HashMap<>(),
             latest = new HashMap<>();
 
     private PackageManager packageManager;
 
-    public AccessibilityData(Context context){
+    AccessibilityData(Context context){
         packageManager = context.getPackageManager();
 
-        for(Map.Entry<Integer, String> entry: getNames().entrySet()){
+        Map<Integer, String> names = getNames();
+        for(Map.Entry<Integer, String> entry: names.entrySet()){
             int key = entry.getKey();
             if(key == AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED){
                 current.put(key, new StringData(""));
@@ -42,7 +46,7 @@ public class AccessibilityData implements DataReceiver {
     }
 
     private Map<Integer, String> getNames(){
-        Map<Integer, String> names = new HashMap<>();
+        @SuppressLint("UseSparseArrays") Map<Integer, String> names = new HashMap<>();
         names.put(AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED, NOTIFICATION);
         names.put(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED, WINDOW_STATE_CHANGED);
         names.put(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED, WINDOW_CONTENT_CHANGED);
@@ -66,20 +70,26 @@ public class AccessibilityData implements DataReceiver {
             StringData val = (StringData) current.get(type);
             String notifyApp;
             Notification notification = (Notification)event.getParcelableData();
-            if(notification != null && notification.when > System.currentTimeMillis() - 60*60*24*1000) {
-                if(notification.sound != null || notification.vibrate != null) {
-                    try {
-                        PackageInfo activityInfo = packageManager.getPackageInfo(event.getPackageName().toString(), PackageManager.GET_ACTIVITIES);
-                        notifyApp = activityInfo.applicationInfo.loadLabel(packageManager).toString().replace(",", "，").replace("\n", "，");
-                    } catch (PackageManager.NameNotFoundException e) {
-                        e.printStackTrace();
-                        notifyApp = "";
-
-                    }
-                    Log.d("NOTIFY", notifyApp);
-                    val.value = notifyApp;
-                }
+            if (notification == null || notification.when <= System.currentTimeMillis() - Constants.APP_TIME_LIMITATION) {
+                return;
             }
+            if (notification.sound == null && notification.vibrate == null) {
+                return;
+            }
+            try {
+                CharSequence packageName = event.getPackageName();
+                PackageInfo activityInfo = packageManager.getPackageInfo(packageName.toString(), PackageManager.GET_ACTIVITIES);
+                CharSequence appLabel = activityInfo.applicationInfo.loadLabel(packageManager);
+                notifyApp = appLabel.toString();
+                notifyApp = notifyApp.replace(",", "，");
+                notifyApp = notifyApp.replace("\n", "，");
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+                notifyApp = "";
+
+            }
+            Log.d("NOTIFY", notifyApp);
+            val.value = notifyApp;
         }
         else {
             IntData val = (IntData) current.get(type);
@@ -92,13 +102,14 @@ public class AccessibilityData implements DataReceiver {
     @Override
     public Map<String, Data> getData() {
         Map<String, Data> data = new HashMap<>();
-        for(Map.Entry<Integer, String> entry: getNames().entrySet()) {
+        Map<Integer, String> names = getNames();
+        for(Map.Entry<Integer, String> entry: names.entrySet()) {
             data.put(entry.getValue(), this.latest.get(entry.getKey()));
         }
         return data;
     }
 
-    public void refresh() {
+    void refresh() {
         for(Map.Entry<Integer, Data> entry: current.entrySet()){
             Data data = entry.getValue();
             Data temp = latest.get(entry.getKey());

@@ -14,6 +14,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * マッチング用
  * Created by seuo on 15/06/30.
  */
 public class WifiWatching{
@@ -22,8 +23,8 @@ public class WifiWatching{
     private Context context;
     public WifiManager manager;
     private IntentFilter filter1 = new IntentFilter("android.net.wifi.SCAN_RESULTS");
-    private List<ScanResult> results = new ArrayList<ScanResult>();
-    private List<ScanEventAction> actions = new ArrayList<ScanEventAction>();
+    private List<ScanResult> results = new ArrayList<>();
+    private List<ScanEventAction> actions = new ArrayList<>();
 
     private ScheduledExecutorService service;
 
@@ -36,7 +37,7 @@ public class WifiWatching{
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context c, Intent intent) {
             if(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION.equals(intent.getAction())) {
                 results = manager.getScanResults();
 
@@ -53,13 +54,13 @@ public class WifiWatching{
         }
     };
 
-    public void setScanResultAvailableAction(ScanEventAction action){
+    void setScanResultAvailableAction(ScanEventAction action){
         actions.add(action);
     }
 
-    public WifiWatching(Context context){
-        this.context = context;
-        manager = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
+    WifiWatching(Context c){
+        this.context = c;
+        manager = (WifiManager)c.getSystemService(Context.WIFI_SERVICE);
     }
 
     public void start(){
@@ -71,7 +72,7 @@ public class WifiWatching{
         }
     }
 
-    public void stop(){
+    void stop(){
         if(isReceiverRegistered) {
             context.unregisterReceiver(receiver);
             service.shutdown();
@@ -79,7 +80,7 @@ public class WifiWatching{
         }
     }
 
-    public void removeAction(ScanEventAction action){
+    void removeAction(ScanEventAction action){
         for(int i = 0; i < actions.size(); i++) {
             if(action.equals(actions.get(i))){
                 actions.remove(i);
@@ -88,11 +89,11 @@ public class WifiWatching{
         }
     }
 
-    public List<ScanResult> getScanList(){
+    List<ScanResult> getScanList(){
         return results;
     }
 
     public interface ScanEventAction{
-        public void onScanResultAvailable();
+        void onScanResultAvailable();
     }
 }

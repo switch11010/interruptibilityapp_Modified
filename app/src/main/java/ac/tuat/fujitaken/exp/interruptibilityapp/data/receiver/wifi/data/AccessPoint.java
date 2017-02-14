@@ -9,27 +9,30 @@ public class AccessPoint {
     public String ssid;
     public int frequency;
 
-    public AccessPoint(int id, String mac, String ssid, int frequency) {
-        this.id = id;
-        this.mac = mac;
-        this.ssid = ssid;
-        this.frequency = frequency;
+    public AccessPoint(int i, String s, String s1, int i1) {
+        this.id = i;
+        this.mac = s;
+        this.ssid = s1;
+        this.frequency = i1;
     }
 
-    public AccessPoint(String mac, String ssid, int frequency) {
-        this(-1, mac, ssid, frequency);
+    public AccessPoint(String s, String s1, int i) {
+        this(-1, s, s1, i);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         AccessPoint that = (AccessPoint) o;
 
-        if (!mac.equals(that.mac)) return false;
+        return mac.equals(that.mac);
 
-        return true;
     }
 
     @Override

@@ -13,6 +13,7 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.SettingFragme
  * Created by hi on 2017/02/07.
  */
 
+@SuppressWarnings("UnusedDeclaration")
 public class AppSettings {
     private boolean accSave, noteMode;
     private int port, id, volume;

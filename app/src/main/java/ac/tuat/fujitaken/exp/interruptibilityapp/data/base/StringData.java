@@ -8,8 +8,8 @@ public class StringData extends Data {
     public String value;
     private static final StringData BLANK = new StringData("");
 
-    public StringData(String value){
-        this.value = value;
+    public StringData(String s){
+        this.value = s;
     }
 
     @Override

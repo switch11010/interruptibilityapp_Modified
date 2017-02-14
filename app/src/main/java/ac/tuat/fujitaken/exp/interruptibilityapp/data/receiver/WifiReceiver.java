@@ -13,7 +13,6 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,14 +34,14 @@ public class WifiReceiver extends BroadcastReceiver implements DataReceiver {
     private DoubleData dist = new DoubleData(0);
     private List<Map<Integer, Pattern>> buf = new ArrayList<>();*/
 
-    private WifiData wifiData = new WifiData(new ArrayList<RSSI>());
+    private WifiData wifiData = new WifiData(new ArrayList<>());
 
-    public WifiReceiver(Context context){
+    public WifiReceiver(Context c){
         IntentFilter filter = new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
-        context.registerReceiver(this, filter);
-        this.context = context;
-        manager = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
-        activate = mayRequestLocation(context);
+        c.registerReceiver(this, filter);
+        this.context = c;
+        manager = (WifiManager)c.getSystemService(Context.WIFI_SERVICE);
+        activate = hasRequestLocation(c);
 
 /*        List<Spot> list = helper.allSpot();
         flag = list.size() > 0;
@@ -81,7 +80,7 @@ public class WifiReceiver extends BroadcastReceiver implements DataReceiver {
     }
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(Context c, Intent intent) {
         if(activate) {
             if (WifiManager.SCAN_RESULTS_AVAILABLE_ACTION.equals(intent.getAction())) {
 /*            if (flag) {
@@ -145,28 +144,25 @@ public class WifiReceiver extends BroadcastReceiver implements DataReceiver {
 
                 List<ScanResult> results = manager.getScanResults();
                 List<RSSI> aps = new ArrayList<>();
+                //noinspection Convert2streamapi
                 for (ScanResult ap : results) {
                     aps.add(new RSSI(ap.BSSID, ap.frequency, ap.level));
                 }
-                Collections.sort(aps, new Comparator<RSSI>() {
-                    @Override
-                    public int compare(RSSI lhs, RSSI rhs) {
-                        return rhs.level - lhs.level;
-                    }
-                });
+                Collections.sort(aps, (lhs, rhs) -> rhs.level - lhs.level);
                 wifiData.value = aps;
             }
         }
     }
 
-    private boolean mayRequestLocation(Context context) {
+    private boolean hasRequestLocation(Context c) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return true;
         }
-        if (context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (c.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             return true;
         }
-        Toast.makeText(context, "位置情報の権限がありません。", Toast.LENGTH_SHORT).show();
+        Toast toast = Toast.makeText(c, "位置情報の権限がありません。", Toast.LENGTH_SHORT);
+        toast.show();
         return false;
     }
 

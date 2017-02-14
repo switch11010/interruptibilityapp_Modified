@@ -51,7 +51,8 @@ public class AllData implements DataReceiver, RegularThread.ThreadListener {
         data = new TreeMap<>(new Comparator<String>() {
             @Override
             public int compare(String lhs, String rhs) {
-                return names.get(lhs).compareTo(names.get(rhs));
+                Integer left = names.get(lhs);
+                return left.compareTo(names.get(rhs));
             }
         });
 
@@ -78,6 +79,7 @@ public class AllData implements DataReceiver, RegularThread.ThreadListener {
         sensorReceiver.release();
     }
 
+    @SuppressWarnings("Convert2streamapi")
     public RowData newLine(){
         latestLine = new RowData();
         for(Data d: data.values()){
@@ -86,6 +88,7 @@ public class AllData implements DataReceiver, RegularThread.ThreadListener {
         return latestLine;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public RowData getLatestLine(){
         return latestLine;
     }
@@ -93,7 +96,8 @@ public class AllData implements DataReceiver, RegularThread.ThreadListener {
     public String getHeader(){
         StringBuilder header = new StringBuilder();
         for(String name: data.keySet()){
-            header.append(name).append(",");
+            header.append(name);
+            header.append(",");
         }
         return header.substring(0, header.length()-1);
     }
@@ -109,7 +113,7 @@ public class AllData implements DataReceiver, RegularThread.ThreadListener {
 
     @Override
     public void run() {
-        if(walkDetection.judge()){
+        if(walkDetection.isWalkingNext()){
             wifiReceiver.scan();
         }
         accessibilityEventReceiver.refresh();

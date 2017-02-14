@@ -11,6 +11,7 @@ public abstract class Data implements Cloneable, Serializable {
      * インスタンスのコピーを作成する
      * @return  コピー
      */
+    @Override
     public Data clone(){
         Data copy = null;
         try {

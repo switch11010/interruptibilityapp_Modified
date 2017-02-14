@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.os.BatteryManager;
-import android.os.Build;
-import android.os.PowerManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,11 +23,11 @@ public class BroadcastData extends BroadcastReceiver implements DataReceiver {
     private Map<String, Data> data = new HashMap<>();
     private Context context;
 
-    public BroadcastData(Context context){
-        this.context = context;
+    public BroadcastData(Context c){
+        this.context = c;
 
         IntentFilter batteryFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-        Intent batteryStatus = context.registerReceiver(null, batteryFilter);
+        Intent batteryStatus = c.registerReceiver(null, batteryFilter);
 
         int status = 0;
         if (batteryStatus != null) {
@@ -37,10 +35,10 @@ public class BroadcastData extends BroadcastReceiver implements DataReceiver {
         }
 
         //noinspection deprecation
-        data.put(HEADSET_PLUG, new BoolData(hasHeadset(context)));
+        data.put(HEADSET_PLUG, new BoolData(hasHeadset(c)));
         data.put(POWER_CONNECTED, new BoolData(status == BatteryManager.BATTERY_STATUS_CHARGING ||  status == BatteryManager.BATTERY_STATUS_FULL));
         data.put(SCREEN_ON, new BoolData(true));
-        data.put(RINGER_MODE, new IntData(getRingerMode(context)));
+        data.put(RINGER_MODE, new IntData(getRingerMode(c)));
 
         IntentFilter filter =  new IntentFilter();
         filter.addAction(Intent.ACTION_HEADSET_PLUG);
@@ -49,7 +47,7 @@ public class BroadcastData extends BroadcastReceiver implements DataReceiver {
         filter.addAction(Intent.ACTION_SCREEN_ON);
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         filter.addAction(AudioManager.RINGER_MODE_CHANGED_ACTION);
-        context.registerReceiver(this, filter);
+        c.registerReceiver(this, filter);
     }
 
     @Override
@@ -58,7 +56,7 @@ public class BroadcastData extends BroadcastReceiver implements DataReceiver {
     }
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(Context c, Intent intent) {
         String action = intent.getAction();
 
         if(action != null) {
@@ -82,12 +80,12 @@ public class BroadcastData extends BroadcastReceiver implements DataReceiver {
                     break;
                 case Intent.ACTION_HEADSET_PLUG: {
                     val = (BoolData) data.get(HEADSET_PLUG);
-                    val.value = hasHeadset(context);
+                    val.value = hasHeadset(c);
                     break;
                 }
                 case AudioManager.RINGER_MODE_CHANGED_ACTION: {
                     IntData d = (IntData) data.get(RINGER_MODE);
-                    d.value = getRingerMode(context);
+                    d.value = getRingerMode(c);
                     break;
                 }
             }

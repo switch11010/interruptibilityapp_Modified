@@ -1,5 +1,6 @@
 package ac.tuat.fujitaken.exp.interruptibilityapp.data;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -20,7 +21,7 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.Walking;
  */
 public class EventCounter {
 
-    public static final String
+    private static final String
             WALK_START = "WALK_START",
             WALK_STOP = "WALK_STOP",
 
@@ -37,7 +38,7 @@ public class EventCounter {
             PC_TO_SP_BY_SELF = "PC_TO_SP_BY_SELF",
             PC_TO_SP_BY_NOTE = "PC_TO_SP_BY_NOTE";
 
-    public static final int
+    private static final int
             WALK_START_FLAG = Walking.WALK_START,
             WALK_STOP_FLAG = Walking.WALK_STOP,
 
@@ -54,7 +55,7 @@ public class EventCounter {
             SP_TO_PC_BY_SELF_FLAG = Screen.SCREEN_OFF | PC.FROM_PC,
             SP_TO_PC_BY_NOTE_FLAG = Screen.SCREEN_OFF | Notify.NOTIFICATION | PC.FROM_PC;
 
-    public static final HashMap<Integer, String> EVENT_KEYS_FROM_FLAGS = new HashMap<Integer, String>(){
+    private static final HashMap<Integer, String> EVENT_KEYS_FROM_FLAGS = new HashMap<Integer, String>(){
         {
             put(WALK_START_FLAG, WALK_START);
             put(WALK_STOP_FLAG, WALK_STOP);
@@ -85,6 +86,7 @@ public class EventCounter {
      * 記録済みのデータが有る場合は読み込み，無ければ初期化
      * @param context a
      */
+    @SuppressLint("UseSparseArrays")
     public EventCounter(Context context){
 
         evaluations = new HashMap<>();
@@ -101,7 +103,8 @@ public class EventCounter {
     public Integer getEvaluations(String e){
 
         for (Map.Entry<Integer, String> set: EVENT_KEYS_FROM_FLAGS.entrySet()){
-            if(set.getValue().equals(e)){
+            String value = set.getValue();
+            if(value.equals(e)){
                 return evaluations.get(set.getKey());
             }
         }
@@ -119,7 +122,8 @@ public class EventCounter {
         }
         SharedPreferences.Editor editor = preferences.edit();
         evaluations.put(e, t+1);
-        editor.putInt(EVENT_KEYS_FROM_FLAGS.get(e), t+1).apply();
+        editor.putInt(EVENT_KEYS_FROM_FLAGS.get(e), t+1);
+        editor.apply();
         calcEvaluation();
     }
 
@@ -146,6 +150,7 @@ public class EventCounter {
     }
 
     public Map<String, Integer> getEvaluations() {
+        //noinspection unchecked
         Map<String, Integer> ret = new TreeMap();
         for(Map.Entry<Integer, Integer> entry: evaluations.entrySet()){
             ret.put(EVENT_KEYS_FROM_FLAGS.get(entry.getKey()), entry.getValue());
@@ -157,7 +162,8 @@ public class EventCounter {
         int event = 0;
 
         for (Map.Entry<Integer, String> entry: EVENT_KEYS_FROM_FLAGS.entrySet()){
-            if(entry.getValue().equals(e)){
+            String value = entry.getValue();
+            if(value.equals(e)){
                 event = entry.getKey();
                 break;
             }
@@ -166,7 +172,9 @@ public class EventCounter {
             return;
         }
         evaluations.put(event, c);
-        preferences.edit().putInt(e, c).apply();
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt(e, c);
+        editor.apply();
         calcEvaluation();
     }
 
@@ -180,7 +188,8 @@ public class EventCounter {
         SharedPreferences.Editor editor = preferences.edit();
         for(Map.Entry<Integer, String> set: EVENT_KEYS_FROM_FLAGS.entrySet()){
             evaluations.put(set.getKey(), 0);
-            editor.putInt(set.getValue(), 0).apply();
+            editor.putInt(set.getValue(), 0);
+            editor.apply();
         }
         editor.apply();
     }
