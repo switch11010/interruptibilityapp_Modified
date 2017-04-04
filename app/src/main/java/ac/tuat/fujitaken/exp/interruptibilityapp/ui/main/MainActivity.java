@@ -6,33 +6,33 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.PermissionChecker;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v4.widget.DrawerLayout;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.R;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.ApplicationData;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.wifi.database.WiPSDBHelper;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.ItemFragment;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.NavigationDrawerFragment;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.SettingFragment;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.SpotListFragment;
-import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.ApplicationData;
-import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.wifi.database.WiPSDBHelper;
 
 
 public class MainActivity extends ActionBarActivity

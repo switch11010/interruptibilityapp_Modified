@@ -1,4 +1,4 @@
-package ac.tuat.fujitaken.exp.interruptibilityapp.data;
+package ac.tuat.fujitaken.exp.interruptibilityapp.data.settings;
 
 import android.Manifest;
 import android.app.AppOpsManager;

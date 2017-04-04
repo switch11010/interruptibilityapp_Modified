@@ -10,7 +10,6 @@ import java.util.Map;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.Constants;
 import ac.tuat.fujitaken.exp.interruptibilityapp.Flows.RegularThread;
-import ac.tuat.fujitaken.exp.interruptibilityapp.data.EventCounter;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.BoolData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.Data;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.StringData;
@@ -19,11 +18,14 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.DataReceiver;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.EvaluationData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.RowData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.SaveData;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.EventCounter;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.Notify;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.PC;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.Screen;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.Walking;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.SettingFragment;
+
+;
 
 /**
  * 通知タイミング検出用

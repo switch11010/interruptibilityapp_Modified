@@ -68,12 +68,7 @@ public class MainService extends AccessibilityService {
         final SaveData save_50;
         if (PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(SettingFragment.ACC_SAVE, false)) {
             save_50 = new SaveData("Acc", accelerometerData.getHeader());
-            loop_50.setListener(new RegularThread.ThreadListener() {
-                @Override
-                public void run() {
-                    save_50.addLine(accelerometerData.newLine());
-                }
-            });
+            loop_50.setListener(()-> save_50.addLine(accelerometerData.newLine()));
             saveTask.addData(save_50);
         }
 

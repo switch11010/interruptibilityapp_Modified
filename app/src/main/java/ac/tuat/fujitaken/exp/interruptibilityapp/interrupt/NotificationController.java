@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import ac.tuat.fujitaken.exp.interruptibilityapp.data.EventCounter;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.EventCounter;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.EvaluationData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.RowData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.questionnaire.InterruptionNotification;

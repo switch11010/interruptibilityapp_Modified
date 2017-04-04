@@ -13,13 +13,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
-import ac.tuat.fujitaken.exp.interruptibilityapp.R;
-import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.MainActivity;
-import ac.tuat.fujitaken.exp.interruptibilityapp.data.EventCounter;
-import ac.tuat.fujitaken.exp.interruptibilityapp.ui.questionnaire.fragments.InputDialogFragment;
-import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.EventAdapter;
-
 import java.util.Map;
+
+import ac.tuat.fujitaken.exp.interruptibilityapp.R;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.EventCounter;
+import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.EventAdapter;
+import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.MainActivity;
+import ac.tuat.fujitaken.exp.interruptibilityapp.ui.questionnaire.fragments.InputDialogFragment;
 
 /**
  * イベント数をリスト表示するフラグメント
