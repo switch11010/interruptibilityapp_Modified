@@ -1,8 +1,6 @@
 package ac.tuat.fujitaken.exp.interruptibilityapp.interrupt;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.net.UnknownHostException;
@@ -19,11 +17,11 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.EvaluationData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.RowData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.SaveData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.EventCounter;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.Settings;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.Notify;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.PC;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.Screen;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.Walking;
-import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.SettingFragment;
 
 ;
 
@@ -48,19 +46,16 @@ public class InterruptTiming implements RegularThread.ThreadListener {
     private boolean note;
 
     private UDPConnection udpConnection = null;
-    private EventCounter counter;
     private AllData mAllData;
 
     //コンストラクタ
     public InterruptTiming(Context context, AllData allData){
         this.mAllData = allData;
         //設定ファイルからモードを確認
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        note = preferences.getBoolean(SettingFragment.NOTE, true);
+        note = Settings.getAppSettings().isNoteMode();
 
         prevTime = System.currentTimeMillis()- Constants.NOTIFICATION_INTERVAL;
-        counter = new EventCounter(context);
-        notificationController = new NotificationController(context, counter, allData, this);
+        notificationController = new NotificationController(allData, this);
         try {
             udpConnection = new UDPConnection(context);
         } catch (UnknownHostException e) {
@@ -125,7 +120,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                 event |= pc.judge(message);
 
                 Log.d("EVENT", "Num is " + Integer.toBinaryString(event));
-                Log.d("EVENT", notificationController.counter.getEventName(event));
+                Log.d("EVENT", Settings.getEventCounter().getEventName(event));
 
                 if (noteFlag) {
                     double p = calcP(event);
@@ -148,6 +143,8 @@ public class InterruptTiming implements RegularThread.ThreadListener {
          * 電話以外は確率を求めてから通知
          * ただし，評価数が平均の2倍or1/2の場合は補正
          */
+        EventCounter counter = Settings.getEventCounter();
+
         if(counter.getEvaluations(event) == null){
             return 0;
         }

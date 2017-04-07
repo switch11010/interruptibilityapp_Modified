@@ -1,5 +1,6 @@
 package ac.tuat.fujitaken.exp.interruptibilityapp.data.settings;
 
+import android.app.Application;
 import android.content.Context;
 
 /**
@@ -7,23 +8,25 @@ import android.content.Context;
  * Created by hi on 2017/02/28.
  */
 
+public class Settings extends Application {
 
-public class Settings {
     private static Settings instance;
-    private MyApplication myApp;
     private AppSettings appSettings;
     private DeviceSettings deviceSettings;
     private EventCounter eventCounter;
 
-    static void createInstance(MyApplication app){
-        instance = new Settings(app);
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        instance = this;
+        instance.settings();
     }
 
-    private Settings(MyApplication app){
-        this.myApp = app;
-        appSettings = new AppSettings();
-        deviceSettings = new DeviceSettings(myApp.getApplicationContext());
-        eventCounter = new EventCounter(myApp.getApplicationContext());
+    private void settings(){
+        appSettings = new AppSettings(getApplicationContext());
+        deviceSettings = new DeviceSettings(getApplicationContext());
+        eventCounter = new EventCounter(getApplicationContext());
     }
 
     public static AppSettings getAppSettings() {
@@ -31,7 +34,7 @@ public class Settings {
     }
 
     public static Context getContext() {
-        return instance.myApp.getApplicationContext();
+        return instance.getApplicationContext();
     }
 
     public static DeviceSettings getDeviceSettings() {

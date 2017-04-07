@@ -9,16 +9,16 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.RingtoneManager;
+import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
-import android.os.Bundle;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.SettingFragment;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.Settings;
 
 /**
  * Created by hi on 2015/10/28.
@@ -46,7 +46,7 @@ public class InterruptionNotification {
         this.context = context;
         audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        volume = preferences.getInt(SettingFragment.VOLUME, audioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION));
+        volume = Settings.getAppSettings().getVolume();
 
         notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
     }

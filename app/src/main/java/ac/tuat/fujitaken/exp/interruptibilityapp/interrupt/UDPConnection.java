@@ -14,7 +14,8 @@ import java.net.UnknownHostException;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.Constants;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.RowData;
-import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.SettingFragment;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.AppSettings;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.Settings;
 
 /**
  *
@@ -29,9 +30,11 @@ public class UDPConnection {
     public UDPConnection(Context context) throws UnknownHostException {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
 
-        ipAddress = InetAddress.getByName(preferences.getString(SettingFragment.IP_ADDRESS, ""));
-        port = preferences.getInt(SettingFragment.PORT, 54613);
-        id = preferences.getInt(SettingFragment.SP_ID, 10);
+        AppSettings settings = Settings.getAppSettings();
+
+        ipAddress = InetAddress.getByName(settings.getIpAddress());
+        port = settings.getPort();
+        id = settings.getId();
     }
 
     public boolean sendRequest(RowData data){

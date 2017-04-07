@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.R;
-import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.ApplicationData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.wifi.database.WiPSDBHelper;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.ItemFragment;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.NavigationDrawerFragment;
@@ -264,7 +263,7 @@ public class MainActivity extends ActionBarActivity
 
     private void checkUsage(){
 
-        if(!ApplicationData.checkPermission(getApplicationContext()) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if(!ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.Settings.getDeviceSettings().isUsagePermissionGranted && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Intent intent = new Intent();
             intent.setAction(Settings.ACTION_USAGE_ACCESS_SETTINGS);
             startActivity(intent);

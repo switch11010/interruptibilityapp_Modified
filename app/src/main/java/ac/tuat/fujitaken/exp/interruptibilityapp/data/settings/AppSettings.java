@@ -8,27 +8,26 @@ import android.preference.PreferenceManager;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.Constants;
 
-import static ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.SettingFragment.ACC_SAVE;
-import static ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.SettingFragment.IP_ADDRESS;
-import static ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.SettingFragment.NOTE;
-import static ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.SettingFragment.PORT;
-import static ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.SettingFragment.SP_ID;
-import static ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.SettingFragment.VOLUME;
-
 /**
  *
  * Created by hi on 2017/02/07.
  */
 
-@SuppressWarnings("UnusedDeclaration")
 public class AppSettings extends Application{
+    //設定保存のための定数
+    public static final String ACC_SAVE = "acc_save",
+            NOTE = "note",
+            VOLUME = "volume",
+            IP_ADDRESS = "ip_address",
+            SP_ID = "sp_id",
+            PORT = "port_num";
+
     private boolean accSave, noteMode;
     private int port, id, volume;
     private String ipAddress;
     private SharedPreferences preferences;
 
-    AppSettings(){
-        Context context = Settings.getContext();
+    AppSettings(Context context){
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
         accSave = preferences.getBoolean(ACC_SAVE, false);
         noteMode = preferences.getBoolean(NOTE, true);
@@ -87,7 +86,7 @@ public class AppSettings extends Application{
         return noteMode;
     }
 
-    void refresh(){
+    public void refresh(){
         if(preferences == null){
             preferences = PreferenceManager.getDefaultSharedPreferences(Settings.getContext());
         }

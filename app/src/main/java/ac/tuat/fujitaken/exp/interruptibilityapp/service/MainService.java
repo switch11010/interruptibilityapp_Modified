@@ -3,20 +3,19 @@ package ac.tuat.fujitaken.exp.interruptibilityapp.service;
 import android.accessibilityservice.AccessibilityService;
 import android.content.Context;
 import android.os.PowerManager;
-import android.preference.PreferenceManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.Toast;
 
 import java.util.concurrent.TimeUnit;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.Constants;
-import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.SettingFragment;
+import ac.tuat.fujitaken.exp.interruptibilityapp.Flows.RegularThread;
+import ac.tuat.fujitaken.exp.interruptibilityapp.Flows.SaveTask;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.AccelerometerData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.AllData;
-import ac.tuat.fujitaken.exp.interruptibilityapp.interrupt.InterruptTiming;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.SaveData;
-import ac.tuat.fujitaken.exp.interruptibilityapp.Flows.SaveTask;
-import ac.tuat.fujitaken.exp.interruptibilityapp.Flows.RegularThread;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.Settings;
+import ac.tuat.fujitaken.exp.interruptibilityapp.interrupt.InterruptTiming;
 
 /**
  * AccessibilityService
@@ -66,7 +65,7 @@ public class MainService extends AccessibilityService {
         //
         loop_50.setListener(allData.getWalkDetection());
         final SaveData save_50;
-        if (PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(SettingFragment.ACC_SAVE, false)) {
+        if (Settings.getAppSettings().isAccSave()) {
             save_50 = new SaveData("Acc", accelerometerData.getHeader());
             loop_50.setListener(()-> save_50.addLine(accelerometerData.newLine()));
             saveTask.addData(save_50);

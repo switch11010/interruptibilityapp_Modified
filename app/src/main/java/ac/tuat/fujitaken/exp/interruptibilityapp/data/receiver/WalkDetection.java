@@ -14,7 +14,7 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.Flows.RegularThread;
  * 歩行検出用
  * Created by hi on 2015/11/12.
  */
-class WalkDetection implements DataReceiver, RegularThread.ThreadListener {
+public class WalkDetection implements DataReceiver, RegularThread.ThreadListener {
 
     private static final double _1G = 9.8;
 

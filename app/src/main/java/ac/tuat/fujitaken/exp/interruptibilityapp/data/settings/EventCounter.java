@@ -87,7 +87,7 @@ public class EventCounter {
      * @param context a
      */
     @SuppressLint("UseSparseArrays")
-    public EventCounter(Context context){
+    EventCounter(Context context){
 
         evaluations = new HashMap<>();
 

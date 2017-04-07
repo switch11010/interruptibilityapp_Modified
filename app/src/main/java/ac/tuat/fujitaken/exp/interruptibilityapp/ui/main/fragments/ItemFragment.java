@@ -16,7 +16,7 @@ import android.widget.ListView;
 import java.util.Map;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.R;
-import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.EventCounter;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.Settings;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.EventAdapter;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.MainActivity;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.questionnaire.fragments.InputDialogFragment;
@@ -32,7 +32,6 @@ public class ItemFragment extends ListFragment {
 
     private EventAdapter adapter;
     private String item;
-    private EventCounter counter;
 
     public ItemFragment() {
     }
@@ -62,7 +61,6 @@ public class ItemFragment extends ListFragment {
     @Override
     public void onResume() {
         super.onResume();
-        counter = new EventCounter(getActivity().getApplicationContext());
         update();
     }
 
@@ -79,7 +77,7 @@ public class ItemFragment extends ListFragment {
         if(!SettingFragment.isServiceActive(getActivity().getApplicationContext())) {
             //クリックされたアイテムの取得
             item = (String) ((Map.Entry) l.getItemAtPosition(position)).getKey();
-            int t = counter.getEvaluations(item);
+            int t = Settings.getEventCounter().getEvaluations(item);
 
             //数値入力のためのダイアログ作成
             InputDialogFragment fragment = InputDialogFragment.newInstance(item, String.valueOf(t), InputType.TYPE_CLASS_NUMBER);
@@ -106,7 +104,7 @@ public class ItemFragment extends ListFragment {
                 //結果が有効な数値なら，変換して置き換える
                 try {
                     int t = Integer.parseInt(result);
-                    counter.putEvaluation(item, t);
+                    Settings.getEventCounter().putEvaluation(item, t);
                     update();
                 }catch (NumberFormatException e){
                     Log.e("InputFormatError", e.getMessage());
@@ -142,7 +140,7 @@ public class ItemFragment extends ListFragment {
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                counter.initialize();
+                                Settings.getEventCounter().initialize();
                                 update();
                             }
                         })
@@ -156,6 +154,6 @@ public class ItemFragment extends ListFragment {
     //リストの更新
     private void update(){
         adapter.clear();
-        adapter.addAll(counter.getEvaluations().entrySet());
+        adapter.addAll(Settings.getEventCounter().getEvaluations().entrySet());
     }
 }

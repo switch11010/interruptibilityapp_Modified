@@ -11,14 +11,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.EventCounter;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.AllData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.EvaluationData;
-import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.RowData;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.SaveData;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.Settings;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.questionnaire.InterruptionNotification;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.questionnaire.QuestionActivity;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.questionnaire.fragments.QuestionFragment;
-import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.AllData;
-import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.SaveData;
 
 /**
  * 通知制御くらす
@@ -35,9 +34,7 @@ public class NotificationController {
             lateData,
             cancelData,
             answerLine;
-    public EventCounter counter;
     private InterruptTiming timing;
-    private RowData saveLine;
 
     /**
      * 通知への回答を受け取るレシーバ
@@ -61,7 +58,7 @@ public class NotificationController {
                     timing.prevTime = System.currentTimeMillis();
                     if (answerData != null) {
                         answerLine.setAnswer(answerData.clone());
-                        counter.addEvaluations(answerData.event);
+                        Settings.getEventCounter().addEvaluations(answerData.event);
                         clearBuf();
                     }
                 }
@@ -114,11 +111,10 @@ public class NotificationController {
         return evaluationSave;
     }
 
-    public NotificationController(Context context, EventCounter counter, AllData allData, InterruptTiming timing){
-        this.counter = counter;
+    public NotificationController(AllData allData, InterruptTiming timing){
         this.timing = timing;
         evaluationSave = new SaveData("Evaluation", "AnswerTime,Evaluation,Task,Location,Comment,Event," + allData.getHeader());
-        interruptionNotification = new InterruptionNotification(context);
+        interruptionNotification = new InterruptionNotification(Settings.getContext());
         IntentFilter filter = new IntentFilter();
         filter.addAction(QuestionFragment.BROADCAST_ANSWER_ACTION);
         filter.addAction(QuestionFragment.BROADCAST_ASK_ACTION);
@@ -134,7 +130,7 @@ public class NotificationController {
         cancelData = new EvaluationData();
         cancelData.evaluation = -2;
 
-        localBroadcastManager = LocalBroadcastManager.getInstance(context);
+        localBroadcastManager = LocalBroadcastManager.getInstance(Settings.getContext());
         localBroadcastManager.registerReceiver(receiver, filter);
     }
 

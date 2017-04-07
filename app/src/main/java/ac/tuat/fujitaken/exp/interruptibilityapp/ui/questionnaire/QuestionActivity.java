@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.interrupt.NotificationController;
+import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.MainActivity;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.questionnaire.fragments.QuestionFragment;
 
 /**
@@ -40,6 +41,8 @@ public class QuestionActivity extends FragmentActivity {
             }
         }
         else{
+            Intent intent = new Intent(QuestionActivity.this, MainActivity.class);
+            startActivity(intent);
             finish();
         }
     }

@@ -5,4 +5,7 @@ package ac.tuat.fujitaken.exp.interruptibilityapp.Flows;
  */
 
 public class SaveThread {
+    /**
+     * SaveTaskの内容+データロック，スレッド監視機能
+     */
 }
