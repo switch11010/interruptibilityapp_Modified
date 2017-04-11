@@ -1,6 +1,7 @@
 package ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 
 import java.util.Comparator;
@@ -8,9 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import ac.tuat.fujitaken.exp.interruptibilityapp.Flows.RegularThread;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.Data;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.RowData;
-import ac.tuat.fujitaken.exp.interruptibilityapp.Flows.RegularThread;
 
 /**
  * 全データを統括するクラス

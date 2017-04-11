@@ -92,12 +92,10 @@ public class ApplicationData implements DataReceiver {
         String key;
 
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP){
-            key = getForegroundApp();
+            key = activityManager.getRunningTasks(1).get(0).topActivity.getPackageName();
         }
         else{
-            List<ActivityManager.RunningTaskInfo> tasks = activityManager.getRunningTasks(1);
-            ActivityManager.RunningTaskInfo info = tasks.get(0);
-            key = info.topActivity.getPackageName();
+            key = getForegroundApp();
         }
         try {
             PackageInfo info = packageManager.getPackageInfo(key, PackageManager.GET_ACTIVITIES);

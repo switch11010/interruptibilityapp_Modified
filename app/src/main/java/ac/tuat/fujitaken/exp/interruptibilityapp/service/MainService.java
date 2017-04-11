@@ -3,6 +3,7 @@ package ac.tuat.fujitaken.exp.interruptibilityapp.service;
 import android.accessibilityservice.AccessibilityService;
 import android.content.Context;
 import android.os.PowerManager;
+import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.Toast;
 
@@ -49,6 +50,8 @@ public class MainService extends AccessibilityService {
         //処理を続けるためにCPUのスリープをロックする
         wakeLock = ((PowerManager) getSystemService(Context.POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");
         wakeLock.acquire();
+
+        Log.d("Info", "onCreate");
 
         /**
          * 各インスタンスの初期化

@@ -8,6 +8,7 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Process;
 import android.support.annotation.RequiresApi;
+import android.util.Log;
 
 /**
  *
@@ -26,7 +27,6 @@ public class DeviceSettings {
     DeviceSettings(Context context){
         manager = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            isUsagePermissionGranted = context.checkSelfPermission(Manifest.permission.PACKAGE_USAGE_STATS) == PackageManager.PERMISSION_GRANTED;
             isStoragePermissionGranted = context.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
             isPhonePermissionGranted = context.checkSelfPermission(Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED;
             isLocationPermissionGranted = context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
@@ -35,14 +35,19 @@ public class DeviceSettings {
             isStoragePermissionGranted = true;
             isPhonePermissionGranted = true;
             isLocationPermissionGranted = true;
-
-            boolean usagePermission = true;
-
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                usagePermission = checkPermission(context);
-            }
-            isUsagePermissionGranted = usagePermission;
         }
+
+        boolean usagePermission = true;
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            usagePermission = checkPermission(context);
+        }
+        isUsagePermissionGranted = usagePermission;
+
+        Log.d("Permission", isUsagePermissionGranted + ", "
+                + isStoragePermissionGranted + ","
+                + isPhonePermissionGranted + ","
+                + isLocationPermissionGranted);
     }
 
     public boolean isWifiEnabled(){

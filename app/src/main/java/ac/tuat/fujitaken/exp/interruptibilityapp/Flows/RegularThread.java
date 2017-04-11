@@ -1,6 +1,8 @@
 package ac.tuat.fujitaken.exp.interruptibilityapp.Flows;
 
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -34,6 +36,7 @@ public class RegularThread {
         if(schedule == null) {
             schedule = Executors.newSingleThreadScheduledExecutor();
             schedule.scheduleAtFixedRate(repeatTask, delay, delay, unit);
+            Log.d("EVENT", listeners.size() + "");
         }
     }
 

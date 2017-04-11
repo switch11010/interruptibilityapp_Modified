@@ -82,6 +82,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
      */
     @Override
     public void run() {
+        Log.d("EVENT", "e");
         final RowData line = mAllData.newLine();
         Map<String, Data> map = mAllData.getData();
 
