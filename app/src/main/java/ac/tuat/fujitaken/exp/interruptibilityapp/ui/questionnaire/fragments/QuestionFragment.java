@@ -90,7 +90,7 @@ public class QuestionFragment extends DialogFragment{
         comment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                InputDialogFragment fragment = InputDialogFragment.newInstance("コメント");
+                InputDialogFragment fragment = InputDialogFragment.newInstance("気になったことなど");
                 fragment.setTargetFragment(selfFragment, COMMENT_REQUEST_CODE);
                 getActivity().getSupportFragmentManager().beginTransaction()
                         .add(fragment, COMMENT)
@@ -115,7 +115,7 @@ public class QuestionFragment extends DialogFragment{
             task.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ListDialogFragment fragment = ListDialogFragment.newInstance("現在の作業内容は？", new String[]{"PC作業", "デスクワーク", "机外作業", "移動", "会話", "休憩",  "自由記述"});
+                    ListDialogFragment fragment = ListDialogFragment.newInstance("割り込み直前の作業内容は？", new String[]{"PC作業", "デスクワーク", "机外作業", "移動", "会話", "休憩",  "自由記述"});
                     fragment.setTargetFragment(selfFragment, TASK_REQUEST_CODE);
                     getActivity().getSupportFragmentManager().beginTransaction()
                             .add(fragment, TASK)

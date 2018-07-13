@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import java.util.List;
 
@@ -33,11 +34,13 @@ public class SettingFragment extends Fragment {
 
     //データを受け取るための定数
     private static final String ARG_POSITION = "param1";
+    private final static int CHOSE_FILE_CODE = 12345;
 
     private SwitchCompat saveSwitch, noteSwitch;
     private TextView exist;
     private EditText ipText, spText, portText;
     private SeekBar volume;
+    private ToggleButton togglePC, toggleSD;
     private AudioManager manager;
 
     public static Fragment newInstance(int position){
@@ -74,12 +77,15 @@ public class SettingFragment extends Fragment {
                 intent.setAction(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
                 startActivity(intent);
             });
+
         manager = (AudioManager)getActivity().getSystemService(Context.AUDIO_SERVICE);
         volume = (SeekBar)root.findViewById(R.id.volume);
         volume.setMax(manager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION));
         ipText = (EditText)root.findViewById(R.id.ip_address);
         spText = (EditText)root.findViewById(R.id.sp_id);
         portText = (EditText)root.findViewById(R.id.port_num);
+        togglePC = (ToggleButton)root.findViewById(R.id.togglePC);
+        toggleSD = (ToggleButton)root.findViewById(R.id.toggleSD);
 
         return root;
     }
@@ -95,6 +101,8 @@ public class SettingFragment extends Fragment {
         ipText.setText(settings.getIpAddress());
         spText.setText(String.valueOf(settings.getId()));
         portText.setText(String.valueOf(settings.getPort()));
+        togglePC.setChecked(settings.isPcMode());
+        toggleSD.setChecked(settings.isSaveMode());
 
         volume.setProgress(settings.getVolume());
 
@@ -113,6 +121,8 @@ public class SettingFragment extends Fragment {
         spText.setEnabled(state);
         portText.setEnabled(state);
         volume.setEnabled(state);
+        togglePC.setEnabled(state);
+        toggleSD.setEnabled(state);
         exist.setVisibility(state? View.INVISIBLE: View.VISIBLE);
     }
 
@@ -123,6 +133,8 @@ public class SettingFragment extends Fragment {
         AppSettings settings = Settings.getAppSettings();
         settings.setAccSave(saveSwitch.isChecked());
         settings.setNoteMode(noteSwitch.isChecked());
+        settings.setPcMode(togglePC.isChecked());
+        settings.setSaveMode(toggleSD.isChecked());
         settings.setIpAddress(ipText.getText().toString());
         settings.setId(Integer.parseInt(spText.getText().toString()));
         settings.setPort(Integer.parseInt(portText.getText().toString()));

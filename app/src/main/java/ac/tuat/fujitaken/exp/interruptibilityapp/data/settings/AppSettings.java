@@ -20,9 +20,11 @@ public class AppSettings extends Application{
             VOLUME = "volume",
             IP_ADDRESS = "ip_address",
             SP_ID = "sp_id",
-            PORT = "port_num";
+            PORT = "port_num",
+            PC_MODE = "pc_mode",
+            SAVE_MODE = "save_mode";
 
-    private boolean accSave, noteMode;
+    private boolean accSave, noteMode, pcMode, saveMode;
     private int port, id, volume;
     private String ipAddress;
     private SharedPreferences preferences;
@@ -31,11 +33,15 @@ public class AppSettings extends Application{
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
         accSave = preferences.getBoolean(ACC_SAVE, false);
         noteMode = preferences.getBoolean(NOTE, true);
+        pcMode = preferences.getBoolean(PC_MODE, false);
+        saveMode = preferences.getBoolean(SAVE_MODE, false);
         ipAddress = preferences.getString(IP_ADDRESS, "");
         port = preferences.getInt(PORT, Constants.DEFAULT_PORT);
         id = preferences.getInt(SP_ID, Constants.DEFAULT_SP_ID);
         AudioManager manager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
-        volume = preferences.getInt(VOLUME, manager.getStreamVolume(AudioManager.STREAM_NOTIFICATION));
+        if (manager != null) {
+            volume = preferences.getInt(VOLUME, manager.getStreamVolume(AudioManager.STREAM_NOTIFICATION));
+        }
     }
 
     public void setAccSave(boolean b) {
@@ -62,6 +68,14 @@ public class AppSettings extends Application{
         this.volume = i;
     }
 
+    public void setPcMode(boolean pcMode) {
+        this.pcMode = pcMode;
+    }
+
+    public void setSaveMode(boolean saveMode) {
+        this.saveMode = saveMode;
+    }
+
     public int getId() {
         return id;
     }
@@ -86,18 +100,28 @@ public class AppSettings extends Application{
         return noteMode;
     }
 
+    public boolean isPcMode() {
+        return pcMode;
+    }
+
+    public boolean isSaveMode() {
+        return saveMode;
+    }
+
     public void refresh(){
         if(preferences == null){
             preferences = PreferenceManager.getDefaultSharedPreferences(Settings.getContext());
         }
         //設定の保存
-        preferences.edit()
-                .putBoolean(ACC_SAVE, accSave)
-                .putBoolean(NOTE, noteMode)
-                .putString(IP_ADDRESS, ipAddress)
-                .putInt(SP_ID, id)
-                .putInt(PORT, port)
-                .putInt(VOLUME, volume)
-                .apply();
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean(ACC_SAVE, accSave);
+        editor.putBoolean(NOTE, noteMode);
+        editor.putString(IP_ADDRESS, ipAddress);
+        editor.putInt(SP_ID, id);
+        editor.putInt(PORT, port);
+        editor.putInt(VOLUME, volume);
+        editor.putBoolean(PC_MODE, pcMode);
+        editor.putBoolean(SAVE_MODE, saveMode);
+        editor.apply();
     }
 }

@@ -6,7 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.widget.Toast;
@@ -20,30 +23,35 @@ import java.util.Map;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.Data;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.RSSI;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.WifiData;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.DeviceSettings;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.Settings;
+import ac.tuat.fujitaken.exp.interruptibilityapp.interruption.UDPConnection;
 
 /**
  *
  * Created by hi on 2015/12/01.
  */
 public class WifiReceiver extends BroadcastReceiver implements DataReceiver {
-    private Context context;
-    private WifiManager manager;
     private boolean activate = false;
-/*    private Pattern[] patterns;
+    private Context context;
+    /*
+    private Pattern[] patterns;
     private double[] weight;
     private DoubleData dist = new DoubleData(0);
-    private List<Map<Integer, Pattern>> buf = new ArrayList<>();*/
+    private List<Map<Integer, Pattern>> buf = new ArrayList<>();
+    */
 
     private WifiData wifiData = new WifiData(new ArrayList<>());
 
     public WifiReceiver(Context c){
-        IntentFilter filter = new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
-        c.registerReceiver(this, filter);
-        this.context = c;
-        manager = (WifiManager)c.getSystemService(Context.WIFI_SERVICE);
+        IntentFilter scanFilter = new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
+        IntentFilter wifiChangeFilter = new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+        c.registerReceiver(this, scanFilter);
+        c.registerReceiver(this, wifiChangeFilter);
         activate = hasRequestLocation(c);
-
-/*        List<Spot> list = helper.allSpot();
+        this.context = c;
+        /*
+        List<Spot> list = helper.allSpot();
         flag = list.size() > 0;
         if(flag) {
             SQLiteDatabase db = helper.getReadableDatabase();
@@ -61,7 +69,8 @@ public class WifiReceiver extends BroadcastReceiver implements DataReceiver {
             for(int i = 0; i < weight.length; i++){
                 weight[i] /= s;
             }
-        }*/
+        }
+        */
 
         scan();
     }
@@ -71,6 +80,8 @@ public class WifiReceiver extends BroadcastReceiver implements DataReceiver {
     }
 
     public void scan(){
+        DeviceSettings settings = Settings.getDeviceSettings();
+        WifiManager manager = settings.getManager();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 && manager.isScanAlwaysAvailable()) {
             manager.startScan();
         }
@@ -79,11 +90,71 @@ public class WifiReceiver extends BroadcastReceiver implements DataReceiver {
         }
     }
 
+    public static void sendIP(Context context){
+        if(!isActiveWifi(context)){
+            return;
+        }
+
+        DeviceSettings settings = Settings.getDeviceSettings();
+        WifiManager manager = settings.getManager();
+        WifiInfo wINfo = manager.getConnectionInfo();
+        int ipAdr = wINfo.getIpAddress();
+        UDPConnection.sendIP(ipAdr);
+    }
+
+    public void sendIP(){
+        sendIP(context);
+    }
+
+    private static boolean isActiveWifi(Context context){
+        DeviceSettings settings = Settings.getDeviceSettings();
+        if(!settings.isWifiEnabled()){
+            return false;
+        }
+        // Activity 等の Context 内で
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        if (networkInfo != null){// && networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+            // シンプルな状態を取得
+            NetworkInfo.State networkState = networkInfo.getState();
+            if(networkState == NetworkInfo.State.CONNECTED){
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public void onReceive(Context c, Intent intent) {
-        if(activate) {
+        String action = intent.getAction();
+        if(action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)){
+            NetworkInfo info = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
+            switch (info.getState()) {
+                case DISCONNECTED:
+                    break;
+                case SUSPENDED:
+                    break;
+                case CONNECTING:
+                    break;
+                case CONNECTED:
+                    /**
+                     * 自身のIPを送信する処理
+                     */
+                    sendIP();
+                    break;
+                case DISCONNECTING:
+                    break;
+                case UNKNOWN:
+                    break;
+                default:
+                    break;
+            }
+        }
+        else if(activate) {
             if (WifiManager.SCAN_RESULTS_AVAILABLE_ACTION.equals(intent.getAction())) {
-/*            if (flag) {
+                /*
+                if (flag) {
                 List<ScanResult> results = manager.getScanResults();
                 Map<AccessPoint, Pattern> record = new HashMap<>();
 
@@ -140,7 +211,11 @@ public class WifiReceiver extends BroadcastReceiver implements DataReceiver {
                         dist.value = sum;
                     }
                 }
-            }*/
+            }
+            */
+
+                DeviceSettings settings = Settings.getDeviceSettings();
+                WifiManager manager = settings.getManager();
 
                 List<ScanResult> results = manager.getScanResults();
                 List<RSSI> aps = new ArrayList<>();

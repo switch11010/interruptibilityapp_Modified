@@ -1,7 +1,6 @@
 package ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 
 import java.util.Comparator;
@@ -9,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-import ac.tuat.fujitaken.exp.interruptibilityapp.Flows.RegularThread;
+import ac.tuat.fujitaken.exp.interruptibilityapp.flow.RegularThread;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.Data;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.RowData;
 
@@ -27,6 +26,7 @@ public class AllData implements DataReceiver, RegularThread.ThreadListener {
     private PhoneState phoneState;
     private SensorReceiver sensorReceiver;
     private WalkDetection walkDetection;
+    private WifiReceiver wifiReceiver;
 
     //データ参照用のマップ
     private Map<String, Integer> names = new HashMap<>();
@@ -34,7 +34,6 @@ public class AllData implements DataReceiver, RegularThread.ThreadListener {
 
     //最新値
     private RowData latestLine = new RowData();
-    private WifiReceiver wifiReceiver;
 
     public AllData(Context context, AccelerometerData accelerometerData){
         accessibilityEventReceiver = new AccessibilityData(context);
@@ -89,7 +88,6 @@ public class AllData implements DataReceiver, RegularThread.ThreadListener {
         return latestLine;
     }
 
-    @SuppressWarnings("UnusedDeclaration")
     public RowData getLatestLine(){
         return latestLine;
     }

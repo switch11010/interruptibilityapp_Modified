@@ -13,7 +13,7 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.R;
 public class Notify {
     public static final int NOTIFICATION = 1 << 5;
     private String appName = "";
-    private static final int NOTE_TIME = Constants.NOTIFICATION_THRESHOLD * 1000/Constants.MAIN_LOOP_PERIOD;
+    private static final int NOTE_TIME = Constants.NOTIFICATION_THRESHOLD/Constants.MAIN_LOOP_PERIOD;
     private int noteCount = NOTE_TIME;
 
     public Notify(Context context){

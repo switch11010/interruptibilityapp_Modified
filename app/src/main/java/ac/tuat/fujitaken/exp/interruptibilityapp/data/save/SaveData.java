@@ -1,12 +1,19 @@
 package ac.tuat.fujitaken.exp.interruptibilityapp.data.save;
 
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.os.Build;
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.AppSettings;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.Settings;
 
 /**
  * データを一定時間で保存するクラス
@@ -30,14 +37,54 @@ public class SaveData{
     }
 
     private void updateFile(int number){
+        AppSettings settings = Settings.getAppSettings();
+        File externalStorageDirectory = Environment.getExternalStorageDirectory();;
+        if(settings.isSaveMode()){
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+                String path = getSdCardFilesDirPathListForLollipop(Settings.getContext());
+                if(!"".equals(path)){
+                    externalStorageDirectory = new File(path);
+                }
+            }
+        }
+
         do {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.JAPAN);
             String fileName = sdf.format(System.currentTimeMillis()) + "_" + category + "_" + (number++);
-            File externalStorageDirectory = Environment.getExternalStorageDirectory();
             String fileName1 = externalStorageDirectory.getPath() + "/EventLog/" + fileName;
             file = new File(fileName1 + ".csv");
         }while(file.exists());
+        Log.d("DirPath", file.getPath());
     }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public static String getSdCardFilesDirPathListForLollipop(Context context) {
+        List<String> sdCardFilesDirPathList = new ArrayList<>();
+
+        // getExternalFilesDirsはAndroid4.4から利用できるAPI。
+        // filesディレクトリのリストを取得できる。
+        File[] dirArr = context.getExternalFilesDirs(null);
+
+        for (File dir : dirArr) {
+            if (dir != null) {
+                String path = dir.getAbsolutePath();
+
+                // isExternalStorageRemovableはAndroid5.0から利用できるAPI。
+                // 取り外し可能かどうか（SDカードかどうか）を判定している。
+                if (Environment.isExternalStorageRemovable(dir)) {
+
+                    // 取り外し可能であればSDカード。
+                    if (!sdCardFilesDirPathList.contains(path)) {
+                        sdCardFilesDirPathList.add(path);
+                        return path.substring(0, path.length() - 61);
+                    }
+
+                }
+            }
+        }
+        return "";
+    }
+
 
     public File getFile() {
         return file;

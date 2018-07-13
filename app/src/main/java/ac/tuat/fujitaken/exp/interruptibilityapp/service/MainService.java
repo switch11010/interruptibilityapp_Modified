@@ -10,13 +10,14 @@ import android.widget.Toast;
 import java.util.concurrent.TimeUnit;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.Constants;
-import ac.tuat.fujitaken.exp.interruptibilityapp.Flows.RegularThread;
-import ac.tuat.fujitaken.exp.interruptibilityapp.Flows.SaveTask;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.AccelerometerData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.AllData;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.WifiReceiver;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.SaveData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.Settings;
-import ac.tuat.fujitaken.exp.interruptibilityapp.interrupt.InterruptTiming;
+import ac.tuat.fujitaken.exp.interruptibilityapp.flow.RegularThread;
+import ac.tuat.fujitaken.exp.interruptibilityapp.flow.SaveTask;
+import ac.tuat.fujitaken.exp.interruptibilityapp.interruption.InterruptTiming;
 
 /**
  * AccessibilityService
@@ -87,6 +88,8 @@ public class MainService extends AccessibilityService {
         saveTask.couldStart(Constants.SAVE_LOOP_PERIOD, TimeUnit.MINUTES);
 
         Toast.makeText(getApplicationContext(), "Service Start", Toast.LENGTH_SHORT).show();
+        WifiReceiver.sendIP(getApplicationContext());
+        //UDPConnection.startReceive();
     }
 
     @Override
@@ -100,6 +103,8 @@ public class MainService extends AccessibilityService {
 
     @Override
     public void onDestroy() {
+
+        //UDPConnection.stop();
         //タイミング制御をストップ
         interruptTiming.release();
 

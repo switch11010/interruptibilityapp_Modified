@@ -8,7 +8,7 @@ import java.util.Map;
 import ac.tuat.fujitaken.exp.interruptibilityapp.Constants;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.BoolData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.Data;
-import ac.tuat.fujitaken.exp.interruptibilityapp.Flows.RegularThread;
+import ac.tuat.fujitaken.exp.interruptibilityapp.flow.RegularThread;
 
 /**
  * 歩行検出用

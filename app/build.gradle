@@ -1,14 +1,13 @@
 apply plugin: 'com.android.application'
-apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion "26.0.2"
     defaultConfig {
         applicationId "ac.tuat.fujitaken.exp.interruptibilityapp"
         minSdkVersion 16
-        versionCode 1
-        versionName "2.6.1"
+        versionCode 3
+        versionName "2.6.8"
     }
     buildTypes {
         release {
@@ -25,12 +24,13 @@ android {
 }
 repositories {
     maven { url "https://jitpack.io" }
+    google()
 }
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support:support-v13:25.3.1'
-    compile 'com.android.support:recyclerview-v7:25.3.1'
+    compile 'com.android.support:appcompat-v7:25.4.0'
+    compile 'com.android.support:support-v13:25.4.0'
+    compile 'com.android.support:recyclerview-v7:25.4.0'
     compile 'org.apache.commons:commons-math3:3.6.1'
 }

@@ -38,7 +38,7 @@ public class EventCounter {
             PC_TO_SP_BY_SELF = "PC_TO_SP_BY_SELF",
             PC_TO_SP_BY_NOTE = "PC_TO_SP_BY_NOTE";
 
-    private static final int
+    public static final int
             WALK_START_FLAG = Walking.WALK_START,
             WALK_STOP_FLAG = Walking.WALK_STOP,
 
@@ -95,7 +95,7 @@ public class EventCounter {
 
         for(Map.Entry<Integer, String> entry: EVENT_KEYS_FROM_FLAGS.entrySet()){
             evaluations.put(entry.getKey(), preferences.getInt(entry.getValue(), 0));
-            Log.d("EVENTS_FLAG", entry.getValue() + " is " + Integer.toBinaryString(entry.getKey()));
+            Log.d("EVENTS_FLAG", entry.getValue() + " is " + Integer.toBinaryString(entry.getKey()) + " ( " + evaluations.get(entry.getKey()) + " ) ");
         }
         calcEvaluation();
     }
@@ -128,6 +128,18 @@ public class EventCounter {
     }
 
     public int getEvaluationMin() {
+        return min;
+    }
+
+    public int getEvaluationMin(int[] events) {
+        min = evaluations.get(events[0]);
+        for(int e: events){
+            int value = evaluations.get(e);
+            Log.d("event", Integer.toBinaryString(e) + " is " + value);
+            if (value < min) {
+                min = value;
+            }
+        }
         return min;
     }
 

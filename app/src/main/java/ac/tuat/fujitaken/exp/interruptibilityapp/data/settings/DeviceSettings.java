@@ -1,6 +1,7 @@
 package ac.tuat.fujitaken.exp.interruptibilityapp.data.settings;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -24,6 +25,7 @@ public class DeviceSettings {
             isLocationPermissionGranted;
     private WifiManager manager;
 
+    @SuppressLint("WifiManagerPotentialLeak")
     DeviceSettings(Context context){
         manager = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -60,6 +62,9 @@ public class DeviceSettings {
 
         AppOpsManager appOpsManager = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
 
+        if(appOpsManager == null){
+            return false;
+        }
         int mode = appOpsManager.checkOp(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(),
                 context.getPackageName());
         if (mode == AppOpsManager.MODE_DEFAULT) {
@@ -68,5 +73,9 @@ public class DeviceSettings {
         }
 
         return mode == AppOpsManager.MODE_ALLOWED;
+    }
+
+    public WifiManager getManager() {
+        return manager;
     }
 }

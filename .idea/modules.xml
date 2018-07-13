@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/interruptibilityapp.iml" filepath="$PROJECT_DIR$/interruptibilityapp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/interruptibilityapp_Modified.iml" filepath="$PROJECT_DIR$/interruptibilityapp_Modified.iml" />
     </modules>
   </component>
 </project>

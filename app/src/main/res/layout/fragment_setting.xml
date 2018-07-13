@@ -129,4 +129,20 @@
         android:layout_alignBottom="@+id/port_num"
         android:layout_alignStart="@+id/ip_address_text" />
 
+    <ToggleButton
+        android:id="@+id/togglePC"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:text="ToggleButton" />
+
+    <ToggleButton
+        android:id="@+id/toggleSD"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:text="ToggleButton" />
+
 </RelativeLayout>
