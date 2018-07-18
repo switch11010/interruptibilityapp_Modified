@@ -87,7 +87,7 @@ public class MainService extends AccessibilityService {
         loop_1.start(Constants.MAIN_LOOP_PERIOD, TimeUnit.MILLISECONDS);
         saveTask.couldStart(Constants.SAVE_LOOP_PERIOD, TimeUnit.MINUTES);
 
-        Toast.makeText(getApplicationContext(), "Service Start", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "記録開始", Toast.LENGTH_SHORT).show();
         WifiReceiver.sendIP(getApplicationContext());
         //UDPConnection.startReceive();
     }
@@ -108,7 +108,7 @@ public class MainService extends AccessibilityService {
         //タイミング制御をストップ
         interruptTiming.release();
 
-        //関し処理をストップ
+        //監視処理をストップ
         loop_1.stop();
         loop_50.stop();
 
@@ -119,9 +119,9 @@ public class MainService extends AccessibilityService {
         //保存処理をストップ
         saveTask.stop();
 
-        Toast.makeText(getApplicationContext(), "Service Finish", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "記録終了", Toast.LENGTH_SHORT).show();
 
-        //Wakelockを解法
+        //Wakelockを解放
         wakeLock.release();
         super.onDestroy();
     }

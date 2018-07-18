@@ -32,6 +32,7 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.ItemFragment;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.NavigationDrawerFragment;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.SettingFragment;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.SpotListFragment;
+import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.SettingFragment_Ex;  // 追加
 
 
 public class MainActivity extends ActionBarActivity
@@ -113,6 +114,11 @@ public class MainActivity extends ActionBarActivity
 
         }
         */
+        else if (position == 2) {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.container, SettingFragment_Ex.newInstance(position + 1))
+                    .commit();
+        }
     }
 
     /**
@@ -142,6 +148,9 @@ public class MainActivity extends ActionBarActivity
                     mTitle = getString(R.string.title_section5);
                     break;
                  */
+            case 3:
+                mTitle = getString(R.string.title_section10);
+                break;
         }
     }
 

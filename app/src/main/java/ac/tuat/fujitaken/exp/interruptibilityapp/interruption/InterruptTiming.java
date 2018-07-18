@@ -172,6 +172,17 @@ public class InterruptTiming implements RegularThread.ThreadListener {
      * @return  通知確率
      */
     private double calcP(int event){
+        // 追加
+        // Setting_Exの 通知を強制 がオンになっていたら強制的に通知を配信する
+        //AppSettings settings = Settings.getAppSettings();
+        if (Settings.getAppSettings().isForceNoteMode()) {
+            Log.e("forceNoteMode", "強制的に通知を配信 がオン");
+            return 1;  // 100%
+        } else {
+            Log.e("forceNoteMode", "強制的に通知を配信 がオフ");
+        }
+        // 追加ここまで
+
         EventCounter counter = Settings.getEventCounter();
         //eventが正常値以外なら確率0を返す
         if(counter.getEvaluations(event) == null) {

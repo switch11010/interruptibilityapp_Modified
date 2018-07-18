@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">操作記録アプリケーション</string>
-    <string name="description">状態記録用アプリケーションです。</string>
+    <string name="app_name">★操作記録★</string>
+    <string name="description">スマホ情報記録＆割込み通知アプリです。\n\n・設定画面からユーザー補助の許可をONにすると裏で記録を開始します。\n　バッテリーを消費しまくるので大学を出たらオフにしてください。\n\n【必要なアクセス許可】\n・設定＞アプリ から通知およびデータのアクセスの許可\n・設定＞セキュリティ＞使用履歴にアクセスできるアプリ の許可\n\n※ Androidのバージョンによって設定項目が無かったりします。いい感じに。</string>
 
     <!-- 通知用文字 -->
     <string name="positive_dialog_text">OK</string>
@@ -16,6 +16,7 @@
     <string name="title_section3">EvaluationCounter</string>
     <string name="title_section4">Matching</string>
     <string name="title_section5">Wifi Record</string>
+    <string name="title_section10">Setting_Ex</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

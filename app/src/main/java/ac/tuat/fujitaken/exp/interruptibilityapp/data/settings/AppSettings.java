@@ -17,6 +17,7 @@ public class AppSettings extends Application{
     //設定保存のための定数
     public static final String ACC_SAVE = "acc_save",
             NOTE = "note",
+            FORCE_NOTE = "force_note",  // 追加
             VOLUME = "volume",
             IP_ADDRESS = "ip_address",
             SP_ID = "sp_id",
@@ -25,6 +26,7 @@ public class AppSettings extends Application{
             SAVE_MODE = "save_mode";
 
     private boolean accSave, noteMode, pcMode, saveMode;
+    private boolean forceNoteMode;  // 追加
     private int port, id, volume;
     private String ipAddress;
     private SharedPreferences preferences;
@@ -33,6 +35,7 @@ public class AppSettings extends Application{
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
         accSave = preferences.getBoolean(ACC_SAVE, false);
         noteMode = preferences.getBoolean(NOTE, true);
+        forceNoteMode = preferences.getBoolean(FORCE_NOTE, false);  // 追加
         pcMode = preferences.getBoolean(PC_MODE, false);
         saveMode = preferences.getBoolean(SAVE_MODE, false);
         ipAddress = preferences.getString(IP_ADDRESS, "");
@@ -47,66 +50,58 @@ public class AppSettings extends Application{
     public void setAccSave(boolean b) {
         this.accSave = b;
     }
-
     public void setId(int i) {
         this.id = i;
     }
-
     public void setIpAddress(String s) {
         this.ipAddress = s;
     }
-
     public void setNoteMode(boolean b) {
         this.noteMode = b;
     }
-
     public void setPort(int i) {
         this.port = i;
     }
-
     public void setVolume(int i) {
         this.volume = i;
     }
-
     public void setPcMode(boolean pcMode) {
         this.pcMode = pcMode;
     }
-
     public void setSaveMode(boolean saveMode) {
         this.saveMode = saveMode;
     }
-
-    public int getId() {
-        return id;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public int getVolume() {
-        return volume;
-    }
-
-    public String getIpAddress() {
-        return ipAddress;
-    }
+    public void setForceNoteMode(boolean b) {
+        this.forceNoteMode = b;
+    }  // 追加
 
     public boolean isAccSave() {
         return accSave;
     }
-
+    public int     getId() {
+        return id;
+    }
+    public String   getIpAddress() {
+        return ipAddress;
+    }
     public boolean isNoteMode() {
         return noteMode;
     }
-
+    public int      getPort() {
+        return port;
+    }
+    public int      getVolume() {
+        return volume;
+    }
     public boolean isPcMode() {
         return pcMode;
     }
-
     public boolean isSaveMode() {
         return saveMode;
     }
+    public boolean isForceNoteMode() {
+        return forceNoteMode;
+    }  // 追加
 
     public void refresh(){
         if(preferences == null){
@@ -122,6 +117,7 @@ public class AppSettings extends Application{
         editor.putInt(VOLUME, volume);
         editor.putBoolean(PC_MODE, pcMode);
         editor.putBoolean(SAVE_MODE, saveMode);
+        editor.putBoolean(FORCE_NOTE, forceNoteMode);  // 追加
         editor.apply();
     }
 }
