@@ -45,6 +45,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
 
     //通知モードになっているか
     private boolean note;
+    private boolean forceNote;  //s 追加：通知を強制する設定
 
     private UDPConnection udpConnection = null;
     private AllData mAllData;
@@ -54,6 +55,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
         this.mAllData = allData;
         //設定ファイルからモードを確認
         note = Settings.getAppSettings().isNoteMode();
+        forceNote = Settings.getAppSettings().isForceNoteMode();  //s 追加：通知を強制する設定
 
         prevTime = System.currentTimeMillis()- Constants.NOTIFICATION_INTERVAL;
         notificationController = NotificationController.getInstance(allData, this);
@@ -86,6 +88,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
      * データの更新，通知判定を行う
      */
     @Override
+    //s クラス RegularThread からの implements
     public void run() {
         final RowData line = mAllData.newLine();
         Map<String, Data> map = mAllData.getData();
@@ -132,8 +135,12 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                     Log.d("EVENT_P", "P " + p);
                     Log.d("EVENT_P", "PC Flag " + pc.isPcFlag());
                     if (p >= 2  //評価数が平均より1/2以下では時間に関係なく通知
+                            || forceNote  //s 追加：Setting_Exの 通知を強制 がオンになっていたら強制的に通知を配信する
                             || pcOpsFlag(event)
                             ||( Math.random() < p && line.time - prevTime > Constants.NOTIFICATION_INTERVAL)) {    //前の通知から一定時間経過
+                        if (forceNote) {  //s 追加ここから
+                            Log.e("forceNoteMode", "強制的に通知を配信 がオン");
+                        }  //s 追加ここまで
                         notificationController.normalNotify(event, line);
                         eval = true;
                     }
@@ -142,7 +149,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                     notificationController.saveEvent(event, line);
                 }
             });
-        thread.start();
+        thread.start();  //s 上までのthreadを開始する
     }
 
     private boolean pcOpsFlag(int event){
@@ -172,17 +179,6 @@ public class InterruptTiming implements RegularThread.ThreadListener {
      * @return  通知確率
      */
     private double calcP(int event){
-        // 追加
-        // Setting_Exの 通知を強制 がオンになっていたら強制的に通知を配信する
-        //AppSettings settings = Settings.getAppSettings();
-        if (Settings.getAppSettings().isForceNoteMode()) {
-            Log.e("forceNoteMode", "強制的に通知を配信 がオン");
-            return 1;  // 100%
-        } else {
-            Log.e("forceNoteMode", "強制的に通知を配信 がオフ");
-        }
-        // 追加ここまで
-
         EventCounter counter = Settings.getEventCounter();
         //eventが正常値以外なら確率0を返す
         if(counter.getEvaluations(event) == null) {
