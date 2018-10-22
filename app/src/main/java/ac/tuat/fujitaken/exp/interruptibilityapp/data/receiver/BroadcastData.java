@@ -38,6 +38,7 @@ public class BroadcastData extends BroadcastReceiver implements DataReceiver {
         data.put(HEADSET_PLUG, new BoolData(hasHeadset(c)));
         data.put(POWER_CONNECTED, new BoolData(status == BatteryManager.BATTERY_STATUS_CHARGING ||  status == BatteryManager.BATTERY_STATUS_FULL));
         data.put(SCREEN_ON, new BoolData(true));
+        data.put(UNLOCKED, new BoolData(true));  //s 追加
         data.put(RINGER_MODE, new IntData(getRingerMode(c)));
 
         IntentFilter filter =  new IntentFilter();
@@ -46,11 +47,13 @@ public class BroadcastData extends BroadcastReceiver implements DataReceiver {
         filter.addAction(Intent.ACTION_POWER_DISCONNECTED);
         filter.addAction(Intent.ACTION_SCREEN_ON);
         filter.addAction(Intent.ACTION_SCREEN_OFF);
+        filter.addAction(Intent.ACTION_USER_PRESENT);  //s 追加
         filter.addAction(AudioManager.RINGER_MODE_CHANGED_ACTION);
         c.registerReceiver(this, filter);
     }
 
     @Override
+    //s DataReciever からの implements
     public Map<String, Data> getData() {
         return data;
     }
@@ -69,7 +72,13 @@ public class BroadcastData extends BroadcastReceiver implements DataReceiver {
                 case Intent.ACTION_SCREEN_OFF:
                     val = (BoolData) data.get(SCREEN_ON);
                     val.value = false;
+                    val = (BoolData) data.get(UNLOCKED);  //s 追加
+                    val.value = false;  //s 追加
                     break;
+                case Intent.ACTION_USER_PRESENT:  //s 追加
+                    val = (BoolData) data.get(UNLOCKED);
+                    val.value = true;
+                    break;  //s 追加ここまで
                 case Intent.ACTION_POWER_CONNECTED:
                     val = (BoolData) data.get(POWER_CONNECTED);
                     val.value = true;

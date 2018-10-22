@@ -33,6 +33,7 @@ public interface DataReceiver {
                 HEADSET_PLUG = "HEADSET_PLUG",
                 POWER_CONNECTED = "POWER_CONNECTED",
                 SCREEN_ON = "SCREEN_ON",
+                UNLOCKED = "UNLOCKED",  //s 追加：ロックの解除
                 RINGER_MODE = "RINGER_MODE",
                 PHONE = "PHONE",
 
@@ -50,6 +51,7 @@ public interface DataReceiver {
                 HEADSET_PLUG ,
                 POWER_CONNECTED,
                 SCREEN_ON,
+                UNLOCKED,  //s 追加：ロックの解除
                 RINGER_MODE,
                 PHONE,
 
