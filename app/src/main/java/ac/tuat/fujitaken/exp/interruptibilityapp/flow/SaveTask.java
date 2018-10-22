@@ -30,6 +30,10 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.SaveData;
  *
  * Created by Komuro on 2015/11/23.
  */
+//s 定期的にデータを保存するクラス らしい
+//s クラス SaveData に保存するデータが定義されているとか
+//s
+//s 呼び出し元：MainService
 public class SaveTask {
 
     private ScheduledExecutorService schedule = null;
@@ -38,7 +42,7 @@ public class SaveTask {
 
     private Runnable saveTask = ()->{
         List<String> files = new ArrayList<>();
-        File storage = Environment.getExternalStorageDirectory();
+        File storage = Environment.getExternalStorageDirectory();  //s アプリを消しても消失しないストレージ領域（SDカードとは限らない）
 
         if(storage.getFreeSpace() > Constants.STORAGE_FREE_SPACE_LIMITATION) {
             for (int i = 0; i < data.size(); i++) {
@@ -79,7 +83,7 @@ public class SaveTask {
                 }
             }
             schedule = Executors.newSingleThreadScheduledExecutor();
-            schedule.scheduleAtFixedRate(saveTask, period, period, timeUnit);
+            schedule.scheduleAtFixedRate(saveTask, period, period, timeUnit);  //s period(Constants.SAVE_LOOP_PERIOD: 3m)おきにsaveTask処理を開始する（処理開始直後に待機開始）
 
             Calendar dateTime = Calendar.getInstance();
             dateTime.setTime(new Date());
@@ -173,7 +177,7 @@ public class SaveTask {
      * データの保存
      */
     private void save(SaveData saveData) {
-        if(saveData.rock){
+        if(saveData.lock){  //s 名前変更：rock → lock
             return;
         }
 

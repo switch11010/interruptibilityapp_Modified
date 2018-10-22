@@ -110,7 +110,7 @@ public class NotificationController {
      * 記録のバッファを開放する処理
      */
     private void clearBuf(){
-        evaluationSave.rock = false;
+        evaluationSave.lock = false;  //s 名前変更：rock → lock
         hasNotification = false;
     }
 
@@ -184,7 +184,7 @@ public class NotificationController {
         bundle.putSerializable(EvaluationData.EVALUATION_DATA, line);
         interruptionNotification.normalNotify(bundle);
         hasNotification = true;
-        evaluationSave.rock = true;
+        evaluationSave.lock = true;  //s 名前変更：rock → lock
     }
 
     public InterruptTiming getTiming() {
@@ -214,7 +214,7 @@ public class NotificationController {
         bundle.putSerializable(EvaluationData.EVALUATION_DATA, line);
         interruptionNotification.normalNotify(bundle);
         hasNotification = true;
-        evaluationSave.rock = true;
+        evaluationSave.lock = true;  //s 名前変更：rock → lock
     }
 
     //通知は出さないが，イベントを記録する
