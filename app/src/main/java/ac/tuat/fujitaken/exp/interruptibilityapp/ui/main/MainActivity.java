@@ -32,7 +32,7 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.ItemFragment;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.NavigationDrawerFragment;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.SettingFragment;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.SpotListFragment;
-import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.SettingFragment_Ex;  // 追加
+import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.SettingFragment_Ex;  //s 追加
 
 
 public class MainActivity extends ActionBarActivity

@@ -22,7 +22,7 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.SensorData;
  */
 public class AccelerometerData implements DataReceiver, SensorEventListener{
 
-    private SensorData acc;
+    private SensorData acc;  //s 最新のセンサデータが常に acc.value に格納されているっぽい　getData()で呼び出す
     private SensorManager manager;
 
     public AccelerometerData(Context context){
@@ -44,6 +44,8 @@ public class AccelerometerData implements DataReceiver, SensorEventListener{
     }
 
     @Override
+    //s DataReceiver からの implements
+    //s private SensorData acc のゲッタ
     public Map<String, Data> getData() {
         Map<String, Data> data = new HashMap<>();
         data.put(ACCELEROMETER, acc);
@@ -51,11 +53,13 @@ public class AccelerometerData implements DataReceiver, SensorEventListener{
     }
 
     @Override
+    //s センサの値が変更されると呼ばれる SensorEventListener の implements
     public void onSensorChanged(SensorEvent event) {
         acc.values = event.values.clone();
     }
 
     @Override
+    //s センサの精度が変更されると呼ばれる SensorEventListener の implements
     public void onAccuracyChanged(Sensor sensor, int accuracy) {}
 
     double getNorm(){

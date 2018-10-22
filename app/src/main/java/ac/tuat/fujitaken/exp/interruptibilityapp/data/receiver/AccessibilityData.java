@@ -64,8 +64,13 @@ class AccessibilityData implements DataReceiver {
      * データの更新
      * @param event 更新するイベント
      */
+    //s なんらかのイベントが発生して
+    //s MainService.onAccessibilityEvent() が 呼ばれると AllData.put() を経由してここが呼ばれる
     public void put(AccessibilityEvent event){
+        //s 発生したイベントの種類を取得
         int type = event.getEventType();
+
+        //s イベントが通知の変更だった
         if(type == AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED){
             StringData val = (StringData) current.get(type);
             String notifyApp;
@@ -100,6 +105,7 @@ class AccessibilityData implements DataReceiver {
     }
 
     @Override
+    //s DataReceiver からの implements
     public Map<String, Data> getData() {
         Map<String, Data> data = new HashMap<>();
         Map<Integer, String> names = getNames();

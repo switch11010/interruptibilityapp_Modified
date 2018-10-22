@@ -6,8 +6,8 @@ android {
     defaultConfig {
         applicationId "ac.tuat.fujitaken.exp.interruptibilityapp"
         minSdkVersion 16
-        versionCode 300
-        versionName "3.0.0"
+        versionCode 301
+        versionName "3.0.1."
     }
     buildTypes {
         release {
@@ -33,4 +33,5 @@ dependencies {
     compile 'com.android.support:support-v13:25.4.0'
     compile 'com.android.support:recyclerview-v7:25.4.0'
     compile 'org.apache.commons:commons-math3:3.6.1'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
 }

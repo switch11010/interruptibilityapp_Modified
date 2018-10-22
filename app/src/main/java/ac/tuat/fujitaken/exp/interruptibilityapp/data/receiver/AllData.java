@@ -35,6 +35,7 @@ public class AllData implements DataReceiver, RegularThread.ThreadListener {
     //最新値
     private RowData latestLine = new RowData();
 
+    //s コンストラクタ
     public AllData(Context context, AccelerometerData accelerometerData){
         accessibilityEventReceiver = new AccessibilityData(context);
         applicationInfoReceiver = new ApplicationData(context);
@@ -44,6 +45,9 @@ public class AllData implements DataReceiver, RegularThread.ThreadListener {
         walkDetection = new WalkDetection(accelerometerData);
         wifiReceiver = new WifiReceiver(context);
 
+        //s NAMES[]：implements元の DataReceiver で宣言してあるString[]型の定数
+        //s これを privateな連想配列のキー として設定
+        //s names["APPLICATION"] = 0;
         for(int i = 0; i < NAMES.length; i++){
             this.names.put(NAMES[i], i);
         }
@@ -69,6 +73,7 @@ public class AllData implements DataReceiver, RegularThread.ThreadListener {
         return walkDetection;
     }
 
+    //s MainService の onAccessibilityEvent() で呼ばれる
     public void put(AccessibilityEvent event){
         accessibilityEventReceiver.put(event);
     }
@@ -102,6 +107,7 @@ public class AllData implements DataReceiver, RegularThread.ThreadListener {
     }
 
     @Override
+    //s クラス DataReceiver からの implements
     public Map<String, Data> getData() {
         return data;
     }
@@ -111,6 +117,8 @@ public class AllData implements DataReceiver, RegularThread.ThreadListener {
     }
 
     @Override
+    //s クラス RegularThread からの implements
+    //s 定期実行される
     public void run() {
         if(walkDetection.isWalkingNext()){
             wifiReceiver.scan();

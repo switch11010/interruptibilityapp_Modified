@@ -50,17 +50,17 @@ public class MainService extends AccessibilityService {
 
         //処理を続けるためにCPUのスリープをロックする
         wakeLock = ((PowerManager) getSystemService(Context.POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");
-        wakeLock.acquire();
+        wakeLock.acquire();  //s ロック開始
 
-        Log.d("Info", "onCreate");
+        Log.d("Info", "MainService.onCreate");
 
         /**
          * 各インスタンスの初期化
          */
-        loop_50 = new RegularThread();
-        loop_1 = new RegularThread();
+        loop_50 = new RegularThread();  //s ACC_LOOP_PERIOD(20ms) おき
+        loop_1  = new RegularThread();  //s MAIN_LOOP_PERIOD(500ms) おき
 
-        accelerometerData = new AccelerometerData(getApplicationContext());
+        accelerometerData = new AccelerometerData(getApplicationContext());  //s getApplicationContext()：ApplicationのContextだか何かが返ってくるやつらしい
         allData = new AllData(getApplicationContext(), accelerometerData);
         interruptTiming = new InterruptTiming(getApplicationContext(), allData);
 
@@ -68,7 +68,7 @@ public class MainService extends AccessibilityService {
 
         //
         loop_50.setListener(allData.getWalkDetection());
-        final SaveData save_50;
+        final SaveData save_50;  //s 再代入禁止なローカル変数の宣言
         if (Settings.getAppSettings().isAccSave()) {
             save_50 = new SaveData("Acc", accelerometerData.getHeader());
             loop_50.setListener(()-> save_50.addLine(accelerometerData.newLine()));
@@ -93,6 +93,9 @@ public class MainService extends AccessibilityService {
     }
 
     @Override
+    //s なんらかのイベントが発生すると呼ばれる関数
+    //s どの種類のイベントで呼ばれるかは設定ファイルに記載：res/xml/accessibility_service_config.xml
+    //s 途中 AllData.put() を経由して AccessibilityData.put() が呼ばれる
     public void onAccessibilityEvent(AccessibilityEvent event) {
         //AccessibilityServiceイベントをレシーバに受け渡し
         allData.put(event);
@@ -122,7 +125,8 @@ public class MainService extends AccessibilityService {
         Toast.makeText(getApplicationContext(), "記録終了", Toast.LENGTH_SHORT).show();
 
         //Wakelockを解放
-        wakeLock.release();
+        wakeLock.release();  //s CPUがスリープできるようになる
+
         super.onDestroy();
     }
 }
