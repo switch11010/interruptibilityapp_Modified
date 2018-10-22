@@ -34,7 +34,6 @@ public class SettingFragment_Ex extends Fragment {
 
     //データを受け取るための定数
     private static final String ARG_POSITION = "param1";
-    private final static int CHOSE_FILE_CODE = 12345;
 
     /*private SwitchCompat saveSwitch, noteSwitch;*/
     private SwitchCompat forceNoteSwitch;
