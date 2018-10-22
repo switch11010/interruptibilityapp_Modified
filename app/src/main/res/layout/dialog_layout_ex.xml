@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/abc_dialog_padding_material"
+    android:orientation="vertical"
+    style="@style/Theme.AppCompat.Light.Dialog"
+    android:gravity="center_horizontal">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="割り込み拒否度"
+        android:id="@+id/interruptibilityText"
+        android:layout_gravity="center_horizontal" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:id="@+id/interrupt"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/button_background"
+        android:textColor="#ffffff"
+        android:textSize="25sp"
+        android:layout_below="@+id/interruptibilityText" />
+
+    <TextView
+        android:id="@+id/taskText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="直前の作業内容"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_below="@+id/interrupt" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="task"
+        android:id="@+id/task"
+        android:layout_below="@+id/taskText"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/button_background"
+        android:textColor="#ffffff"
+        android:textSize="15sp"
+        android:maxLength="10" />
+
+    <TextView
+        android:id="@+id/locationText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="回答場所"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_below="@+id/task" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="location"
+        android:id="@+id/location"
+        android:layout_below="@+id/locationText"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/button_background"
+        android:textColor="#ffffff"
+        android:textSize="15sp"
+        android:maxLength="10" />
+
+    <TextView
+        android:id="@+id/commentText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="コメント"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_below="@+id/location" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/comment"
+        android:layout_below="@+id/commentText"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/button_background"
+        android:textColor="#ffffff"
+        android:textSize="15sp"
+        android:maxLength="10"
+        android:text="COMMENT" />
+
+</RelativeLayout>
