@@ -37,6 +37,7 @@ public class SettingFragment_Ex extends Fragment {
 
     /*private SwitchCompat saveSwitch, noteSwitch;*/
     private SwitchCompat forceNoteSwitch;
+    private SwitchCompat noNoteOnWalkSwitch;
     /*private TextView exist;
     private EditText ipText, spText, portText;
     private SeekBar volume;
@@ -68,6 +69,7 @@ public class SettingFragment_Ex extends Fragment {
         /*saveSwitch = (SwitchCompat)root.findViewById(R.id.saveSwitch);
         noteSwitch = (SwitchCompat)root.findViewById(R.id.noteSwitch);*/
         forceNoteSwitch = (SwitchCompat)root.findViewById(R.id.forceNoteSwitch);
+        noNoteOnWalkSwitch = (SwitchCompat)root.findViewById(R.id.noNoteOnWalkSwitch);
 
         /*exist = (TextView)root.findViewById(R.id.isExistService);
         exist.setVisibility(View.INVISIBLE);
@@ -100,6 +102,7 @@ public class SettingFragment_Ex extends Fragment {
         /*saveSwitch.setChecked(settings.isAccSave());
         noteSwitch.setChecked(settings.isNoteMode());*/
         forceNoteSwitch.setChecked(settings.isForceNoteMode());
+        noNoteOnWalkSwitch.setChecked(settings.isNoNoteOnWalkMode());
         /*ipText.setText(settings.getIpAddress());
         spText.setText(String.valueOf(settings.getId()));
         portText.setText(String.valueOf(settings.getPort()));
@@ -120,6 +123,7 @@ public class SettingFragment_Ex extends Fragment {
         /*saveSwitch.setEnabled(state);
         noteSwitch.setEnabled(state);*/
         forceNoteSwitch.setEnabled(state);
+        noNoteOnWalkSwitch.setEnabled(state);
         /*ipText.setEnabled(state);
         spText.setEnabled(state);
         portText.setEnabled(state);
@@ -137,6 +141,7 @@ public class SettingFragment_Ex extends Fragment {
         /*settings.setAccSave(saveSwitch.isChecked());
         settings.setNoteMode(noteSwitch.isChecked());*/
         settings.setForceNoteMode(forceNoteSwitch.isChecked());
+        settings.setNoNoteOnWalkMode(noNoteOnWalkSwitch.isChecked());
         /*settings.setPcMode(togglePC.isChecked());
         settings.setSaveMode(toggleSD.isChecked());
         settings.setIpAddress(ipText.getText().toString());

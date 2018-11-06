@@ -14,7 +14,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="30dp"
         android:layout_marginTop="25dp"
-        android:text="通知の表示を強制 "
+        android:text="通知の配信を強制 "
         android:textSize="20sp" />
 
     <TextView
@@ -26,6 +26,26 @@
         android:text="他のよりも多く発生するタイプの割込みでも\n気にせず通知を配信する(はず)"
         android:layout_below="@+id/forceNoteSwitch"
         android:layout_alignStart="@+id/forceNoteSwitch" />
+
+    <android.support.v7.widget.SwitchCompat
+        android:id="@+id/noNoteOnWalkSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="歩行で通知を出さない "
+        android:textSize="20sp"
+        android:layout_below="@+id/textView3"
+        android:layout_alignStart="@+id/textView3" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="false"
+        android:layout_marginTop="5dp"
+        android:text="歩行開始・歩行終了でも通知を出さない"
+        android:layout_below="@+id/noNoteOnWalkSwitch"
+        android:layout_alignStart="@+id/noNoteOnWalkSwitch" />
 
     <!--android.support.v7.widget.SwitchCompat
         android:layout_width="wrap_content"

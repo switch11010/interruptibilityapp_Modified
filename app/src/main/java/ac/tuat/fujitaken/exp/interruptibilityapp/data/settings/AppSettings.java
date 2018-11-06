@@ -17,16 +17,17 @@ public class AppSettings extends Application{
     //設定保存のための定数
     public static final String ACC_SAVE = "acc_save",
             NOTE = "note",
-            FORCE_NOTE = "force_note",  //s 追加
             VOLUME = "volume",
             IP_ADDRESS = "ip_address",
             SP_ID = "sp_id",
             PORT = "port_num",
             PC_MODE = "pc_mode",
-            SAVE_MODE = "save_mode";
+            SAVE_MODE = "save_mode",
+            FORCE_NOTE = "force_note",  //s 追加
+            NO_NOTE_ON_WALK = "no_note_on_walk";  //s 追加
 
     private boolean accSave, noteMode, pcMode, saveMode;
-    private boolean forceNoteMode;  //s 追加
+    private boolean forceNoteMode, noNoteOnWalkMode;  //s 追加
     private int port, id, volume;
     private String ipAddress;
     private SharedPreferences preferences;
@@ -35,7 +36,6 @@ public class AppSettings extends Application{
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
         accSave = preferences.getBoolean(ACC_SAVE, false);
         noteMode = preferences.getBoolean(NOTE, true);
-        forceNoteMode = preferences.getBoolean(FORCE_NOTE, false);  //s 追加
         pcMode = preferences.getBoolean(PC_MODE, false);
         saveMode = preferences.getBoolean(SAVE_MODE, false);
         ipAddress = preferences.getString(IP_ADDRESS, "");
@@ -45,6 +45,8 @@ public class AppSettings extends Application{
         if (manager != null) {
             volume = preferences.getInt(VOLUME, manager.getStreamVolume(AudioManager.STREAM_NOTIFICATION));
         }
+        forceNoteMode = preferences.getBoolean(FORCE_NOTE, false);  //s 追加
+        noNoteOnWalkMode = preferences.getBoolean(NO_NOTE_ON_WALK, false);  //s 追加
     }
 
     public void setAccSave(boolean b) {
@@ -74,6 +76,9 @@ public class AppSettings extends Application{
     public void setForceNoteMode(boolean b) {
         this.forceNoteMode = b;
     }  //s 追加
+    public void setNoNoteOnWalkMode(boolean b) {
+        this.noNoteOnWalkMode = b;
+    }  //s 追加
 
     public boolean isAccSave() {
         return accSave;
@@ -102,6 +107,9 @@ public class AppSettings extends Application{
     public boolean isForceNoteMode() {
         return forceNoteMode;
     }  //s 追加
+    public boolean isNoNoteOnWalkMode() {
+        return noNoteOnWalkMode;
+    }  //s 追加
 
     public void refresh(){
         if(preferences == null){
@@ -118,6 +126,7 @@ public class AppSettings extends Application{
         editor.putBoolean(PC_MODE, pcMode);
         editor.putBoolean(SAVE_MODE, saveMode);
         editor.putBoolean(FORCE_NOTE, forceNoteMode);  //s 追加
+        editor.putBoolean(NO_NOTE_ON_WALK, noNoteOnWalkMode);  //s 追加
         editor.apply();
     }
 }

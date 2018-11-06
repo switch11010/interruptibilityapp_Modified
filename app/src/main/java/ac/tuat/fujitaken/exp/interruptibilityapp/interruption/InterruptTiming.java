@@ -211,6 +211,10 @@ public class InterruptTiming implements RegularThread.ThreadListener {
             if(s == 1024){
                 return 0;
             }
+            if (settings.isNoNoteOnWalkMode()) {   //s 追加ここから
+                Log.d("noNoteOnWalkMode", "歩行で通知を出さない がオン");
+                return 0;
+            }  //s 追加ここまで
         }
 
         //AppSettings settings = Settings.getAppSettings();  //s 上に移動
