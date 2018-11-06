@@ -41,18 +41,22 @@ public class MainService extends AccessibilityService {
 
     @Override
     protected void onServiceConnected() {
+        Log.d("Info", "MainService.onServiceConnected_1");  //s 追加
         super.onServiceConnected();
+        Log.d("Info", "MainService.onServiceConnected_2e");  //s 追加
     }
 
     @Override
     public void onCreate() {
+        Log.d("Info", "MainService.onCreate_1");  //s 追加
         super.onCreate();
+        Log.d("Info", "MainService.onCreate_2");  //s 追加
 
         //処理を続けるためにCPUのスリープをロックする
-        wakeLock = ((PowerManager) getSystemService(Context.POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");
+        wakeLock = ((PowerManager) getSystemService(Context.POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MainService:MyWakeLock");  //s 文句を言われたのでnewWakeLockのタグを"MyWakeLock"から変更
         wakeLock.acquire();  //s ロック開始
 
-        Log.d("Info", "MainService.onCreate");
+        Log.d("Info", "MainService.onCreate_3");
 
         /**
          * 各インスタンスの初期化
@@ -90,10 +94,12 @@ public class MainService extends AccessibilityService {
         Toast.makeText(getApplicationContext(), "記録開始", Toast.LENGTH_SHORT).show();
         WifiReceiver.sendIP(getApplicationContext());
         //UDPConnection.startReceive();
+
+        Log.d("Info", "MainService.onCreate_4e");  //s 追加
     }
 
     @Override
-    //s なんらかのイベントが発生すると呼ばれる関数
+    //s なんらかの Accessibility イベントが発生すると呼ばれる関数
     //s どの種類のイベントで呼ばれるかは設定ファイルに記載：res/xml/accessibility_service_config.xml
     //s 途中 AllData.put() を経由して AccessibilityData.put() が呼ばれる
     public void onAccessibilityEvent(AccessibilityEvent event) {
@@ -106,6 +112,7 @@ public class MainService extends AccessibilityService {
 
     @Override
     public void onDestroy() {
+        Log.d("Info", "MainService.onDestroy_1");  //s 追加
 
         //UDPConnection.stop();
         //タイミング制御をストップ
@@ -127,6 +134,8 @@ public class MainService extends AccessibilityService {
         //Wakelockを解放
         wakeLock.release();  //s CPUがスリープできるようになる
 
+        Log.d("Info", "MainService.onDestroy_2");  //s 追加
         super.onDestroy();
+        Log.d("Info", "MainService.onDestroy_3e");  //s 追加
     }
 }
