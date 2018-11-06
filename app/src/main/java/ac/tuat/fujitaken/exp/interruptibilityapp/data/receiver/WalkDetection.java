@@ -206,9 +206,8 @@ public class WalkDetection implements DataReceiver, RegularThread.ThreadListener
         return maxC;
     }
 
-    @Override
-    //s クラス RegularThread からの implements
     //s 定期実行される
+    @Override  //s クラス RegularThread からの implements
     public void run() {
         double norm = acc.getNorm();
         buffer.add(norm);

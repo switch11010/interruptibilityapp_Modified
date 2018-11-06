@@ -96,7 +96,7 @@ class AccessibilityData implements DataReceiver {
             Log.d("NOTIFY", notifyApp);
             val.value = notifyApp;
         }
-        else {
+        else {  //s イベントが通知の変更以外だった
             IntData val = (IntData) current.get(type);
             if (val != null) {
                 val.value++;
@@ -104,8 +104,7 @@ class AccessibilityData implements DataReceiver {
         }
     }
 
-    @Override
-    //s DataReceiver からの implements
+    @Override  //s DataReceiver からの implements
     public Map<String, Data> getData() {
         Map<String, Data> data = new HashMap<>();
         Map<Integer, String> names = getNames();

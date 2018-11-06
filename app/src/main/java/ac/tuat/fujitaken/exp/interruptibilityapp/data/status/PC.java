@@ -16,6 +16,9 @@ public class PC {
     private String latestMessage = "";
     private boolean pcFlag = false;
 
+    //s 直前に PC の使用があったかどうかを判定する…？
+    //s InterruptTiming.run() → InterruptTiming.eventTriggeredThread() から呼ばれる
+    //s 引数 message : udpConnection.receiveData() の返り値
     public int judge(String message){
         latestMessage = message;
         if (COMM_FAILED.equals(message)) {
@@ -44,6 +47,9 @@ public class PC {
         return isPrevFromPC;
     }
 
+    //s 直前に PC の使用があったかどうかを判定する…？
+    //s InterruptTiming.run() → InterruptTiming.eventTriggeredThread() から呼ばれる
+    //s InterruptTiming.eventTriggeredThread() → InterruptTiming.pcOpsFlag() からも呼ばれる
     public boolean isPcFlag() {
         if(latestMessage.equals(PREV_STATE)){
             boolean ret = pcFlag;

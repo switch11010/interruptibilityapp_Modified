@@ -10,7 +10,7 @@ public interface Constants {
             ACC_LOOP_PERIOD = 20,   //加速度用スレッドのループ間隔（ms）
             SAVE_LOOP_PERIOD = 3,   //データ保存用スレッドのループ間隔（m）
 
-            NOTIFICATION_THRESHOLD = 30 * 1000, //通知遷移と判断するまで時間（ms）
+            NOTIFICATION_THRESHOLD = 30 * 1000, //通知遷移と判断するまで時間（ms）  //s これを超えると通知とは関係ない遷移だと判断される
 
             NOTIFICATION_INTERVAL = 7 * 60 * 1000,  //最低通知間隔（ms）
             STORAGE_FREE_SPACE_LIMITATION = 100*1000*1000,  //ログ保存のために最低確保するストレージサイズ

@@ -74,7 +74,7 @@ public class ItemFragment extends ListFragment {
      */
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        if(!SettingFragment.isServiceActive(getActivity().getApplicationContext())) {
+        if(!SettingFragment.isServiceActive(getActivity().getApplicationContext())) {  //s サービスが非稼働中の場合？
             //クリックされたアイテムの取得
             item = (String) ((Map.Entry) l.getItemAtPosition(position)).getKey();
             int t = Settings.getEventCounter().getEvaluations(item);

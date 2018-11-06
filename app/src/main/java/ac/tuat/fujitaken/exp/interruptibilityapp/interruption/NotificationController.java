@@ -31,7 +31,7 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.ui.questionnaire.fragments.Ques
  * Created by hi on 2015/11/17.
  */
 public class NotificationController {
-    private static NotificationController instance = null;
+    private static NotificationController instance = null;  //s インスタンスを保持する変数　定義の意図がナゾ（インスタンスが1つしか生成されない singleton っぽいけど違う）
     private InterruptionNotification interruptionNotification;
     private ScheduledExecutorService schedule;
     public SaveData evaluationSave;
@@ -46,6 +46,7 @@ public class NotificationController {
     /**
      * 通知への回答を受け取るレシーバ
      */
+    //s QuestionActivity / QuestionFragment からアプリ内ブロードキャストが送信される
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -114,19 +115,24 @@ public class NotificationController {
         hasNotification = false;
     }
 
+    //s MainService.onCreate() から InterruptTiming.getEvaluationData() を経由して呼ばれる
     public SaveData getEvaluationData() {
         return evaluationSave;
     }
 
+    //s InterruptTiming のコンストラクタから呼ばれる
     public static NotificationController getInstance(AllData allData, InterruptTiming timing){
+        //s if (instance == null) の条件を入れたほうがいいような気がする
         instance = new NotificationController(allData, timing);
         return instance;
     }
 
+    //s UDPConnection.notify() で呼ばれるけど使われない
     public static NotificationController getInstance(){
         return instance;
     }
 
+    //s コンストラクタ（↑の getInstance(AllData, InterruptTiming) でインスタンスが生成される）
     private NotificationController(AllData allData, InterruptTiming timing){
         this.timing = timing;
         evaluationSave = new SaveData("Evaluation", "AnswerTime,Evaluation,Task,Location,Comment,Event," + allData.getHeader());
@@ -153,6 +159,7 @@ public class NotificationController {
     /**
      * レシーバ，バッファの開放と通知の削除
      */
+    //s MainService.onDestroy() → InterruptTiming.release() から呼ばれる
     public void release() {
         if(hasNotification) {
             schedule.shutdownNow();
@@ -167,6 +174,7 @@ public class NotificationController {
      * 通知を出す
      * @param event 通知を出す要因のイベント
      */
+    //s InterruptTiming.eventTriggeredThread() で、状態遷移が検知されて通知を配信したいときに呼ばれる
     public void normalNotify(int event, EvaluationData line){
         if(hasNotification){
             return;
@@ -191,6 +199,7 @@ public class NotificationController {
         return timing;
     }
 
+    //s UDPConnection.notify() で呼ばれるが使用されていない
     public void normalNotify(){
         if(hasNotification){
             return;

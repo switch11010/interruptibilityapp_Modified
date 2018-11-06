@@ -52,8 +52,7 @@ public class BroadcastData extends BroadcastReceiver implements DataReceiver {
         c.registerReceiver(this, filter);
     }
 
-    @Override
-    //s DataReciever からの implements
+    @Override  //s DataReceiver からの implements
     public Map<String, Data> getData() {
         return data;
     }

@@ -27,6 +27,8 @@ public class UDPConnection {
     private static boolean receiver = true;
     private DatagramSocket client = null;
 
+    //s コンストラクタ
+    //s MainService.onCreate() → InterruptTiming() で呼ばれる
     public UDPConnection(Context context) throws UnknownHostException {
         myIPAddress = "";
         AppSettings settings = Settings.getAppSettings();
@@ -36,6 +38,8 @@ public class UDPConnection {
         id = settings.getId();
     }
 
+    //s PC に何か要求を送信するっぽい（そのまま）
+    //s InterruptTiming.eventTriggeredThread() で呼ばれる
     public boolean sendRequest(RowData data){
         if(client == null) {
             try {
@@ -153,6 +157,8 @@ public class UDPConnection {
         controller.normalNotify();
     }
 
+    //s PC から何か受信するっぽい（そのまま）
+    //s InterruptTiming.eventTriggeredThread() で this.sendRequest() の直後に呼ばれる
     public String receiveData(){
         String message = "";
         if(client != null) {

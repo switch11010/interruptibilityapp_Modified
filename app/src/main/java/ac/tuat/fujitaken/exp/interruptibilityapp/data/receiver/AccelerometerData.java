@@ -43,9 +43,8 @@ public class AccelerometerData implements DataReceiver, SensorEventListener{
         return "ACCELEROMETER";
     }
 
-    @Override
-    //s DataReceiver からの implements
     //s private SensorData acc のゲッタ
+    @Override  //s DataReceiver からの implements
     public Map<String, Data> getData() {
         Map<String, Data> data = new HashMap<>();
         data.put(ACCELEROMETER, acc);

@@ -60,7 +60,7 @@ public class AllData implements DataReceiver, RegularThread.ThreadListener {
             }
         });
 
-        data.putAll(accessibilityEventReceiver.getData());
+        data.putAll(accessibilityEventReceiver.getData());  //s putall()：連想配列の全要素コピー
         data.putAll(applicationInfoReceiver.getData());
         data.putAll(broadcastEventReceiver.getData());
         data.putAll(phoneState.getData());
@@ -106,8 +106,7 @@ public class AllData implements DataReceiver, RegularThread.ThreadListener {
         return header.substring(0, header.length()-1);
     }
 
-    @Override
-    //s クラス DataReceiver からの implements
+    @Override  //s クラス DataReceiver からの implements
     public Map<String, Data> getData() {
         return data;
     }
@@ -116,9 +115,8 @@ public class AllData implements DataReceiver, RegularThread.ThreadListener {
         wifiReceiver.scan();
     }
 
-    @Override
-    //s クラス RegularThread からの implements
     //s 定期実行される
+    @Override  //s クラス RegularThread からの implements
     public void run() {
         if(walkDetection.isWalkingNext()){
             wifiReceiver.scan();
