@@ -50,9 +50,11 @@ public class UDPConnection {
                 client.send(sendPacket);
                 Log.d("UDP(Send)", "Sent : " + "(" +sendPacket.getData().length + " Bytes)");
             } catch (SocketException e) {
+                Log.e("UDP.sendRequest", "失敗");  //s 追加
                 e.printStackTrace();
                 return false;
             } catch (IOException e) {
+                Log.e("UDP.sendRequest", "失敗");  //s 追加
                 e.printStackTrace();
                 return false;
             }
@@ -97,9 +99,11 @@ public class UDPConnection {
                 Log.d("UDP(IP)", "Sent : " + "(" +sendPacket.getData().length + " Bytes)");
                 ipSendingClient.close();
             } catch (SocketException e) {
+                Log.e("UDP.sendIP", "失敗");  //s 追加
                 e.printStackTrace();
                 return;
             } catch (IOException e) {
+                Log.e("UDP.sendIP", "失敗");  //s 追加
                 e.printStackTrace();
                 return;
             }
@@ -173,6 +177,7 @@ public class UDPConnection {
                 message = message.substring(0, message.indexOf('\0'));
                 Log.d("UDP(Receive)", "Received : " + message + "(" + message.getBytes("UTF-8").length + " Bytes)");
             } catch (IOException e) {
+                Log.e("UDP.receiveData", "受信に失敗");  //s 追加
                 e.printStackTrace();
             } finally {
                 client.close();

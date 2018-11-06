@@ -2,6 +2,7 @@ package ac.tuat.fujitaken.exp.interruptibilityapp.data.settings;
 
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 
 /**
  *
@@ -17,10 +18,13 @@ public class Settings extends Application {
 
     @Override
     public void onCreate() {
+        Log.d("Info", "Settings.onCreate_1");  //s 追加
         super.onCreate();
+        Log.d("Info", "Settings.onCreate_2");  //s 追加
 
         instance = this;
         instance.settings();
+        Log.d("Info", "Settings.onCreate_3e");  //s 追加
     }
 
     private void settings(){

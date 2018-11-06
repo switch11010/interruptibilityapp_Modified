@@ -36,7 +36,8 @@ public class RegularThread {
         if(schedule == null) {
             schedule = Executors.newSingleThreadScheduledExecutor();
             schedule.scheduleAtFixedRate(repeatTask, delay, delay, unit);  //s delayおきにrepeatTask処理を開始する（処理開始直後に待機開始）
-            Log.d("EVENT", listeners.size() + "");
+            //Log.d("EVENT", listeners.size() + "");  //s コメントアウト：変更前
+            Log.d("RegularThread.start", "リスナー登録数：" + listeners.size());  //s 変更
         }
     }
 
