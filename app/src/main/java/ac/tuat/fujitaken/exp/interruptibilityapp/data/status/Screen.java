@@ -2,6 +2,7 @@ package ac.tuat.fujitaken.exp.interruptibilityapp.data.status;
 
 import android.content.Context;
 import android.provider.Settings;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,8 @@ public class Screen {
     private boolean prevState = true;  //s 前回の画面点灯状態
     private List<Integer> buffer = new ArrayList<>();  //s 画面を操作したかどうかの履歴を記憶するキュー？
     private int sumOps = 0;                            //s ↑の buffer 内に格納されている ops の合計数
+    private List<Integer> bufferL = null;  //s 追加：ロック画面での判定に利用する
+    private int sumOpsL = 0;               //s 追加：同上
     private boolean prevConnect = false;  //s 前回に充電中だったかの状態
     private String appName = "";
     private boolean prevUnlocked = true;  //s 追加：前回にロック解除済だったかの状態
@@ -41,6 +44,21 @@ public class Screen {
             buffer.add(0);
         }
         buffer.add(1);
+
+        //s 追加ここから：ロック画面での判定に利用
+        int lockScreenOffSec = ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.Settings.getAppSettings().getLockScreenOffSec() * 1000;
+        int lockScreenOffTimeout = lockScreenOffSec / Constants.MAIN_LOOP_PERIOD - 1;
+        //Log.d("Screen", "lockScreenOffTimeout: " + lockScreenOffTimeout);
+        if (lockScreenOffTimeout > 0) {
+            bufferL = new ArrayList<>();
+            sumOpsL = 1;
+            for (int i = 0; i < lockScreenOffTimeout - 1; i++) {
+                bufferL.add(0);
+            }
+            bufferL.add(1);
+        }
+        //s 追加ここまで
+
         appName = context.getString(R.string.app_name);
     }
 
@@ -64,16 +82,28 @@ public class Screen {
         sumOps -= buffer.remove(0);
         sumOps += ops;
         buffer.add(ops);
+        if (bufferL != null) {  //s 追加ここから
+            sumOpsL -= bufferL.remove(0);
+            sumOpsL += ops;
+            bufferL.add(ops);
+        }//s 追加ここまで
 
         //s 画面がオンになったかどうか、オフになったかどうか（両方 false もあり得る）
-        boolean on = latestValue && !prevState && !(prevConnect && !connect) && !appName.equals(noteApp),  //s 今回入＆前回切＆（前回接続＆今回非接続）ではない＆通知が自身の通知ではない
-        off = !latestValue && prevState && sumOps > 0;  //s 今回切＆前回入＆無操作による画面切ではない
+        boolean on = latestValue && !prevState && !(prevConnect && !connect) && !appName.equals(noteApp),  //s 今回入＆前回切＆（前回接続＆今回非接続）ではない＆通知が自分のではない
+        //off = !latestValue && prevState && sumOps > 0;  //s コメントアウト：今回切＆前回入＆無操作による画面切ではない
+        off = !latestValue && prevState && (prevUnlocked && sumOps > 0 || bufferL != null && !prevUnlocked && sumOpsL > 0);  //s 変更：ロック画面での無操作画面切に対応
         boolean unlock = nowUnlocked && !prevUnlocked;  //s 追加：ロックが解除された
         boolean lock = !nowUnlocked && prevUnlocked;  //s 追加：ロックが設定された
         if(on){  //s 手動でオンにしたor通知でオンになった…？
             sumOps -= buffer.remove(0);  //s List（配列）の先頭の要素を削除＆その要素の数値を減算
             sumOps += 1;
             buffer.add(1);  //s List（配列）の最後尾に 1 を追加
+
+            if (bufferL != null) {  //s 追加ここから
+                sumOpsL -= bufferL.remove(0);
+                sumOpsL += 1;
+                bufferL.add(1);
+            }//s 追加ここまで
         }
 
         prevConnect = connect;

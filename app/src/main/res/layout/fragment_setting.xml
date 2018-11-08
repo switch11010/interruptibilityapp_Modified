@@ -145,4 +145,26 @@
         android:layout_alignParentRight="true"
         android:text="ToggleButton" />
 
+    <!-- s 追加ここから -->
+    <TextView
+        android:text="PC⇔スマホ\nでのみ通知"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/togglePCNote"
+        android:textSize="12sp"
+        android:layout_alignParentBottom="true"
+        android:layout_toEndOf="@+id/togglePC"
+        android:layout_toRightOf="@+id/togglePC" />
+
+    <TextView
+        android:text="SDカード"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/toggleSDNote"
+        android:textSize="12sp"
+        android:layout_alignParentBottom="true"
+        android:layout_toStartOf="@+id/toggleSD"
+        android:layout_toLeftOf="@+id/toggleSD" />
+    <!-- s 追加ここまで -->
+
 </RelativeLayout>

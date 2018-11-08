@@ -38,6 +38,8 @@ public class SettingFragment_Ex extends Fragment {
     /*private SwitchCompat saveSwitch, noteSwitch;*/
     private SwitchCompat forceNoteSwitch;
     private SwitchCompat noNoteOnWalkSwitch;
+    private EditText lockScreenOffSecText;
+    private SwitchCompat noteOnAppChangeSwitch;
     /*private TextView exist;
     private EditText ipText, spText, portText;
     private SeekBar volume;
@@ -68,8 +70,18 @@ public class SettingFragment_Ex extends Fragment {
         @SuppressLint("InflateParams") View root = inflater.inflate(R.layout.fragment_setting_ex, null);
         /*saveSwitch = (SwitchCompat)root.findViewById(R.id.saveSwitch);
         noteSwitch = (SwitchCompat)root.findViewById(R.id.noteSwitch);*/
-        forceNoteSwitch = (SwitchCompat)root.findViewById(R.id.forceNoteSwitch);
-        noNoteOnWalkSwitch = (SwitchCompat)root.findViewById(R.id.noNoteOnWalkSwitch);
+        forceNoteSwitch = (SwitchCompat)root.findViewById(R.id.forceNoteSwitch);  //s 通知の強制
+        noNoteOnWalkSwitch = (SwitchCompat)root.findViewById(R.id.noNoteOnWalkSwitch);  //s 歩行時通知配信抑制
+        lockScreenOffSecText = (EditText)root.findViewById(R.id.lockScreenOffSecText);  //s ロック画面自動消灯時間
+
+        Button b = (Button)root.findViewById(R.id.moveBatterySaverSettingsButton);  //s 電池最適化の設定画面表示ボタン
+        b.setOnClickListener(v -> {
+            Intent intent = new Intent();
+            intent.setAction(android.provider.Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+            startActivity(intent);
+        });
+
+        noteOnAppChangeSwitch = (SwitchCompat)root.findViewById(R.id.noteOnAppChangeSwitch);  //s アプリ切替で通知
 
         /*exist = (TextView)root.findViewById(R.id.isExistService);
         exist.setVisibility(View.INVISIBLE);
@@ -103,6 +115,8 @@ public class SettingFragment_Ex extends Fragment {
         noteSwitch.setChecked(settings.isNoteMode());*/
         forceNoteSwitch.setChecked(settings.isForceNoteMode());
         noNoteOnWalkSwitch.setChecked(settings.isNoNoteOnWalkMode());
+        lockScreenOffSecText.setText(String.valueOf(settings.getLockScreenOffSec()));
+        noteOnAppChangeSwitch.setChecked(settings.isNoteOnAppChangeMode());
         /*ipText.setText(settings.getIpAddress());
         spText.setText(String.valueOf(settings.getId()));
         portText.setText(String.valueOf(settings.getPort()));
@@ -124,6 +138,8 @@ public class SettingFragment_Ex extends Fragment {
         noteSwitch.setEnabled(state);*/
         forceNoteSwitch.setEnabled(state);
         noNoteOnWalkSwitch.setEnabled(state);
+        lockScreenOffSecText.setEnabled(state);
+        noteOnAppChangeSwitch.setEnabled(state);
         /*ipText.setEnabled(state);
         spText.setEnabled(state);
         portText.setEnabled(state);
@@ -142,6 +158,8 @@ public class SettingFragment_Ex extends Fragment {
         settings.setNoteMode(noteSwitch.isChecked());*/
         settings.setForceNoteMode(forceNoteSwitch.isChecked());
         settings.setNoNoteOnWalkMode(noNoteOnWalkSwitch.isChecked());
+        settings.setLockScreenOffSec(Integer.parseInt(lockScreenOffSecText.getText().toString()));
+        settings.setNoteOnAppChangeMode(noteOnAppChangeSwitch.isChecked());
         /*settings.setPcMode(togglePC.isChecked());
         settings.setSaveMode(toggleSD.isChecked());
         settings.setIpAddress(ipText.getText().toString());
