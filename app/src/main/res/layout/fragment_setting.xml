@@ -147,7 +147,7 @@
 
     <!-- s 追加ここから -->
     <TextView
-        android:text="PC⇔スマホ\nでのみ通知"
+        android:text="PC関係の遷移\nでのみ通知"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/togglePCNote"

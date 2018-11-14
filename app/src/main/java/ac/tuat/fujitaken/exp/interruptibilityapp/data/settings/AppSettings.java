@@ -14,7 +14,7 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.Constants;
  */
 
 public class AppSettings extends Application{  //s extends Application を抜いてもいい気がする
-    //設定保存のための定数
+    //設定保存のための定数  //s 端末に設定の情報を記録しておくためのキー
     public static final String ACC_SAVE = "acc_save",
             NOTE = "note",
             VOLUME = "volume",
@@ -28,6 +28,7 @@ public class AppSettings extends Application{  //s extends Application を抜い
             LOCK_SCREEN_OFF_SEC = "lock_screen_off_sec",
             NOTE_ON_APP_CHANGE = "note_on_app_change";  //s 追加ここまで
 
+    //s 設定の情報を記憶するフィールド　ゲッタを通してこれにアクセスすることで設定を読み出せる
     private boolean accSave, noteMode, pcMode, saveMode;
     private int port, id, volume;
     private String ipAddress;
@@ -39,7 +40,7 @@ public class AppSettings extends Application{  //s extends Application を抜い
 
     AppSettings(Context context){
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        accSave = preferences.getBoolean(ACC_SAVE, false);
+        accSave = preferences.getBoolean(ACC_SAVE, true);  //s 変更：defValue を true に
         noteMode = preferences.getBoolean(NOTE, true);
         pcMode = preferences.getBoolean(PC_MODE, false);
         saveMode = preferences.getBoolean(SAVE_MODE, false);
@@ -56,6 +57,8 @@ public class AppSettings extends Application{  //s extends Application を抜い
         noteOnAppChangeMode = preferences.getBoolean(NOTE_ON_APP_CHANGE, false);  //s 追加ここまで
     }
 
+    //s 設定の変更をフィールドに反映させる
+    //s SettingFragment.onPause(), SettingFragment_Ex.onPause() から呼ばれる
     public void setAccSave(boolean b) {
         this.accSave = b;
     }
@@ -93,30 +96,31 @@ public class AppSettings extends Application{  //s extends Application を抜い
         this.noteOnAppChangeMode = b;
     }  //s 追加ここまで
 
+    //s 設定の情報を読み出す（ゲッタ）
     public boolean isAccSave() {
         return accSave;
-    }
+    }  //s MainService.onCreate() から呼ばれる
     public int      getId() {
         return id;
-    }
+    }  //s UDPConnection() と UDPConnection.sendIP() で呼ばれる
     public String   getIpAddress() {
         return ipAddress;
-    }
+    }  //s 同上：UDP系
     public boolean isNoteMode() {
         return noteMode;
-    }
+    }  //s InterruptTiming() で呼ばれる
     public int      getPort() {
         return port;
-    }
+    }  //s UDP系
     public int      getVolume() {
         return volume;
-    }
+    }  //s InterruptionNotification() で呼ばれる
     public boolean isPcMode() {
         return pcMode;
-    }
+    }  //s InterruptTiming.calcP() で呼ばれる
     public boolean isSaveMode() {
         return saveMode;
-    }
+    }  //s SaveData.updateFile() で呼ばれる：SDカードに保存するかどうか
     public boolean isForceNoteMode() {
         return forceNoteMode;
     }  //s 追加ここから
@@ -130,6 +134,9 @@ public class AppSettings extends Application{  //s extends Application を抜い
         return noteOnAppChangeMode;
     }  //s 追加ここまで
 
+
+    //s 現在フィールドに記憶されている設定情報を端末に保存する
+    //s SettingFragment.onPause(), SettingFragment_Ex.onPause() の最後に呼ばれる
     public void refresh(){
         if(preferences == null){
             preferences = PreferenceManager.getDefaultSharedPreferences(Settings.getContext());

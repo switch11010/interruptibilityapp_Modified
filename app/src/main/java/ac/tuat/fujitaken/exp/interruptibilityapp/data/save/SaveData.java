@@ -28,18 +28,19 @@ public class SaveData{
 
     /**
      * コンストラクタ
-     * @param s  ファイルのカテゴリー
+     * @param category  ファイルのカテゴリー
      */
-    public SaveData(String s, String s1) {
-        this.header = s1;
-        this.category = s;
+    //public SaveData(String s, String s1) {  //s コメントアウト
+    public SaveData(String category, String header) {  //s 変更：引数名をわかりやすいのに
+        this.header = header;
+        this.category = category;
         updateFile(0);
     }
 
     private void updateFile(int number){
         AppSettings settings = Settings.getAppSettings();
         File externalStorageDirectory = Environment.getExternalStorageDirectory();;
-        if(settings.isSaveMode()){
+        if(settings.isSaveMode()){  //s SDカードに保存する設定が オン だった場合
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
                 String path = getSdCardFilesDirPathListForLollipop(Settings.getContext());
                 if(!"".equals(path)){
@@ -98,6 +99,7 @@ public class SaveData{
      * データ行の追加
      * @param newLine   新しい行
      */
+    //s InterruptTiming.run()→NotificationController.save(), MainService.onCreate()内のラムダ式, 自作Log.printLog() で呼ばれる
     public void addLine(RowData newLine){
         if(data != null) {
             data.add(newLine);
