@@ -3,13 +3,14 @@ package ac.tuat.fujitaken.exp.interruptibilityapp.service;
 import android.accessibilityservice.AccessibilityService;
 import android.content.Context;
 import android.os.PowerManager;
-import android.util.Log;
+//import android.util.Log;  //s 自作 Log クラスに変更
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.Toast;
 
 import java.util.concurrent.TimeUnit;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.Constants;
+import ac.tuat.fujitaken.exp.interruptibilityapp.Log;  //s 追加
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.AccelerometerData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.AllData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.WifiReceiver;
@@ -84,12 +85,14 @@ public class MainService extends AccessibilityService {
         //割り込みタイミング制御用オブジェクト
         loop_1.setListener(interruptTiming);
 
-        saveTask.addData(interruptTiming.getEvaluationData());
+        saveTask.addData(interruptTiming.getEvaluationData());  //s "Evaluation" カテゴリの SaveData を 定期的に記録するように登録する
+
+        saveTask.addData(ac.tuat.fujitaken.exp.interruptibilityapp.Log.getSaveData());  //s 追加：自作 Log クラスの SaveData を定期記録に登録
 
         //処理をスタート
         loop_50.start(Constants.ACC_LOOP_PERIOD, TimeUnit.MILLISECONDS);
         loop_1.start(Constants.MAIN_LOOP_PERIOD, TimeUnit.MILLISECONDS);
-        saveTask.couldStart(Constants.SAVE_LOOP_PERIOD, TimeUnit.MINUTES);
+        saveTask.couldStart(Constants.SAVE_LOOP_PERIOD, TimeUnit.MINUTES);  //s 定期的に端末にデータを保存する処理
 
         Toast.makeText(getApplicationContext(), "記録開始", Toast.LENGTH_SHORT).show();
         WifiReceiver.sendIP(getApplicationContext());

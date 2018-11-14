@@ -1,12 +1,13 @@
 package ac.tuat.fujitaken.exp.interruptibilityapp.interruption;
 
 import android.content.Context;
-import android.util.Log;
+//import android.util.Log;  //s コメントアウト
 
 import java.net.UnknownHostException;
 import java.util.Map;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.Constants;
+import ac.tuat.fujitaken.exp.interruptibilityapp.Log;  //s 追加
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.BoolData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.Data;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.StringData;
