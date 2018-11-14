@@ -59,7 +59,7 @@ public class SaveTask {
 
             MediaScannerConnection.scanFile(context, files.toArray(new String[files.size()]), null, null);
         }
-    };
+    };  //s Constants.SAVE_LOOP_PERIOD: 3m おきに 定期実行される
 
     public SaveTask(Context appContext){
         this.context = appContext;
@@ -71,9 +71,11 @@ public class SaveTask {
         }
     }
 
+    //s 定期的に保存する SaveData を private なリストに追加する
+    //s MainService.onCreate() で呼ばれる
     public void addData(SaveData saveData){
         data.add(saveData);
-    }
+    }  //s 可変長配列 data[] の末尾に追加
 
     public boolean couldStart(int period, TimeUnit timeUnit) {
         if(schedule == null){
@@ -103,13 +105,14 @@ public class SaveTask {
 
     public void stop(){
         if(schedule != null){
-            schedule.shutdownNow();
-            Thread thread = new Thread(saveTask);
+            schedule.shutdownNow();  //s 現在稼働中のスケジュールを停止
+            Thread thread = new Thread(saveTask);  //s 未保存のデータを Thread で記録する
             thread.start();
             schedule = null;
         }
     }
 
+    //s できるなら、ファイルを作成＆ヘッダ書き込み で初期化
     private boolean couldInitialize(SaveData saveData) {
         boolean success = false;
 

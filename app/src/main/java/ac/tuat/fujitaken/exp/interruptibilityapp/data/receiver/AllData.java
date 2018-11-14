@@ -60,7 +60,7 @@ public class AllData implements DataReceiver, RegularThread.ThreadListener {
             }
         });
 
-        data.putAll(accessibilityEventReceiver.getData());  //s putall()：連想配列の全要素コピー
+        data.putAll(accessibilityEventReceiver.getData());  //s putAll()：連想配列の全要素コピー
         data.putAll(applicationInfoReceiver.getData());
         data.putAll(broadcastEventReceiver.getData());
         data.putAll(phoneState.getData());

@@ -83,6 +83,7 @@ public class NotificationController {
     };
 
     //30秒経過したときの，通知の更新処理
+    //s normalNotify() で渡される
     private Runnable askTask = new Runnable() {
         @Override
         public void run() {
@@ -98,6 +99,7 @@ public class NotificationController {
     };
 
     //通知への回答がなかったとき，通知を消す処理
+    //s　上の BroadcastReceiver receiver で渡される
     private Runnable cancelTask = new Runnable() {
         @Override
         public void run() {
