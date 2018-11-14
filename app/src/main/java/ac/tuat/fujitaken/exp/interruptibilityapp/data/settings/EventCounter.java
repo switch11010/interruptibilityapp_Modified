@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.ActiveApp;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.Notify;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.PC;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.Screen;
@@ -55,7 +56,10 @@ public class EventCounter {
             SELF_SCREEN_OFF_LOCK = "SELF_SCREEN_OFF_LOCK",
             NOTE_SCREEN_OFF_LOCK = "NOTE_SCREEN_OFF_LOCK",
             SP_TO_PC_BY_SELF_LOCK = "SP_TO_PC_BY_SELF_LOCK",
-            SP_TO_PC_BY_NOTE_LOCK = "SP_TO_PC_BY_NOTE_LOCK";  //s 追加ここまで
+            SP_TO_PC_BY_NOTE_LOCK = "SP_TO_PC_BY_NOTE_LOCK",
+
+            //s アプリ切り替え（特別枠）
+            APP_SWITCH = "APP_SWITCH";  //s 追加ここまで
 
     //s 状態遷移となるビットの組み合わせによる フラグの定義
     //s 使われている場所は InterruptTiming と 下の EVENT_KEYS_FROM_FLAGS のキー のみ
@@ -95,8 +99,49 @@ public class EventCounter {
             SELF_SCREEN_OFF_LOCK_FLAG = SELF_SCREEN_OFF_FLAG | Screen.LOCK,
             NOTE_SCREEN_OFF_LOCK_FLAG = NOTE_SCREEN_OFF_FLAG | Screen.LOCK,
             SP_TO_PC_BY_SELF_LOCK_FLAG = SP_TO_PC_BY_SELF_FLAG | Screen.LOCK,
-            SP_TO_PC_BY_NOTE_LOCK_FLAG = SP_TO_PC_BY_NOTE_FLAG | Screen.LOCK;
+            SP_TO_PC_BY_NOTE_LOCK_FLAG = SP_TO_PC_BY_NOTE_FLAG | Screen.LOCK,
+
+            //s アプリ切り替え（特別枠）
+            APP_SWITCH_FLAG = ActiveApp.APP_SWITCH;
             //s 追加ここまで
+    //s ビット対応表
+    /**
+                                    ８ ７ ６ ５ ４ ３ ２ １ ０
+                                    ロ ロ Ｐ 通 画 画 歩 歩 空
+                                    ッ ッ Ｃ 知 面 面 き き
+                                    ク ク か    消 点 終 始
+                                    設 解 ら    灯 灯 わ め
+                                    定 除             り
+                    WALK_START_FLAG ・ ・ ・ ・ ・ ・ ・ ＠ ・
+                     WALK_STOP_FLAG ・ ・ ・ ・ ・ ・ ＠ ・ ・
+                SELF_SCREEN_ON_FLAG ・ ・ ・ ・ ・ ＠ ・ ・ ・
+                NOTE_SCREEN_ON_FLAG ・ ・ ・ ＠ ・ ＠ ・ ・ ・
+               SELF_SCREEN_OFF_FLAG ・ ・ ・ ・ ＠ ・ ・ ・ ・
+               NOTE_SCREEN_OFF_FLAG ・ ・ ・ ＠ ＠ ・ ・ ・ ・
+                    PC_TO_WALK_FLAG ・ ・ ＠ ・ ・ ・ ・ ＠ ・
+                    WALK_TO_PC_FLAG ・ ・ ＠ ・ ・ ・ ＠ ・ ・
+              PC_TO_SP_BY_SELF_FLAG ・ ・ ＠ ・ ・ ＠ ・ ・ ・
+              PC_TO_SP_BY_NOTE_FLAG ・ ・ ＠ ＠ ・ ＠ ・ ・ ・
+              SP_TO_PC_BY_SELF_FLAG ・ ・ ＠ ・ ＠ ・ ・ ・ ・
+              SP_TO_PC_BY_NOTE_FLAG ・ ・ ＠ ＠ ＠ ・ ・ ・ ・
+
+
+                   SELF_UNLOCK_FLAG ・ ＠ ・ ・ ・ ・ ・ ・ ・  // 通知が無い＆ロック解除
+                   NOTE_UNLOCK_FLAG ・ ＠ ・ ＠ ・ ・ ・ ・ ・  // 通知が来た＆ロック解除
+       PC_TO_SP_BY_SELF_UNLOCK_FLAG ・ ＠ ＠ ・ ・ ・ ・ ・ ・  // ↑＆PC
+       PC_TO_SP_BY_NOTE_UNLOCK_FLAG ・ ＠ ＠ ＠ ・ ・ ・ ・ ・  // ↑＆PC
+
+         SELF_SCREEN_ON_UNLOCK_FLAG ・ ＠ ・ ・ ・ ＠ ・ ・ ・  // 通知が無い＆画面点灯・ロック解除
+         NOTE_SCREEN_ON_UNLOCK_FLAG ・ ＠ ・ ＠ ・ ＠ ・ ・ ・  // 通知が来た＆画面点灯・ロック解除
+    PC_TO_SP_BY_SELF_ON_UNLOCK_FLAG ・ ＠ ＠ ・ ・ ＠ ・ ・ ・  // ↑＆PC
+    PC_TO_SP_BY_NOTE_ON_UNLOCK_FLAG ・ ＠ ＠ ＠ ・ ＠ ・ ・ ・  // ↑＆PC
+
+          SELF_SCREEN_OFF_LOCK_FLAG ＠ ・ ・ ・ ＠ ・ ・ ・ ・  // 通知が無い＆画面消灯＆ロック設定
+          NOTE_SCREEN_OFF_LOCK_FLAG ＠ ・ ・ ＠ ＠ ・ ・ ・ ・  // 通知が来た＆画面消灯＆ロック設定
+         SP_TO_PC_BY_SELF_LOCK_FLAG ＠ ・ ＠ ・ ＠ ・ ・ ・ ・  // ↑＆PC
+         SP_TO_PC_BY_NOTE_LOCK_FLAG ＠ ・ ＠ ＠ ＠ ・ ・ ・ ・  // ↑＆PC
+
+     */
 
     //s 状態遷移となるビットの組み合わせによるフラグ → 文字列 の組み合わせの定義（連想配列）
     //s 読み出しのみ、直接使われているのは EventCounter 内でのみ
@@ -132,7 +177,10 @@ public class EventCounter {
             put(SELF_SCREEN_OFF_LOCK_FLAG, SELF_SCREEN_OFF_LOCK);
             put(NOTE_SCREEN_OFF_LOCK_FLAG, NOTE_SCREEN_OFF_LOCK);
             put(SP_TO_PC_BY_SELF_LOCK_FLAG, SP_TO_PC_BY_SELF_LOCK);
-            put(SP_TO_PC_BY_NOTE_LOCK_FLAG, SP_TO_PC_BY_NOTE_LOCK);  //s 追加ここまで
+            put(SP_TO_PC_BY_NOTE_LOCK_FLAG, SP_TO_PC_BY_NOTE_LOCK);
+
+            //s アプリ切り替え（特別枠）
+            put(APP_SWITCH_FLAG, APP_SWITCH);  //s 追加ここまで
         }
     };
 

@@ -22,6 +22,7 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.Notify;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.PC;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.Screen;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.Walking;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.ActiveApp;  //s 追加：アクティブなアプリ
 import ac.tuat.fujitaken.exp.interruptibilityapp.flow.RegularThread;
 
 ;
@@ -33,7 +34,7 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.flow.RegularThread;
 public class InterruptTiming implements RegularThread.ThreadListener {
 
     //前の通知が出た時間
-    long prevTime;
+    long prevTime;  //s このクラスの他では NotificationController の ブロードキャストレシーバ から 通知回答時に格納される
     //通知コントローラ．
     private NotificationController notificationController;
 
@@ -48,6 +49,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
 
     private UDPConnection udpConnection = null;
     private AllData mAllData;
+
 
     //コンストラクタ
     //s MainService.onCreate() から呼ばれる
@@ -95,20 +97,26 @@ public class InterruptTiming implements RegularThread.ThreadListener {
         final RowData line = mAllData.newLine();
         Map<String, Data> map = mAllData.getData();
 
-        int w = walking.judge(((BoolData)map.get(DataReceiver.WALK)).value);
-        int s = screen.judge(mAllData.getData());
-        int n = notify.judge(((StringData)map.get(DataReceiver.NOTIFICATION)).value);
+        int w = walking.judge(((BoolData)map.get(DataReceiver.WALK)).value);  //s 歩行の開始終了の有無
+        int s = screen.judge(mAllData.getData());                             //s 画面の点灯消灯の有無
+        int n = notify.judge(((StringData)map.get(DataReceiver.NOTIFICATION)).value);  //s 新しい通知の有無？
+        int a = ActiveApp.judge(mAllData.getData());  //s 追加：アプリの切り替えの有無
 
-        final int eventFlag = w | s | n;
+        final int eventFlag = w | s | n;  //s 歩行・画面・通知 での状態変化のイベントのフラグ
 
         EvaluationData evaluationData = new EvaluationData();  //s なんか RowData のやつ
         evaluationData.setValue(line);
         notificationController.save(evaluationData);  //s 通知配信無しでそのまま csv に書き込む？
 
         //if((eventFlag & (Walking.WALK_START | Walking.WALK_STOP | Screen.SCREEN_ON | Screen.SCREEN_OFF)) > 0) {  //s コメントアウト
-        if((eventFlag & (Walking.WALK_START | Walking.WALK_STOP | Screen.SCREEN_ON | Screen.SCREEN_OFF | Screen.UNLOCK)) > 0) {  //s 変更：ロック解除の追加（ロックはオフで兼用）
+        int eventFlagToNotify = Walking.WALK_START | Walking.WALK_STOP | Screen.SCREEN_ON | Screen.SCREEN_OFF;  //s 分離
+        eventFlagToNotify = eventFlagToNotify | Screen.UNLOCK;  //s 追加
+        if((eventFlag & eventFlagToNotify) > 0) {  //s 変更：ロック解除の追加（ロックはオフで兼用）
             eventTriggeredThread(eventFlag, evaluationData);
-            mAllData.scan();
+            mAllData.scan();  //s WifiReceiver.scan()：よくわからない
+        } else if ( Settings.getAppSettings().isNoteOnAppChangeMode() && a > 0 ) {  //s 追加ここから：アプリの切り替えがあった場合、状態遷移として扱う
+            eventTriggeredThread(a, evaluationData);  //s 他のイベントのフラグと混ぜると面倒くさいことになりそうなのでとりあえず単独でやる
+            mAllData.scan();  //s 追加ここまで
         }
     }
 
@@ -121,13 +129,15 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                                 && !NotificationController.hasNotification,  //待機状態の通知なし
                         udpComm = (eventFlag & Screen.SCREEN_ON) > 0 || (eventFlag & Walking.WALK_START) > 0;   //UDP通信が必要かどうか
 
-                String message = "null";
-                if (udpConnection != null && udpComm) {
+                if (event == ActiveApp.APP_SWITCH) {  //s 追加：アプリ切替じゃないときだけUDPでPC操作の有無を調査するように変更
+                    String message = "null";
+                    if (udpConnection != null && udpComm) {
 
-                    udpConnection.sendRequest(line);
-                    message = udpConnection.receiveData();
-                }
-                event |= pc.judge(message);  //s PC のビットも追加
+                        udpConnection.sendRequest(line);
+                        message = udpConnection.receiveData();
+                    }
+                    event |= pc.judge(message);  //s PC のビットも追加
+                }  //s 追加：ifによる分岐の終了
 
                 //Log.d("EVENT", "Num is " + Integer.toBinaryString(event));  //s コメントアウト
                 //Log.d("EVENT", Settings.getEventCounter().getEventName(event));  //s コメントアウト
@@ -135,8 +145,9 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                 str += " -> " + Settings.getEventCounter().getEventName(event);
                 Log.d("InterruptTiming.eTT", str);  //s 追加ここまで
 
-                //s 設定で通知モードが ON なら、通知を配信するか判断する
-                if (noteFlag) {
+                //s 設定で通知モードが ON なら、通知を配信するか判断する　＆アプリ切替で通知配信がオンでアプリ切替イベントだった場合も追加
+                //if (noteFlag) {  //s コメントアウト：変更前
+                if (noteFlag || event == ActiveApp.APP_SWITCH) {  //s 変更：アプリ切替のイベントの対応を追加
                     //一時的に確率変更
                     double p = calcP(event);
                     Log.d("EVENT_P", "time " + (line.time - prevTime));
@@ -328,6 +339,9 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                         start = true;
                         e = counter.getEvaluations(EventCounter.NOTE_SCREEN_OFF_LOCK_FLAG);
                         break;
+
+                    case EventCounter.APP_SWITCH_FLAG:
+                        return 1;
                     //s 追加ここまで
 
                     default:
