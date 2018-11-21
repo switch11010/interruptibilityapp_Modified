@@ -52,8 +52,8 @@ public class AppSettings extends Application{  //s extends Application を抜い
             volume = preferences.getInt(VOLUME, manager.getStreamVolume(AudioManager.STREAM_NOTIFICATION));
         }
         forceNoteMode = preferences.getBoolean(FORCE_NOTE, false);  //s 追加ここから
-        noNoteOnWalkMode = preferences.getBoolean(NO_NOTE_ON_WALK, false);
-        lockScreenOffSec = preferences.getInt(LOCK_SCREEN_OFF_SEC, 10);
+        noNoteOnWalkMode = preferences.getBoolean(NO_NOTE_ON_WALK, true);
+        lockScreenOffSec = preferences.getInt(LOCK_SCREEN_OFF_SEC, 0);
         noteOnAppChangeMode = preferences.getBoolean(NOTE_ON_APP_CHANGE, false);  //s 追加ここまで
     }
 

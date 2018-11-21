@@ -100,12 +100,13 @@ public class SettingFragment extends Fragment {
         ipText.setText(settings.getIpAddress());
         spText.setText(String.valueOf(settings.getId()));
         portText.setText(String.valueOf(settings.getPort()));
-        togglePC.setChecked(settings.isPcMode());
+        //togglePC.setChecked(settings.isPcMode());  //s コメントアウト
+        togglePC.setChecked(false);  //s 変更：常時 OFF に（通知が来ない原因になる）
         toggleSD.setChecked(settings.isSaveMode());
 
         volume.setProgress(settings.getVolume());
 
-        if(isServiceActive(Settings.getContext())) {
+        if(isServiceActive(Settings.getContext())) {  //s サービスが稼働中の場合
             switching(false);
         }
         else{
@@ -113,6 +114,7 @@ public class SettingFragment extends Fragment {
         }
     }
 
+    //s 設定画面のボタンを全て 有効化 / 無効化 する
     private void switching(boolean state){
         saveSwitch.setEnabled(state);
         noteSwitch.setEnabled(state);
@@ -120,7 +122,8 @@ public class SettingFragment extends Fragment {
         spText.setEnabled(state);
         portText.setEnabled(state);
         volume.setEnabled(state);
-        togglePC.setEnabled(state);
+        //togglePC.setEnabled(state);  //s コメントアウト
+        togglePC.setEnabled(false);  //s 変更：常時 Unable に（通知が来ない原因になる）
         toggleSD.setEnabled(state);
         exist.setVisibility(state? View.INVISIBLE: View.VISIBLE);
     }
@@ -146,6 +149,7 @@ public class SettingFragment extends Fragment {
      * @param context　アプリケーションのコンテキスト
      * @return サービスが生存していたらtrue
      */
+    //s MainActivity.onSectionAttached(), ItemFragment.onListItemClick(), .onOptionsItemSelected(), this.onResume() で呼ばれる
     public static boolean isServiceActive(Context context){
         ActivityManager am = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningServiceInfo> listServiceInfo = am.getRunningServices(Integer.MAX_VALUE);
