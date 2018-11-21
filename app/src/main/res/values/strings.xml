@@ -16,7 +16,8 @@
     <string name="title_section3">EvaluationCounter</string>
     <string name="title_section4">Matching</string>
     <string name="title_section5">Wifi Record</string>
-    <string name="title_section10">Setting_Ex</string>
+    <string name="title_section10">Setting_Ex</string><!-- s 追加 -->
+    <string name="title_section20">DebugInfo</string><!-- s 追加 -->
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

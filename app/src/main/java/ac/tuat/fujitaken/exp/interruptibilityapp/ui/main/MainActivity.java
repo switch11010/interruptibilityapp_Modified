@@ -28,6 +28,7 @@ import java.util.List;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.R;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.wifi.database.WiPSDBHelper;
+import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.DebugInfoFragment;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.ItemFragment;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.NavigationDrawerFragment;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.SettingFragment;
@@ -78,6 +79,7 @@ public class MainActivity extends ActionBarActivity
      * 画面を追加するときはここでフラグメントを作成
      * @param position 表示順番
      */
+    //s ここに追加したら 下の onSectionAttached() と NavigationDrawerFragment にも追加しないといけないっぽい
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // run the wifi content by replacing fragments
@@ -114,17 +116,23 @@ public class MainActivity extends ActionBarActivity
 
         }
         */
-        else if (position == 2) {
+        else if (position == 2) {  //s 追加ここから
             fragmentManager.beginTransaction()
                     .replace(R.id.container, SettingFragment_Ex.newInstance(position + 1))
                     .commit();
-        }
+        } else if (position == 3) {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.container, DebugInfoFragment.newInstance(position + 1))
+                    .commit();
+        }  //s 追加ここまで
     }
 
     /**
      * 画面を追加するときはここに名前を追記
      * @param position 表示される順番
      */
+    //s ここに追加したら 上の onNavigationDrawerItemSelected() と NavigationDrawerFragment にも追加しないといけないっぽい
+    //s R.string は res/values/strings.xml に記載
     public void onSectionAttached(int position) {
         if(SettingFragment.isServiceActive(getApplicationContext())) {
             return;
@@ -150,6 +158,9 @@ public class MainActivity extends ActionBarActivity
                  */
             case 3:
                 mTitle = getString(R.string.title_section10);
+                break;
+            case 4:
+                mTitle = getString(R.string.title_section20);
                 break;
         }
     }
