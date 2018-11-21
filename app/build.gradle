@@ -6,8 +6,8 @@ android {
     defaultConfig {
         applicationId "ac.tuat.fujitaken.exp.interruptibilityapp"
         minSdkVersion 16
-        versionCode 303
-        versionName "3.0.3."
+        versionCode 305
+        versionName "3.0.5."
     }
     buildTypes {
         release {
