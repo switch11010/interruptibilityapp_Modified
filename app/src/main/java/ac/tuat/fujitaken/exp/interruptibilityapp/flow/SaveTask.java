@@ -23,6 +23,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.Constants;
+import ac.tuat.fujitaken.exp.interruptibilityapp.LogEx;  //s 自作Log
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.RowData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.SaveData;
 
@@ -65,6 +66,7 @@ public class SaveTask {
         this.context = appContext;
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
             if (appContext.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                LogEx.e("SaveTask", "Permission が未許可（ファイル書き込み）");  //s 追加
                 Toast toast = Toast.makeText(appContext, "ファイル書き込みの権限がありません。", Toast.LENGTH_LONG);
                 toast.show();
             }
@@ -146,7 +148,7 @@ public class SaveTask {
 
         } catch (IOException e) {
             e.printStackTrace();
-            Log.e("Save", e.getMessage());
+            LogEx.e("Save", e.getMessage());
         } finally {
 
             //ファイルのクローズ処理
@@ -205,7 +207,7 @@ public class SaveTask {
                 bufferedWriter.write(line.getLine());
                 bufferedWriter.newLine();
             }
-            Log.d("Save", "データ書き込み完了(" + size + "行)");
+            LogEx.d("Save", "データ書き込み完了(" + size + "行)");
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

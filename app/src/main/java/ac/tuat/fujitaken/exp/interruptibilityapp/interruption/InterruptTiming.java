@@ -1,13 +1,13 @@
 package ac.tuat.fujitaken.exp.interruptibilityapp.interruption;
 
 import android.content.Context;
-//import android.util.Log;  //s コメントアウト
+import android.util.Log;
 
 import java.net.UnknownHostException;
 import java.util.Map;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.Constants;
-import ac.tuat.fujitaken.exp.interruptibilityapp.Log;  //s 追加
+import ac.tuat.fujitaken.exp.interruptibilityapp.LogEx;  //s 自作Log
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.BoolData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.Data;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.StringData;
@@ -64,7 +64,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
         try {
             udpConnection = new UDPConnection(context);
         } catch (UnknownHostException e) {
-            Log.e("InterruptTiming", "UDPConnectionに失敗");  //s 追加
+            LogEx.e("InterruptTiming", "UDPConnectionに失敗");  //s 追加
             e.printStackTrace();
         }
 
@@ -100,7 +100,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
 
         int w = walking.judge(((BoolData)map.get(DataReceiver.WALK)).value);  //s 歩行の開始終了の有無
         int s = screen.judge(mAllData.getData());                             //s 画面の点灯消灯の有無
-        int n = notify.judge(((StringData)map.get(DataReceiver.NOTIFICATION)).value);  //s 新しい通知の有無？
+        int n = notify.judge(((StringData)map.get(DataReceiver.NOTIFICATION)).value);  //s 新しい通知の有無
         int a = ActiveApp.judge(mAllData.getData());  //s 追加：アプリの切り替えの有無
 
         final int eventFlag = w | s | n;  //s 歩行・画面・通知 での状態変化のイベントのフラグ
@@ -140,9 +140,10 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                     event |= pc.judge(message);  //s PC のビットも追加
                 }  //s 追加：ifによる分岐の終了
 
-                //Log.d("EVENT", "Num is " + Integer.toBinaryString(event));  //s コメントアウト
-                //Log.d("EVENT", Settings.getEventCounter().getEventName(event));  //s コメントアウト
-                String str = "イベント発生：" + Integer.toBinaryString(event);  //s 追加ここから
+                //LogEx.d("EVENT", "Num is " + Integer.toBinaryString(event));  //s コメントアウト
+                //LogEx.d("EVENT", Settings.getEventCounter().getEventName(event));  //s コメントアウト
+                LogEx.d("InterruptTiming.eTT", "--------------------");  //s 追加ここから
+                String str = "イベント発生：" + Integer.toBinaryString(event);
                 str += " -> " + Settings.getEventCounter().getEventName(event);
                 Log.d("InterruptTiming.eTT", str);  //s 追加ここまで
 
@@ -151,9 +152,9 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                 if (noteFlag || event == ActiveApp.APP_SWITCH) {  //s 変更：アプリ切替のイベントの対応を追加
                     //一時的に確率変更
                     double p = calcP(event);
-                    Log.d("EVENT_P", "time " + (line.time - prevTime));
-                    Log.d("EVENT_P", "P " + p);
-                    Log.d("EVENT_P", "PC Flag " + pc.isPcFlag());
+                    LogEx.d("EVENT_P", "time " + (line.time - prevTime));
+                    LogEx.d("EVENT_P", "P " + p);
+                    LogEx.d("EVENT_P", "PC Flag " + pc.isPcFlag());
 
                     boolean forceNote = Settings.getAppSettings().isForceNoteMode();  //s 追加：通知を強制する設定
                     boolean isTimePassed = line.time - prevTime > Constants.NOTIFICATION_INTERVAL;  //s 追加：前の通知から一定時間経過（ifの判定式から独立）
@@ -162,7 +163,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                             //||( Math.random() < p && line.time - prevTime > Constants.NOTIFICATION_INTERVAL)) {    //前の通知から一定時間経過  //s コメントアウト
                             || ( (Math.random() < p || p > 0 && forceNote) && isTimePassed )) {  //s 変更：確率(>0)で false でも Setting_Ex の 通知を強制 がオンなら通知を配信
                         if (forceNote) {  //s 追加ここから
-                            Log.d("forceNoteMode", "通知の配信を強制 がオン");
+                            LogEx.d("forceNoteMode", "通知の配信を強制 がオン");
                         }  //s 追加ここまで
                         notificationController.normalNotify(event, line);  //s 通知を配信する
                         eval = true;
@@ -208,7 +209,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
         EventCounter counter = Settings.getEventCounter();
         //eventが正常値以外なら確率0を返す
         if(counter.getEvaluations(event) == null) {  //s 返り値の Integer オブジェクトが null になった場合
-            Log.e("InterruptTiming.calcP", "リストに無いイベント：" + Integer.toBinaryString(event));  //s 追加
+            LogEx.e("InterruptTiming.calcP", "リストに無いイベント：" + Integer.toBinaryString(event));  //s 追加
             return 0;
         }
 
@@ -224,7 +225,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                 return 0;
             }
             if (settings.isNoNoteOnWalkMode()) {   //s 追加ここから
-                Log.d("noNoteOnWalkMode", "歩行で通知を出さない がオン");
+                LogEx.d("noNoteOnWalkMode", "歩行で通知を出さない がオン");
                 return 0;
             }  //s 追加ここまで
         }

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.Constants;
+import ac.tuat.fujitaken.exp.interruptibilityapp.LogEx;  //s 自作Log
 import ac.tuat.fujitaken.exp.interruptibilityapp.R;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.BoolData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.Data;
@@ -48,7 +49,7 @@ public class Screen {
         //s 追加ここから：ロック画面での判定に利用
         int lockScreenOffSec = ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.Settings.getAppSettings().getLockScreenOffSec() * 1000;
         int lockScreenOffTimeout = lockScreenOffSec / Constants.MAIN_LOOP_PERIOD - 1;
-        //Log.d("Screen", "lockScreenOffTimeout: " + lockScreenOffTimeout);
+        LogEx.d("Screen", "lockScreenOffTimeout: " + lockScreenOffTimeout);
         if (lockScreenOffTimeout > 0) {
             bufferL = new ArrayList<>();
             sumOpsL = 1;

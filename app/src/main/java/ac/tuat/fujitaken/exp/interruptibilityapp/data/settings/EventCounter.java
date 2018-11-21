@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import ac.tuat.fujitaken.exp.interruptibilityapp.LogEx;  //s 自作Log
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.ActiveApp;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.Notify;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.PC;
@@ -102,46 +103,42 @@ public class EventCounter {
             SP_TO_PC_BY_NOTE_LOCK_FLAG = SP_TO_PC_BY_NOTE_FLAG | Screen.LOCK,
 
             //s アプリ切り替え（特別枠）
-            APP_SWITCH_FLAG = ActiveApp.APP_SWITCH;
-            //s 追加ここまで
+            APP_SWITCH_FLAG = ActiveApp.APP_SWITCH;  //s 追加ここまで
     //s ビット対応表
-    /**
-                                    ８ ７ ６ ５ ４ ３ ２ １ ０
-                                    ロ ロ Ｐ 通 画 画 歩 歩 空
-                                    ッ ッ Ｃ 知 面 面 き き
-                                    ク ク か    消 点 終 始
-                                    設 解 ら    灯 灯 わ め
-                                    定 除             り
-                    WALK_START_FLAG ・ ・ ・ ・ ・ ・ ・ ＠ ・
-                     WALK_STOP_FLAG ・ ・ ・ ・ ・ ・ ＠ ・ ・
-                SELF_SCREEN_ON_FLAG ・ ・ ・ ・ ・ ＠ ・ ・ ・
-                NOTE_SCREEN_ON_FLAG ・ ・ ・ ＠ ・ ＠ ・ ・ ・
-               SELF_SCREEN_OFF_FLAG ・ ・ ・ ・ ＠ ・ ・ ・ ・
-               NOTE_SCREEN_OFF_FLAG ・ ・ ・ ＠ ＠ ・ ・ ・ ・
-                    PC_TO_WALK_FLAG ・ ・ ＠ ・ ・ ・ ・ ＠ ・
-                    WALK_TO_PC_FLAG ・ ・ ＠ ・ ・ ・ ＠ ・ ・
-              PC_TO_SP_BY_SELF_FLAG ・ ・ ＠ ・ ・ ＠ ・ ・ ・
-              PC_TO_SP_BY_NOTE_FLAG ・ ・ ＠ ＠ ・ ＠ ・ ・ ・
-              SP_TO_PC_BY_SELF_FLAG ・ ・ ＠ ・ ＠ ・ ・ ・ ・
-              SP_TO_PC_BY_NOTE_FLAG ・ ・ ＠ ＠ ＠ ・ ・ ・ ・
-
-
-                   SELF_UNLOCK_FLAG ・ ＠ ・ ・ ・ ・ ・ ・ ・  // 通知が無い＆ロック解除
-                   NOTE_UNLOCK_FLAG ・ ＠ ・ ＠ ・ ・ ・ ・ ・  // 通知が来た＆ロック解除
-       PC_TO_SP_BY_SELF_UNLOCK_FLAG ・ ＠ ＠ ・ ・ ・ ・ ・ ・  // ↑＆PC
-       PC_TO_SP_BY_NOTE_UNLOCK_FLAG ・ ＠ ＠ ＠ ・ ・ ・ ・ ・  // ↑＆PC
-
-         SELF_SCREEN_ON_UNLOCK_FLAG ・ ＠ ・ ・ ・ ＠ ・ ・ ・  // 通知が無い＆画面点灯・ロック解除
-         NOTE_SCREEN_ON_UNLOCK_FLAG ・ ＠ ・ ＠ ・ ＠ ・ ・ ・  // 通知が来た＆画面点灯・ロック解除
-    PC_TO_SP_BY_SELF_ON_UNLOCK_FLAG ・ ＠ ＠ ・ ・ ＠ ・ ・ ・  // ↑＆PC
-    PC_TO_SP_BY_NOTE_ON_UNLOCK_FLAG ・ ＠ ＠ ＠ ・ ＠ ・ ・ ・  // ↑＆PC
-
-          SELF_SCREEN_OFF_LOCK_FLAG ＠ ・ ・ ・ ＠ ・ ・ ・ ・  // 通知が無い＆画面消灯＆ロック設定
-          NOTE_SCREEN_OFF_LOCK_FLAG ＠ ・ ・ ＠ ＠ ・ ・ ・ ・  // 通知が来た＆画面消灯＆ロック設定
-         SP_TO_PC_BY_SELF_LOCK_FLAG ＠ ・ ＠ ・ ＠ ・ ・ ・ ・  // ↑＆PC
-         SP_TO_PC_BY_NOTE_LOCK_FLAG ＠ ・ ＠ ＠ ＠ ・ ・ ・ ・  // ↑＆PC
-
-     */
+    //s                                 ８ ７ ６ ５ ４ ３ ２ １ ０
+    //s                                 ロ ロ Ｐ 通 画 画 歩 歩 空
+    //s                                 ッ ッ Ｃ 知 面 面 き き
+    //s                                 ク ク か    消 点 終 始
+    //s                                 設 解 ら    灯 灯 わ め
+    //s                                 定 除             り
+    //s                 WALK_START_FLAG ・ ・ ・ ・ ・ ・ ・ ＠ ・
+    //s                  WALK_STOP_FLAG ・ ・ ・ ・ ・ ・ ＠ ・ ・
+    //s             SELF_SCREEN_ON_FLAG ・ ・ ・ ・ ・ ＠ ・ ・ ・
+    //s             NOTE_SCREEN_ON_FLAG ・ ・ ・ ＠ ・ ＠ ・ ・ ・
+    //s            SELF_SCREEN_OFF_FLAG ・ ・ ・ ・ ＠ ・ ・ ・ ・
+    //s            NOTE_SCREEN_OFF_FLAG ・ ・ ・ ＠ ＠ ・ ・ ・ ・
+    //s                 PC_TO_WALK_FLAG ・ ・ ＠ ・ ・ ・ ・ ＠ ・
+    //s                 WALK_TO_PC_FLAG ・ ・ ＠ ・ ・ ・ ＠ ・ ・
+    //s           PC_TO_SP_BY_SELF_FLAG ・ ・ ＠ ・ ・ ＠ ・ ・ ・
+    //s           PC_TO_SP_BY_NOTE_FLAG ・ ・ ＠ ＠ ・ ＠ ・ ・ ・
+    //s           SP_TO_PC_BY_SELF_FLAG ・ ・ ＠ ・ ＠ ・ ・ ・ ・
+    //s           SP_TO_PC_BY_NOTE_FLAG ・ ・ ＠ ＠ ＠ ・ ・ ・ ・
+    //s
+    //s
+    //s                SELF_UNLOCK_FLAG ・ ＠ ・ ・ ・ ・ ・ ・ ・  // 通知が無い＆ロック解除
+    //s                NOTE_UNLOCK_FLAG ・ ＠ ・ ＠ ・ ・ ・ ・ ・  // 通知が来た＆ロック解除
+    //s    PC_TO_SP_BY_SELF_UNLOCK_FLAG ・ ＠ ＠ ・ ・ ・ ・ ・ ・  // ↑＆PC
+    //s    PC_TO_SP_BY_NOTE_UNLOCK_FLAG ・ ＠ ＠ ＠ ・ ・ ・ ・ ・  // ↑＆PC
+    //s
+    //s      SELF_SCREEN_ON_UNLOCK_FLAG ・ ＠ ・ ・ ・ ＠ ・ ・ ・  // 通知が無い＆画面点灯・ロック解除
+    //s      NOTE_SCREEN_ON_UNLOCK_FLAG ・ ＠ ・ ＠ ・ ＠ ・ ・ ・  // 通知が来た＆画面点灯・ロック解除
+    //s PC_TO_SP_BY_SELF_ON_UNLOCK_FLAG ・ ＠ ＠ ・ ・ ＠ ・ ・ ・  // ↑＆PC
+    //s PC_TO_SP_BY_NOTE_ON_UNLOCK_FLAG ・ ＠ ＠ ＠ ・ ＠ ・ ・ ・  // ↑＆PC
+    //s
+    //s       SELF_SCREEN_OFF_LOCK_FLAG ＠ ・ ・ ・ ＠ ・ ・ ・ ・  // 通知が無い＆画面消灯＆ロック設定
+    //s       NOTE_SCREEN_OFF_LOCK_FLAG ＠ ・ ・ ＠ ＠ ・ ・ ・ ・  // 通知が来た＆画面消灯＆ロック設定
+    //s      SP_TO_PC_BY_SELF_LOCK_FLAG ＠ ・ ＠ ・ ＠ ・ ・ ・ ・  // ↑＆PC
+    //s      SP_TO_PC_BY_NOTE_LOCK_FLAG ＠ ・ ＠ ＠ ＠ ・ ・ ・ ・  // ↑＆PC
 
     //s 状態遷移となるビットの組み合わせによるフラグ → 文字列 の組み合わせの定義（連想配列）
     //s 読み出しのみ、直接使われているのは EventCounter 内でのみ
@@ -209,7 +206,7 @@ public class EventCounter {
             evaluations.put(entry.getKey(), preferences.getInt(entry.getValue(), 0));
 
             //s D/EVENTS_FLAG: "WALK_TO_PC" is フラグのビット表記 ( 発生回数 )
-            Log.d("EVENTS_FLAG", entry.getValue() + " is " + Integer.toBinaryString(entry.getKey()) + " ( " + evaluations.get(entry.getKey()) + " ) ");
+            LogEx.d("EVENTS_FLAG", entry.getValue() + " is " + Integer.toBinaryString(entry.getKey()) + " ( " + evaluations.get(entry.getKey()) + " ) ");
         }
         calcEvaluation();  //s フィールド min, mean の更新
     }
@@ -240,7 +237,7 @@ public class EventCounter {
     public void addEvaluations(int e){
         Integer t = evaluations.get(e);  //s イベント発生回数の 現在値
         if(t == null ){
-            Log.e("EventCounter.addEval", "指定のフラグ " + Integer.toBinaryString(e) + " に対応する値が null");  //s 追加
+            LogEx.e("EventCounter.addEval", "指定のフラグ " + Integer.toBinaryString(e) + " に対応する値が null");  //s 追加
             return;
         }
         SharedPreferences.Editor editor = preferences.edit();
@@ -260,7 +257,7 @@ public class EventCounter {
         min = evaluations.get(events[0]);
         for(int e: events){
             int value = evaluations.get(e);
-            Log.d("event", Integer.toBinaryString(e) + " is " + value);
+            LogEx.d("event", Integer.toBinaryString(e) + " is " + value);
             if (value < min) {
                 min = value;
             }
@@ -313,7 +310,7 @@ public class EventCounter {
             }
         }
         if(evaluations.get(event) == null){
-            Log.e("EventCounter.putEval", "指定のキー " + e + " が存在しない");  //s 追加
+            LogEx.e("EventCounter.putEval", "指定のキー " + e + " が存在しない");  //s 追加
             return;
         }
         evaluations.put(event, c);  //s 更新
@@ -324,7 +321,7 @@ public class EventCounter {
     }
 
     //s イベントのフラグ から "WALK_START" 的な文字列 を返す
-    //s ItemFragment.eventTriggeredThread() 内の Log で使用
+    //s InterruptTiming.eventTriggeredThread() 内の LogEx 出力で使用
     public String getEventName(int event){
         String ret = EVENT_KEYS_FROM_FLAGS.get(event);
         ret = (ret == null)? "": ret;

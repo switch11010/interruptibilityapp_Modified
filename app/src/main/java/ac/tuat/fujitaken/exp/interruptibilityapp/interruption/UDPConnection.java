@@ -11,6 +11,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.Constants;
+import ac.tuat.fujitaken.exp.interruptibilityapp.LogEx;  //s 自作Log
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.RowData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.AppSettings;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.Settings;
@@ -46,15 +47,15 @@ public class UDPConnection {
                 String sndStr = id + "," + data.getLine();
                 DatagramPacket sendPacket = new DatagramPacket(sndStr.getBytes("UTF-8"), sndStr.length(), ipAddress, port);
                 client = new DatagramSocket();
-                Log.d("UDP(Send)", "Sending : " + sndStr);
+                LogEx.d("UDP(Send)", "Sending : " + sndStr);
                 client.send(sendPacket);
-                Log.d("UDP(Send)", "Sent : " + "(" +sendPacket.getData().length + " Bytes)");
+                LogEx.d("UDP(Send)", "Sent : " + "(" +sendPacket.getData().length + " Bytes)");
             } catch (SocketException e) {
-                Log.e("UDP.sendRequest", "失敗");  //s 追加
+                LogEx.e("UDP.sendRequest", "失敗");  //s 追加
                 e.printStackTrace();
                 return false;
             } catch (IOException e) {
-                Log.e("UDP.sendRequest", "失敗");  //s 追加
+                LogEx.e("UDP.sendRequest", "失敗");  //s 追加
                 e.printStackTrace();
                 return false;
             }
@@ -93,17 +94,17 @@ public class UDPConnection {
 
                 DatagramPacket sendPacket = new DatagramPacket(sndStr.getBytes("UTF-8"), sndStr.length(), ipAddress, port);
                 ipSendingClient = new DatagramSocket();
-                Log.d("UDP(IP)", "IP: " +settings.getIpAddress() + ", Port : " + port);
-                Log.d("UDP(IP)", "Sending : " + sndStr);
+                LogEx.d("UDP(IP)", "IP: " +settings.getIpAddress() + ", Port : " + port);
+                LogEx.d("UDP(IP)", "Sending : " + sndStr);
                 ipSendingClient.send(sendPacket);
-                Log.d("UDP(IP)", "Sent : " + "(" +sendPacket.getData().length + " Bytes)");
+                LogEx.d("UDP(IP)", "Sent : " + "(" +sendPacket.getData().length + " Bytes)");
                 ipSendingClient.close();
             } catch (SocketException e) {
-                Log.e("UDP.sendIP", "失敗");  //s 追加
+                LogEx.e("UDP.sendIP", "失敗");  //s 追加
                 e.printStackTrace();
                 return;
             } catch (IOException e) {
-                Log.e("UDP.sendIP", "失敗");  //s 追加
+                LogEx.e("UDP.sendIP", "失敗");  //s 追加
                 e.printStackTrace();
                 return;
             }
@@ -125,7 +126,7 @@ public class UDPConnection {
                 while (receiver) {
                     byte receivedBuff[] = new byte[64];
                     DatagramPacket receivedPacket = new DatagramPacket(receivedBuff, receivedBuff.length);
-                    Log.d("Notify", "スタート");
+                    LogEx.d("Notify", "スタート");
                     receiveClient.receive(receivedPacket);
                     String message = new String(receivedPacket.getData(), "UTF-8");
                     message = message.substring(0, message.indexOf('\0'));
@@ -157,7 +158,7 @@ public class UDPConnection {
             return;
         }
 
-        Log.d("Notify", "強制通知");
+        LogEx.d("Notify", "強制通知");
         controller.normalNotify();
     }
 
@@ -171,13 +172,13 @@ public class UDPConnection {
 
             try {
                 client.setSoTimeout(Constants.UDP_TIMEOUT);
-                Log.d("UDP(Receive)", "Receiving... (Buffer size is " + receivedBuff.length + " Bytes)");
+                LogEx.d("UDP(Receive)", "Receiving... (Buffer size is " + receivedBuff.length + " Bytes)");
                 client.receive(receivedPacket);
                 message = new String(receivedPacket.getData(), "UTF-8");
                 message = message.substring(0, message.indexOf('\0'));
-                Log.d("UDP(Receive)", "Received : " + message + "(" + message.getBytes("UTF-8").length + " Bytes)");
+                LogEx.d("UDP(Receive)", "Received : " + message + "(" + message.getBytes("UTF-8").length + " Bytes)");
             } catch (IOException e) {
-                Log.e("UDP.receiveData", "受信に失敗");  //s 追加
+                LogEx.e("UDP.receiveData", "受信に失敗");  //s 追加
                 e.printStackTrace();
             } finally {
                 client.close();

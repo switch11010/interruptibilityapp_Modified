@@ -9,6 +9,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import ac.tuat.fujitaken.exp.interruptibilityapp.LogEx;  //s 自作Log
+
+
 /**
  * イベントを監視するクラス
  * Created by hi on 2015/11/11.
@@ -36,8 +39,8 @@ public class RegularThread {
         if(schedule == null) {
             schedule = Executors.newSingleThreadScheduledExecutor();
             schedule.scheduleAtFixedRate(repeatTask, delay, delay, unit);  //s delayおきにrepeatTask処理を開始する（処理開始直後に待機開始）
-            //Log.d("EVENT", listeners.size() + "");  //s コメントアウト：変更前
-            Log.d("RegularThread.start", "リスナー登録数：" + listeners.size());  //s 変更
+            //LogEx.d("EVENT", listeners.size() + "");  //s コメントアウト：変更前
+            LogEx.d("RegularThread.start", "リスナー登録数：" + listeners.size());  //s 変更
         }
     }
 

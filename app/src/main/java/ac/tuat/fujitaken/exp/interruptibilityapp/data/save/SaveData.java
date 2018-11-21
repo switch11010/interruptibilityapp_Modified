@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import ac.tuat.fujitaken.exp.interruptibilityapp.LogEx;  //s 自作Log
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.AppSettings;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.Settings;
 
@@ -19,6 +20,8 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.Settings;
  * データを一定時間で保存するクラス
  * Created by hi on 2015/11/09.
  */
+//s SaveData のインスタンスにどんどんデータを格納していって SaveTask で勝手に端末への記録がされるっぽい
+//s データは RowData の形式で保持する
 public class SaveData{
 
     private File file;      //保存ファイル
@@ -55,7 +58,7 @@ public class SaveData{
             String fileName1 = externalStorageDirectory.getPath() + "/EventLog/" + fileName;
             file = new File(fileName1 + ".csv");
         }while(file.exists());
-        Log.d("DirPath", file.getPath());
+        LogEx.d("DirPath", file.getPath());
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)

@@ -12,6 +12,8 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
+import ac.tuat.fujitaken.exp.interruptibilityapp.LogEx; //s 自作Log
+
 /**
  * 選択ダイアログ
  */
@@ -83,7 +85,7 @@ public class ListDialogFragment extends DialogFragment {
             try {
                 pi.send(Activity.RESULT_OK);
             } catch (PendingIntent.CanceledException ex) {
-                Log.e("Error", ex.getMessage());
+                LogEx.e("Error", ex.getMessage());
             }
         }
     }

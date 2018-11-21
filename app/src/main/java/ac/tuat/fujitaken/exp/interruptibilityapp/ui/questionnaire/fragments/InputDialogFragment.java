@@ -21,6 +21,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import ac.tuat.fujitaken.exp.interruptibilityapp.LogEx;  //s 自作Log
 import ac.tuat.fujitaken.exp.interruptibilityapp.R;
 
 /**
@@ -121,7 +122,7 @@ public class InputDialogFragment extends DialogFragment {
             try {
                 pi.send(Activity.RESULT_OK);
             } catch (PendingIntent.CanceledException ex) {
-                Log.e("Error", ex.getMessage());
+                LogEx.e("Error", ex.getMessage());
             }
         }
     }

@@ -13,6 +13,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.Constants;
+import ac.tuat.fujitaken.exp.interruptibilityapp.LogEx;  //s 自作Log
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.AllData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.EvaluationData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.RowData;
@@ -83,7 +84,7 @@ public class NotificationController {
     };
 
     //30秒経過したときの，通知の更新処理
-    //s normalNotify() で渡される
+    //s normalNotify() でスケジューラに渡される
     private Runnable askTask = new Runnable() {
         @Override
         public void run() {
@@ -91,7 +92,7 @@ public class NotificationController {
             lateData.setValue(answerData);
             Bundle bundle = new Bundle();
             bundle.putSerializable(EvaluationData.EVALUATION_DATA, lateData);
-            interruptionNotification.cancelNotify(bundle);
+            interruptionNotification.cancelNotify(bundle);  //s 通知を配信する
             schedule = Executors.newSingleThreadScheduledExecutor();
             long delete = 60 * 1000;
             schedule.schedule(cancelTask, delete, TimeUnit.MILLISECONDS);
@@ -99,7 +100,7 @@ public class NotificationController {
     };
 
     //通知への回答がなかったとき，通知を消す処理
-    //s　上の BroadcastReceiver receiver で渡される
+    //s　上の BroadcastReceiver receiver でスケジューラに渡される
     private Runnable cancelTask = new Runnable() {
         @Override
         public void run() {
@@ -117,11 +118,13 @@ public class NotificationController {
         hasNotification = false;
     }
 
+    //s インスタンスフィールドの SaveData のゲッタ（メソッド名がひどい）
     //s MainService.onCreate() から InterruptTiming.getEvaluationData() を経由して呼ばれる
     public SaveData getEvaluationData() {
         return evaluationSave;
     }
 
+    //s インスタンスを生成 ＆ 生成したインスタンスを返す
     //s InterruptTiming のコンストラクタから呼ばれる
     public static NotificationController getInstance(AllData allData, InterruptTiming timing){
         //s if (instance == null) の条件を入れたほうがいいような気がする
@@ -129,6 +132,7 @@ public class NotificationController {
         return instance;
     }
 
+    //s インスタンスのゲッタ
     //s UDPConnection.notify() で呼ばれるけど使われない
     public static NotificationController getInstance(){
         return instance;
@@ -179,11 +183,12 @@ public class NotificationController {
     //s InterruptTiming.eventTriggeredThread() で、状態遷移が検知されて通知を配信したいときに呼ばれる
     public void normalNotify(int event, EvaluationData line){
         if(hasNotification){
+            LogEx.e("NC.normalNotify", "通知が存在しているのに呼ばれた");  //s 追加
             return;
         }
         schedule = Executors.newSingleThreadScheduledExecutor();
         long delay = Constants.NOTIFICATION_THRESHOLD;
-        schedule.schedule(askTask, delay, TimeUnit.MILLISECONDS);
+        schedule.schedule(askTask, delay, TimeUnit.MILLISECONDS);  //s delay (ms) 後に askTask 処理を開始する（通知無視の理由を聞く通知
         Bundle bundle = new Bundle();
 
         line.event = event;
@@ -192,7 +197,7 @@ public class NotificationController {
         line.setAnswer(answerData);
 
         bundle.putSerializable(EvaluationData.EVALUATION_DATA, line);
-        interruptionNotification.normalNotify(bundle);
+        interruptionNotification.normalNotify(bundle);  //s 割込み拒否度の評価を要求する通知を配信する（本命）
         hasNotification = true;
         evaluationSave.lock = true;  //s 名前変更：rock → lock
     }
@@ -210,7 +215,7 @@ public class NotificationController {
         RowData lll = timing.getAllData().getLatestLine();
         EvaluationData line = new EvaluationData();
         line.setValue(lll);
-        Log.d("Time", lll.time + "ms");
+        LogEx.d("Time", lll.time + "ms");
 
         schedule = Executors.newSingleThreadScheduledExecutor();
         long delay = Constants.NOTIFICATION_THRESHOLD;

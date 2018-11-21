@@ -3,14 +3,14 @@ package ac.tuat.fujitaken.exp.interruptibilityapp.service;
 import android.accessibilityservice.AccessibilityService;
 import android.content.Context;
 import android.os.PowerManager;
-//import android.util.Log;  //s 自作 Log クラスに変更
+import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.Toast;
 
 import java.util.concurrent.TimeUnit;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.Constants;
-import ac.tuat.fujitaken.exp.interruptibilityapp.Log;  //s 追加
+import ac.tuat.fujitaken.exp.interruptibilityapp.LogEx;  //s 自作Log
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.AccelerometerData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.AllData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.WifiReceiver;
@@ -42,22 +42,24 @@ public class MainService extends AccessibilityService {
 
     @Override
     protected void onServiceConnected() {
-        Log.d("Info", "MainService.onServiceConnected_1");  //s 追加
+        LogEx.d("Info", "MainService.onServiceConnected_1");  //s 追加
         super.onServiceConnected();
-        Log.d("Info", "MainService.onServiceConnected_2e");  //s 追加
+        LogEx.d("Info", "MainService.onServiceConnected_2e");  //s 追加
     }
 
     @Override
     public void onCreate() {
-        Log.d("Info", "MainService.onCreate_1");  //s 追加
+        LogEx.start();  //s 追加：ログの SaveData への記録を開始
+
+        LogEx.d("Info", "MainService.onCreate_1");  //s 追加
         super.onCreate();
-        Log.d("Info", "MainService.onCreate_2");  //s 追加
+        LogEx.d("Info", "MainService.onCreate_2");  //s 追加
 
         //処理を続けるためにCPUのスリープをロックする
         wakeLock = ((PowerManager) getSystemService(Context.POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MainService:MyWakeLock");  //s 文句を言われたのでnewWakeLockのタグを"MyWakeLock"から変更
         wakeLock.acquire();  //s ロック開始
 
-        Log.d("Info", "MainService.onCreate_3");
+        LogEx.d("Info", "MainService.onCreate_3");
 
         /**
          * 各インスタンスの初期化
@@ -65,7 +67,7 @@ public class MainService extends AccessibilityService {
         loop_50 = new RegularThread();  //s ACC_LOOP_PERIOD(20ms) おき
         loop_1  = new RegularThread();  //s MAIN_LOOP_PERIOD(500ms) おき
 
-        accelerometerData = new AccelerometerData(getApplicationContext());  //s getApplicationContext()：ApplicationのContextだか何かが返ってくるやつらしい
+        accelerometerData = new AccelerometerData(getApplicationContext());  //s getApplicationContext()：ApplicationのContext だか何かが返ってくるやつらしい
         allData = new AllData(getApplicationContext(), accelerometerData);
         interruptTiming = new InterruptTiming(getApplicationContext(), allData);
 
@@ -87,7 +89,7 @@ public class MainService extends AccessibilityService {
 
         saveTask.addData(interruptTiming.getEvaluationData());  //s "Evaluation" カテゴリの SaveData を 定期的に記録するように登録する
 
-        saveTask.addData(ac.tuat.fujitaken.exp.interruptibilityapp.Log.getSaveData());  //s 追加：自作 Log クラスの SaveData を定期記録に登録
+        saveTask.addData(LogEx.getSaveData());  //s 追加：自作 LogEx クラスの SaveData を定期記録に登録
 
         //処理をスタート
         loop_50.start(Constants.ACC_LOOP_PERIOD, TimeUnit.MILLISECONDS);
@@ -98,7 +100,7 @@ public class MainService extends AccessibilityService {
         WifiReceiver.sendIP(getApplicationContext());
         //UDPConnection.startReceive();
 
-        Log.d("Info", "MainService.onCreate_4e");  //s 追加
+        LogEx.d("Info", "MainService.onCreate_4e");  //s 追加
     }
 
     @Override
@@ -115,7 +117,7 @@ public class MainService extends AccessibilityService {
 
     @Override
     public void onDestroy() {
-        Log.d("Info", "MainService.onDestroy_1");  //s 追加
+        LogEx.d("Info", "MainService.onDestroy_1");  //s 追加
 
         //UDPConnection.stop();
         //タイミング制御をストップ
@@ -132,13 +134,16 @@ public class MainService extends AccessibilityService {
         //保存処理をストップ
         saveTask.stop();
 
+        //s 追加：ログの SaveData への記録を終了
+        LogEx.stop();
+
         Toast.makeText(getApplicationContext(), "記録終了", Toast.LENGTH_SHORT).show();
 
         //Wakelockを解放
         wakeLock.release();  //s CPUがスリープできるようになる
 
-        Log.d("Info", "MainService.onDestroy_2");  //s 追加
+        LogEx.d("Info", "MainService.onDestroy_2");  //s 追加
         super.onDestroy();
-        Log.d("Info", "MainService.onDestroy_3e");  //s 追加
+        LogEx.d("Info", "MainService.onDestroy_3e");  //s 追加
     }
 }

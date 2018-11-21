@@ -15,6 +15,7 @@ import android.widget.ListView;
 
 import java.util.Map;
 
+import ac.tuat.fujitaken.exp.interruptibilityapp.LogEx;  //s 自作Log
 import ac.tuat.fujitaken.exp.interruptibilityapp.R;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.Settings;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.EventAdapter;
@@ -74,7 +75,7 @@ public class ItemFragment extends ListFragment {
      */
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        if(!SettingFragment.isServiceActive(getActivity().getApplicationContext())) {  //s サービスが非稼働中の場合？
+        if(!SettingFragment.isServiceActive(getActivity().getApplicationContext())) {  //s サービスが非稼働中の場合
             //クリックされたアイテムの取得
             item = (String) ((Map.Entry) l.getItemAtPosition(position)).getKey();
             int t = Settings.getEventCounter().getEvaluations(item);
@@ -107,7 +108,7 @@ public class ItemFragment extends ListFragment {
                     Settings.getEventCounter().putEvaluation(item, t);
                     update();
                 }catch (NumberFormatException e){
-                    Log.e("InputFormatError", e.getMessage());
+                    LogEx.e("InputFormatError", e.getMessage());
                 }
             }
         }
@@ -131,7 +132,7 @@ public class ItemFragment extends ListFragment {
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(!SettingFragment.isServiceActive(getActivity().getApplicationContext())) {
+        if(!SettingFragment.isServiceActive(getActivity().getApplicationContext())) {  //s サービスが非稼働中の場合
 
             //イベント数をクリアする
             if (item.getItemId() == R.id.action_clear) {

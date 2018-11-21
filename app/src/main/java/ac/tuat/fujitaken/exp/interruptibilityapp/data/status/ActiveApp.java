@@ -1,19 +1,19 @@
 package ac.tuat.fujitaken.exp.interruptibilityapp.data.status;
 
-//import android.util.Log;
+import android.util.Log;
 
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import ac.tuat.fujitaken.exp.interruptibilityapp.Log;
+import ac.tuat.fujitaken.exp.interruptibilityapp.LogEx;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.Data;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.StringData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.DataReceiver;
 
 /**
  * s 追加：アプリの切り替えを検出する（シンプル）
- * Created by hi on 2018/11/08.
+ * Created on 2018/11/08.
  */
 public class ActiveApp {
     public static final int APP_SWITCH = 1 << 9;
@@ -33,7 +33,7 @@ public class ActiveApp {
     //s 返り値は イベントのフラグの アプリ切替 に関連するビット
     public static int judge(Map<String, Data> data){
         String nowActiveAppName = ( (StringData)data.get(DataReceiver.APPLICATION) ).value;  //s 現在アクティブなアプリ
-        //Log.d("ActiveApp", "Active: " + nowActiveAppName);
+        //LogEx.d("ActiveApp", "Active: " + nowActiveAppName);
 
         //s 今回アクティブなアプリがアプリ切替として扱いたくないアプリだった場合は、アプリの切り替わりを無視する
         for (String str : ignoreAppPatternSet) {

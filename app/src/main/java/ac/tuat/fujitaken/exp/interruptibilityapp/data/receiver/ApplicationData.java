@@ -17,6 +17,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.Constants;
+import ac.tuat.fujitaken.exp.interruptibilityapp.LogEx;  //s 自作Log
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.Data;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.StringData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.DeviceSettings;
@@ -39,6 +40,7 @@ public class ApplicationData implements DataReceiver {
 
     ApplicationData(Context context){
         if(!Settings.getDeviceSettings().isUsagePermissionGranted){
+            LogEx.e("ApplicationData", "Permission が許可されていない（使用履歴にアクセスできるアプリ）");  //s 追加
             Toast toast = Toast.makeText(context, "使用履歴にアクセスする権限がありません。", Toast.LENGTH_LONG);
             toast.show();
             return;

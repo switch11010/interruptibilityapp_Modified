@@ -11,6 +11,8 @@ import android.os.Process;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 
+import ac.tuat.fujitaken.exp.interruptibilityapp.LogEx;  //s 自作Log
+
 /**
  *
  * Created by hi on 2017/02/07.
@@ -46,7 +48,7 @@ public class DeviceSettings {
         }
         isUsagePermissionGranted = usagePermission;
 
-        Log.d("Permission", isUsagePermissionGranted + ", "
+        LogEx.d("Permission", isUsagePermissionGranted + ", "
                 + isStoragePermissionGranted + ","
                 + isPhonePermissionGranted + ","
                 + isLocationPermissionGranted);

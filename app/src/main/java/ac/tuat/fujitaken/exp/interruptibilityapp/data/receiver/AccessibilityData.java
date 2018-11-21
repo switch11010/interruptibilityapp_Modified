@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.Constants;
+import ac.tuat.fujitaken.exp.interruptibilityapp.LogEx;  //s 自作Log
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.Data;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.IntData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.StringData;
@@ -76,12 +77,12 @@ class AccessibilityData implements DataReceiver {
             String notifyApp;
             Notification notification = (Notification)event.getParcelableData();
             if (notification == null || notification.when <= System.currentTimeMillis() - Constants.APP_TIME_LIMITATION) {
-                return;
+                return;  //s 通知が無い？ or 使用履歴を辿る限界の設定よりも古いもの だった
             }
             if (notification.sound == null && notification.vibrate == null) {
                 return;
             }
-            try {
+            try {  //s 通知を出したアプリの名前を取得してるっぽい（適当）
                 CharSequence packageName = event.getPackageName();
                 PackageInfo activityInfo = packageManager.getPackageInfo(packageName.toString(), PackageManager.GET_ACTIVITIES);
                 CharSequence appLabel = activityInfo.applicationInfo.loadLabel(packageManager);
@@ -93,7 +94,7 @@ class AccessibilityData implements DataReceiver {
                 notifyApp = "";
 
             }
-            Log.d("NOTIFY", notifyApp);
+            LogEx.d("NOTIFY", notifyApp);
             val.value = notifyApp;
         }
         else {  //s イベントが通知の変更以外だった
