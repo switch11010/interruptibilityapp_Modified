@@ -129,6 +129,11 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                         noteFlag = note    //通知モード
                                 && !NotificationController.hasNotification,  //待機状態の通知なし
                         udpComm = (eventFlag & Screen.SCREEN_ON) > 0 || (eventFlag & Walking.WALK_START) > 0;   //UDP通信が必要かどうか
+                if (!noteFlag) {  //s 追加ここから（デバッグ）
+                    LogEx.d("InterruptTiming", "通知を配信しない判断");
+                    LogEx.d("InterruptTiming", "!noteMode: " + !note);
+                    LogEx.d("InterruptTiming", "NC.hasNotification: " + NotificationController.hasNotification);
+                }  //s 追加ここまで
 
                 if (event == ActiveApp.APP_SWITCH) {  //s 追加：アプリ切替じゃないときだけUDPでPC操作の有無を調査するように変更
                     String message = "null";
@@ -145,7 +150,12 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                 LogEx.d("InterruptTiming.eTT", "--------------------");  //s 追加ここから
                 String str = "イベント発生：" + Integer.toBinaryString(event);
                 str += " -> " + Settings.getEventCounter().getEventName(event);
-                Log.d("InterruptTiming.eTT", str);  //s 追加ここまで
+                LogEx.d("InterruptTiming.eTT", str);
+                /*for (int i=0; i<line.data.size(); i++) {
+                    LogEx.e("EvalData line.data", DataReceiver.NAMES[i] + ":\t" + line.data.get(i).getString());
+                }*/
+                LogEx.e("EvalData prevTime", new java.util.Date(prevTime).toString());
+                LogEx.e("EvalData line.time", new java.util.Date(line.time).toString());  //s 追加ここまで
 
                 //s 設定で通知モードが ON なら、通知を配信するか判断する　＆アプリ切替で通知配信がオンでアプリ切替イベントだった場合も追加
                 //if (noteFlag) {  //s コメントアウト：変更前
@@ -158,10 +168,21 @@ public class InterruptTiming implements RegularThread.ThreadListener {
 
                     boolean forceNote = Settings.getAppSettings().isForceNoteMode();  //s 追加：通知を強制する設定
                     boolean isTimePassed = line.time - prevTime > Constants.NOTIFICATION_INTERVAL;  //s 追加：前の通知から一定時間経過（ifの判定式から独立）
+                    /*if (p >= 2  //評価数が平均より1/2以下では時間に関係なく通知
+                            || pcOpsFlag(event)
+                            //||( Math.random() < p && line.time - prevTime > Constants.NOTIFICATION_INTERVAL)) {    //前の通知から一定時間経過  //s コメントアウト
+                            || ( (Math.random() < p || p > 0 && forceNote) && isTimePassed )) {  //s 変更：確率(>0)で false でも Setting_Ex の 通知を強制 がオンなら通知を配信*/
+                    double rnd = Math.random();  //s デバッグ用 ここから（上のブロックコメントが変更前）
+                    boolean eval1 = rnd < p, eval2 = ( (eval1 || p > 0 && forceNote) && isTimePassed );
+                    LogEx.d("InterruptTiming", "rnd: "+rnd);
+                    LogEx.d("InterruptTiming", "eval1: "+eval1);
+                    LogEx.d("InterruptTiming", "eval2: "+eval2);
+                    LogEx.d("InterruptTiming", "├ rnd()<p 確率当選？: "+(eval1 || p > 0 && forceNote));
+                    LogEx.d("InterruptTiming", "└ 前回通知から時間経過？: "+isTimePassed);
                     if (p >= 2  //評価数が平均より1/2以下では時間に関係なく通知
                             || pcOpsFlag(event)
                             //||( Math.random() < p && line.time - prevTime > Constants.NOTIFICATION_INTERVAL)) {    //前の通知から一定時間経過  //s コメントアウト
-                            || ( (Math.random() < p || p > 0 && forceNote) && isTimePassed )) {  //s 変更：確率(>0)で false でも Setting_Ex の 通知を強制 がオンなら通知を配信
+                            || eval2) {  //s 変更：確率(>0)で false でも Setting_Ex の 通知を強制 がオンなら通知を配信  //s デバッグ用 ここまで
                         if (forceNote) {  //s 追加ここから
                             LogEx.d("forceNoteMode", "通知の配信を強制 がオン");
                         }  //s 追加ここまで
@@ -180,12 +201,15 @@ public class InterruptTiming implements RegularThread.ThreadListener {
     private boolean pcOpsFlag(int event){
         if(pc.isPcFlag()) {
             if ((event & (Screen.SCREEN_ON)) > 0) {  //s PC使用＆スマホも使い始めた…？
+                LogEx.d("InterruptTiming", "pcOpsFlag: true1");  //s 追加
                 return Math.random() < 0.5;
             }
             else if ((event & (Screen.SCREEN_OFF)) > 0) {  //s PC使用＆スマホを使い終えた？
+                LogEx.d("InterruptTiming", "pcOpsFlag: true2");  //s 追加
                 return true;
             }
         }
+        LogEx.d("InterruptTiming", "pcOpsFlag: false");  //s 追加
         return false;
     }
 
