@@ -33,8 +33,8 @@ public class InterruptionNotification {
     currentRinger,
     currentVolume;
 
-    public static final String TYPE = "NOTIFICATION_TYPE",
-                                NOTIFICATION_TAG = "INTERRUPTION_NOTIFICATION";
+    public static final String TYPE = "NOTIFICATION_TYPE";
+    private static final String NOTIFICATION_TAG = "INTERRUPTION_NOTIFICATION";  //s 変更：用途がナゾだけど外部で使われないので private に変更
 
     private static final int REQUEST_CODE = 753,
                                 NOTIFICATION_ID = 357;
@@ -74,8 +74,8 @@ public class InterruptionNotification {
                 .setContentTitle("割り込み通知")
                 .setAutoCancel(true)
                 .setContentIntent(pi)
-                .setPriority(Integer.MAX_VALUE)
-                .setVibrate(new long[]{0, 100, 100, 100, 100, 100, 300, 100, 100, 100, 100, 100, 300, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100})     //3,3,7拍子
+                .setPriority(Integer.MAX_VALUE)  //s 優先度を激MAXにすることで常に最上位に表示されるようになるハイパーテクニックらしい
+                .setVibrate(makeVibrationPattern(mode))  //s 変更：バイブのパターンの定義の makeVibrationPattern への分離 ＆ パターンの追加
                 .setLights(Color.rgb(255, 215, 0), 3000, 3000)     //金色っぽい色
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                 .setOnlyAlertOnce(true);
@@ -96,7 +96,7 @@ public class InterruptionNotification {
         //noinspection deprecation
         PowerManager.WakeLock wakelock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK
                 | PowerManager.ACQUIRE_CAUSES_WAKEUP
-                | PowerManager.ON_AFTER_RELEASE, NOTIFICATION_TAG);
+                | PowerManager.ON_AFTER_RELEASE, "InterruptionNotification:" + NOTIFICATION_TAG);  //s 変更：文句を言われたのでtagを変更
         wakelock.acquire();
 
         ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
@@ -123,5 +123,54 @@ public class InterruptionNotification {
         }, 3, TimeUnit.SECONDS);
 
         wakelock.release();
+    }
+
+    /**
+     * s 追加：振動パターンを返す
+     * @param mode  通知の回答期限が過ぎたときの通知だったら false
+     * @return 振動パターン
+     */
+    private long[] makeVibrationPattern(boolean mode) {
+        long[][] vibrationPattern = {
+                new long[] {
+                        0,
+                        100, 100, 100, 100, 100, 300,
+                        100, 100, 100, 100, 100, 300,
+                        100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100
+                },     //3,3,7拍子  //s 元の固定パターン
+                new long[] {
+                        0,
+                        200, 100, 100, 200, 100, 100,
+                        200, 100, 100, 200, 100, 100,
+                        100, 100, 100, 100, 100, 100, 100, 100, 50, 50, 100, 100, 100
+                },  //s レアパターン
+                new long[] {
+                        0,
+                        200, 100, 50, 50, 100, 100, 100, 100,
+                        200, 100, 50, 50, 100, 100, 100, 100,
+                        100, 100, 50, 50, 100, 100, 100, 100, 50, 50, 100, 100, 100, 100, 100
+                }  //s 激レアパターン
+        };
+        long[] vibrationPatternSmall = {
+                0,
+                100
+        };  //s 控えめに一応震えてみるパターン
+
+        if (!mode) {
+            return vibrationPatternSmall;
+        }
+
+        int pattern = vibrationPattern.length - 1;
+        double rnd = Math.random();
+
+        if (rnd < 0.95) {
+            pattern = 0;
+        } else if (rnd < 0.99) {
+            pattern = 1;
+        } else {
+            pattern = 2;
+        }
+
+        return vibrationPattern[pattern];
     }
 }
