@@ -32,7 +32,7 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.ui.questionnaire.fragments.Ques
  * Created by hi on 2015/11/17.
  */
 public class NotificationController {
-    private static NotificationController instance = null;  //s インスタンスを保持する変数　定義の意図がナゾ（インスタンスが1つしか生成されない singleton っぽいけど違う）
+    private static NotificationController instance = null;  //s インスタンスを保持する変数　定義の意図がナゾ（インスタンスが1つのみ生成の singleton っぽいけど少し違う）
     private InterruptionNotification interruptionNotification;
     private ScheduledExecutorService schedule;
     public SaveData evaluationSave;
@@ -188,7 +188,7 @@ public class NotificationController {
         }
         schedule = Executors.newSingleThreadScheduledExecutor();
         long delay = Constants.NOTIFICATION_THRESHOLD;
-        schedule.schedule(askTask, delay, TimeUnit.MILLISECONDS);  //s delay (ms) 後に askTask 処理を開始する（通知無視の理由を聞く通知
+        schedule.schedule(askTask, delay, TimeUnit.MILLISECONDS);  //s delay (ms) 後に askTask 処理を開始する（通知無視の理由を聞く通知）
         Bundle bundle = new Bundle();
 
         line.event = event;
@@ -197,7 +197,10 @@ public class NotificationController {
         line.setAnswer(answerData);
 
         bundle.putSerializable(EvaluationData.EVALUATION_DATA, line);
-        interruptionNotification.normalNotify(bundle);  //s 割込み拒否度の評価を要求する通知を配信する（本命）
+
+        //s 割込み拒否度の評価を要求する通知を配信する（本命）
+        interruptionNotification.normalNotify(bundle, ((event & Screen.UNLOCK) > 0 ? 10000 : 0));  //s 変更：ロック解除時は10秒待機するように
+
         hasNotification = true;
         evaluationSave.lock = true;  //s 名前変更：rock → lock
     }

@@ -13,11 +13,13 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import ac.tuat.fujitaken.exp.interruptibilityapp.LogEx;  //s 自作Log
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.Settings;
 
 /**
@@ -51,19 +53,34 @@ public class InterruptionNotification {
         notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
+    //s 配信済みの通知をひっこめる
     public void cancel(){
         notificationManager.cancel(NOTIFICATION_ID);
     }
 
+    //s 普通の割込み拒否度の評価 の通知を配信する
+    //s NotificationController.normalNotify(), .normalNotify(int event, EvaluationData) で呼ばれる
     public void normalNotify(final Bundle bundle){
-        notification(bundle, true);
+        notification(bundle, true, 0);  //s 変更：通知配信の遅延時間の引数を追加
+    }
+    //s 追加：通知配信の遅延時間を指定できるようにしたver
+    public void normalNotify(final Bundle bundle, long delayMillis){
+        notification(bundle, true, delayMillis);
     }
 
+    //s なんで通知無視したんや の通知を配信する
+    //s NotificationController.normalNotify(int event, EvaluationData) 内でスケジューラに設定される askTask から呼ばれる
     public void cancelNotify(final Bundle bundle){
-        notification(bundle, false);
+        notification(bundle, false, 0);  //s 変更：通知配信の遅延時間の引数を追加
+    }
+    //s 追加：通知配信の遅延時間を指定できるようにしたver（未使用）
+    public void cancelNotify(final Bundle bundle, long delayMillis){
+        notification(bundle, true, delayMillis);
     }
 
-    private void notification(Bundle bundle, boolean mode){
+    //s いろいろパラメータを設定して、通知を配信する
+    //s 上の normalNotify(), cancelNotify() から呼ばれる
+    private void notification(Bundle bundle, boolean mode, long delayMillis) {  //s 変更：通知配信の遅延時間の引数を追加
         Intent intent = new Intent(context, QuestionActivity.class);
         bundle.putBoolean(TYPE, mode);
         intent.putExtras(bundle);
@@ -112,7 +129,19 @@ public class InterruptionNotification {
             audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, volume, 0);
         }
 
-        notificationManager.notify(NOTIFICATION_ID, notification);
+        //s 通知配信の遅延が指定されているなら待つ
+        if (delayMillis > 0) {  //s 追加ここから
+            try {
+                LogEx.d("IntrrptNote.notifi()", "sleep開始");
+                Thread.sleep(delayMillis);
+                LogEx.d("IntrrptNote.notifi()", "sleep終了");
+            } catch (InterruptedException e) {
+                LogEx.e("IntrrptNote.notifi()", "InterruptedException");
+                e.printStackTrace();
+            }
+        }  //s 追加ここまで
+
+        notificationManager.notify(NOTIFICATION_ID, notification);  //s 通知を配信
 
         scheduledExecutorService.schedule(new Runnable() {
             @Override
@@ -156,6 +185,7 @@ public class InterruptionNotification {
                 100
         };  //s 控えめに一応震えてみるパターン
 
+        //s 通知の回答期限が過ぎたときの通知だったら 控えめパターンにする
         if (!mode) {
             return vibrationPatternSmall;
         }
@@ -165,7 +195,7 @@ public class InterruptionNotification {
 
         if (rnd < 0.95) {
             pattern = 0;
-        } else if (rnd < 0.99) {
+        } else if (rnd < 0.995) {
             pattern = 1;
         } else {
             pattern = 2;
