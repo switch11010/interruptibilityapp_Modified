@@ -16,12 +16,13 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import ac.tuat.fujitaken.exp.interruptibilityapp.LogEx;
 import ac.tuat.fujitaken.exp.interruptibilityapp.R;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.EvaluationData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.questionnaire.InterruptionNotification;
 
 /**
- * ダイアログ表示用フラグメント
+ * ダイアログ表示用フラグメント（QuestionFragment のコピペ）
  *
  */
 public class QuestionFragment_Ex extends DialogFragment{
@@ -29,11 +30,13 @@ public class QuestionFragment_Ex extends DialogFragment{
     public static final int INTERRUPTIBILITY_REQUEST_CODE = 147,
             TASK_REQUEST_CODE = 258,
             LOCATION_REQUEST_CODE = 369,
-            COMMENT_REQUEST_CODE = 684;
+            USE_PURPOSE_REQUEST_CODE = 13579,  //s 追加：スマホ使用目的
+            COMMENT_REQUEST_CODE = 684;  //s 入力が終わった後に onActivityResult() 内でどのフラグメントによる入力だったのかの識別に利用…？
 
     public static final String INTERRUPTIBILITY = "INTERRUPTIBILITY",
             TASK = "TASK",
             LOCATION = "LOCATION",
+            USE_PURPOSE = "USE_PURPOSE",  //s 追加：スマホ使用目的
             COMMENT = "COMMENT",
             BROADCAST_ANSWER_ACTION = "BROADCAST_ANSWER_ACTION",
             BROADCAST_ASK_ACTION = "BROADCAST_ASK_ACTION",
@@ -44,10 +47,12 @@ public class QuestionFragment_Ex extends DialogFragment{
     private Button interruptibility,
             task,
             location,
-            comment;
+            usePurpose,  //s 追加：スマホ使用目的
+            note,  //s 追加：ロック画面で通知を確認したことによる開始か
+            comment;  //s 押されると ListDialogFragment とかのフラグメントの表示に移る
 
-    private boolean mode,
-            answered = false;
+    private boolean mode,  //s 割込み通知が一定時間無反応だった（回答時間が過ぎました）なら false
+            answered = false;  //s 割込み通知に回答があったら true ？
 
     private EvaluationData evaluationData;
 
@@ -83,6 +88,7 @@ public class QuestionFragment_Ex extends DialogFragment{
         interruptibility = (Button) rootLayout.findViewById(R.id.interrupt);
         task = (Button) rootLayout.findViewById(R.id.task);
         location = (Button) rootLayout.findViewById(R.id.location);
+        usePurpose = (Button) rootLayout.findViewById(R.id.usePurpose);  //s 追加：スマホ使用目的
         comment = (Button) rootLayout.findViewById(R.id.comment);
 
 
@@ -134,8 +140,25 @@ public class QuestionFragment_Ex extends DialogFragment{
                             .commit();
                 }
             });
+
+            //s 追加ここから：スマホ使用目的
+            usePurpose.setText(evaluationData.usePurpose);
+            usePurpose.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String[] selection = {
+                            "時間・通知の確認", "サブPC的利用", "情報アクセス", "私用", "休憩",  "自由記述"
+                    };
+                    ListDialogFragment fragment = ListDialogFragment.newInstance("スマホの使用目的は？", selection);
+                    fragment.setTargetFragment(selfFragment, USE_PURPOSE_REQUEST_CODE);
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .add(fragment, USE_PURPOSE)
+                            .commit();
+                }
+            });
+            //s 追加ここまで
         }
-        else {
+        else {  //s 時間内に回答をしなかった場合
             TextView interruptibilityText = (TextView)rootLayout.findViewById(R.id.interruptibilityText);
             TextView taskText = (TextView)rootLayout.findViewById(R.id.taskText);
             TextView locationText = (TextView)rootLayout.findViewById(R.id.locationText);
@@ -214,6 +237,10 @@ public class QuestionFragment_Ex extends DialogFragment{
                 this.evaluationData.location = txt;
                 location.setText(txt);
                 break;
+            case USE_PURPOSE_REQUEST_CODE:  //s 追加ここから：スマホ使用目的
+                this.evaluationData.usePurpose = txt;
+                usePurpose.setText(txt);
+                break;  //s 追加ここまで
             case COMMENT_REQUEST_CODE:
                 this.evaluationData.comment = bundle.getString(InputDialogFragment.INPUT_TEXT, "");
                 comment.setText(this.evaluationData.comment);

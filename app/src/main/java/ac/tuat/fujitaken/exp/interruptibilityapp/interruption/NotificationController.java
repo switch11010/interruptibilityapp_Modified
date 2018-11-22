@@ -141,7 +141,7 @@ public class NotificationController {
     //s コンストラクタ（↑の getInstance(AllData, InterruptTiming) でインスタンスが生成される）
     private NotificationController(AllData allData, InterruptTiming timing){
         this.timing = timing;
-        evaluationSave = new SaveData("Evaluation", "AnswerTime,Evaluation,Task,Location,Comment,Event," + allData.getHeader());
+        evaluationSave = new SaveData("Evaluation", "AnswerTime,Evaluation,Task,Location,UsePurpose,Comment,Event," + allData.getHeader());
         interruptionNotification = new InterruptionNotification(Settings.getContext());
         IntentFilter filter = new IntentFilter();
         filter.addAction(QuestionFragment.BROADCAST_ANSWER_ACTION);

@@ -9,6 +9,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import ac.tuat.fujitaken.exp.interruptibilityapp.interruption.NotificationController;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.MainActivity;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.questionnaire.fragments.QuestionFragment;
+import ac.tuat.fujitaken.exp.interruptibilityapp.ui.questionnaire.fragments.QuestionFragment_Ex;
 
 /**
  * 質問をするときのためのアクティビティ
@@ -36,7 +37,7 @@ public class QuestionActivity extends FragmentActivity {
              */
             FragmentManager manager = getSupportFragmentManager();
             if (manager.findFragmentByTag(QUESTION_DIALOG) == null) {
-                manager.beginTransaction().add(QuestionFragment.newInstance(getIntent().getExtras()), QUESTION_DIALOG)
+                manager.beginTransaction().add(QuestionFragment_Ex.newInstance(getIntent().getExtras()), QUESTION_DIALOG)  //s 変更：QF_Exに
                         .commit();
             }
         }

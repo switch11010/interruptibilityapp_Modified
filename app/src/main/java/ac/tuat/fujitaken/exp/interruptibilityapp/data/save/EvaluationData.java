@@ -12,6 +12,7 @@ public class EvaluationData extends RowData {
     public long answerTime = 0;
     public String task = "",
             location = "",
+            usePurpose = "",  //s 追加：スマホ使用目的
             comment = "";
     public int evaluation = 0,
             event = 0;
@@ -38,6 +39,8 @@ public class EvaluationData extends RowData {
         builder.append(",");
         builder.append(location.replaceAll(",", "，"));
         builder.append(",");
+        builder.append(usePurpose.replaceAll(",", "，"));  //s 追加
+        builder.append(",");  //s 追加
         builder.append(comment.replaceAll(",", "，"));
         builder.append(",");
         builder.append(event == 0? "": event);
@@ -64,6 +67,7 @@ public class EvaluationData extends RowData {
         this.answerTime = setData.answerTime;
         this.task = setData.task;
         this.location = setData.location;
+        this.usePurpose = setData.usePurpose;  //s 追加
         this.comment = setData.comment;
         this.evaluation = setData.evaluation;
     }
