@@ -7,9 +7,11 @@ import java.util.Map;
 import java.util.Set;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.LogEx;
+import ac.tuat.fujitaken.exp.interruptibilityapp.R;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.Data;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.StringData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver.DataReceiver;
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.Settings;
 
 /**
  * s 追加：アプリの切り替えを検出する（シンプル）
@@ -21,7 +23,8 @@ public class ActiveApp {
     private static Set<String> ignoreAppPatternSet = new HashSet<String>() {  //s アプリ切替に含めないアプリ の 正規表現 の集合
         {
             add(".*設定");
-            add(".*操作記録.*");  //s 動的に変更出来たらいいけどめんどくさいので静的
+            //add(".*操作記録.*");  //s アプリ名の静的取得ver
+            add(Settings.getContext().getString(R.string.app_name));  //s 操作記録アプリのアプリ名
             add("ZenUI Launcher");
             //add(".*ホーム");
             add(".*System.*");

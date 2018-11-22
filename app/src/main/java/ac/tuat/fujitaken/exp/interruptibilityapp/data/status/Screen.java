@@ -39,7 +39,12 @@ public class Screen {
 
     //s MainService.onCreate()→InterruptTiming() から呼ばれる
     public Screen(Context context){
-        int screenOffTimeout = Settings.System.getInt(context.getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, Constants.SCREEN_OFF_TIME) / Constants.MAIN_LOOP_PERIOD - 1;
+        //s 可変長配列 buffer の初期化（全部 0：操作なし で埋めて、最新値だけ 1：操作あり にする）
+        //int screenOffTimeout = Settings.System.getInt(context.getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, Constants.SCREEN_OFF_TIME) / Constants.MAIN_LOOP_PERIOD - 1;  //s コメントアウト
+        int screenOffTimeoutMilliSec = Settings.System.getInt(context.getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, Constants.SCREEN_OFF_TIME);  //s 変更：分割
+        int screenOffTimeout = screenOffTimeoutMilliSec / Constants.MAIN_LOOP_PERIOD - 1;  //s 変更：分割
+        LogEx.d("Screen", "screenOffTimeoutMilliSec: " + screenOffTimeoutMilliSec);  //s 追加
+        LogEx.d("Screen", "screenOffTimeout: " + screenOffTimeout);  //s 追加
         sumOps = 1;
         for(int i = 0; i < screenOffTimeout -1; i++){
             buffer.add(0);
@@ -47,10 +52,11 @@ public class Screen {
         buffer.add(1);
 
         //s 追加ここから：ロック画面での判定に利用
-        int lockScreenOffSec = ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.Settings.getAppSettings().getLockScreenOffSec() * 1000;
-        int lockScreenOffTimeout = lockScreenOffSec / Constants.MAIN_LOOP_PERIOD - 1;
+        int lockScreenOffMilliSec = ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.Settings.getAppSettings().getLockScreenOffSec() * 1000;
+        int lockScreenOffTimeout = lockScreenOffMilliSec / Constants.MAIN_LOOP_PERIOD - 1;
+        LogEx.d("Screen", "lockScreenOffMilliSec: " + lockScreenOffMilliSec);
         LogEx.d("Screen", "lockScreenOffTimeout: " + lockScreenOffTimeout);
-        if (lockScreenOffTimeout > 0) {
+        if (lockScreenOffMilliSec > 0) {
             bufferL = new ArrayList<>();
             sumOpsL = 1;
             for (int i = 0; i < lockScreenOffTimeout - 1; i++) {
@@ -87,7 +93,7 @@ public class Screen {
             sumOpsL -= bufferL.remove(0);
             sumOpsL += ops;
             bufferL.add(ops);
-        }//s 追加ここまで
+        }  //s 追加ここまで
 
         //s 画面がオンになったかどうか、オフになったかどうか（両方 false もあり得る）
         boolean on = latestValue && !prevState && !(prevConnect && !connect) && !appName.equals(noteApp),  //s 今回入＆前回切＆（前回接続＆今回非接続）ではない＆通知が自分のではない

@@ -129,10 +129,11 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                         noteFlag = note    //通知モード
                                 && !NotificationController.hasNotification,  //待機状態の通知なし
                         udpComm = (eventFlag & Screen.SCREEN_ON) > 0 || (eventFlag & Walking.WALK_START) > 0;   //UDP通信が必要かどうか
-                if (!noteFlag) {  //s 追加ここから（デバッグ）
-                    LogEx.d("InterruptTiming", "通知を配信しない判断");
-                    LogEx.d("InterruptTiming", "!noteMode: " + !note);
-                    LogEx.d("InterruptTiming", "NC.hasNotification: " + NotificationController.hasNotification);
+                LogEx.d("InterruptTiming.eTT", "----------------------------------------");  //s 追加ここから（デバッグ）
+                if (!noteFlag) {
+                    LogEx.d("InterruptTiming.eTT", "通知を配信しない判断");
+                    LogEx.d("InterruptTiming.eTT", "!noteMode: " + !note);
+                    LogEx.d("InterruptTiming.eTT", "NC.hasNotification: " + NotificationController.hasNotification);
                 }  //s 追加ここまで
 
                 if (event == ActiveApp.APP_SWITCH) {  //s 追加：アプリ切替じゃないときだけUDPでPC操作の有無を調査するように変更
@@ -147,7 +148,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
 
                 //LogEx.d("EVENT", "Num is " + Integer.toBinaryString(event));  //s コメントアウト
                 //LogEx.d("EVENT", Settings.getEventCounter().getEventName(event));  //s コメントアウト
-                LogEx.d("InterruptTiming.eTT", "--------------------");  //s 追加ここから
+                //LogEx.d("InterruptTiming.eTT", "--------------------");  //s 追加ここから
                 String str = "イベント発生：" + Integer.toBinaryString(event);
                 str += " -> " + Settings.getEventCounter().getEventName(event);
                 LogEx.d("InterruptTiming.eTT", str);

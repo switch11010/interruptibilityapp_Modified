@@ -17,6 +17,8 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.LogEx; //s 自作Log
 /**
  * 選択ダイアログ
  */
+//s QuestionFragment, _Ex 内で呼ばれる っぽい
+//s 選択式のリスト を表示して選んでもらうフラグメント
 public class ListDialogFragment extends DialogFragment {
 
     public static final String TITLE = "TITLE_TEXT",
@@ -30,6 +32,10 @@ public class ListDialogFragment extends DialogFragment {
     private String[] contents;
     boolean mode;
 
+    //s Fragment のインスタンスを用意して返す
+    //s QuestionFragment, _Ex から呼ばれる
+    //s title：ダイアログのてっぺんに表示する 説明文
+    //s contents：選択式リストの 内容物
     public static ListDialogFragment newInstance(String title, String[] contents) {
         ListDialogFragment fragment = new ListDialogFragment();
         Bundle bundle = new Bundle();
@@ -76,6 +82,7 @@ public class ListDialogFragment extends DialogFragment {
         return builder.create();
     }
 
+    //s すぐ上の ラムダ式内の else の onClick() と すぐ下の onActivityResult() から呼ばれる
     private void onPositiveButtonClicked(Intent result){
         if (getTargetFragment() != null) {
             getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, result);

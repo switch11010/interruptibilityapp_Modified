@@ -27,6 +27,8 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.R;
 /**
  * 記述のためのダイアログ表示クラス
  */
+//s QuestionFragment, _Ex 内：時間経過時、ListDialogFragment内：コメント で使われる っぽい
+//s 自由記述式の入力欄 を表示して何かを書いてもらうフラグメント
 public class InputDialogFragment extends DialogFragment {
 
     public static final String INPUT_TEXT = "INPUT_TEXT",
@@ -39,6 +41,7 @@ public class InputDialogFragment extends DialogFragment {
     private String title,
             initialText;
 
+    //s QuestionFragment, _Ex 内：時間経過時、ListDialogFragment内：コメント入力時 で呼ばれる
     public static InputDialogFragment newInstance(String title) {
         InputDialogFragment fragment = new InputDialogFragment();
         Bundle b = new Bundle();
@@ -47,6 +50,7 @@ public class InputDialogFragment extends DialogFragment {
         return fragment;
     }
 
+    //s 未使用っぽい？
     public static InputDialogFragment newInstance(String title, int inputMode) {
         InputDialogFragment fragment = new InputDialogFragment();
         Bundle b = new Bundle();
@@ -56,6 +60,7 @@ public class InputDialogFragment extends DialogFragment {
         return fragment;
     }
 
+    //s ItemFragment.onListItemClick() 内で呼ばれる（EvaluationCounter のイベント発生回数の手動変更用）
     public static InputDialogFragment newInstance(String title, String initialText, int inputMode) {
         InputDialogFragment fragment = new InputDialogFragment();
         Bundle b = new Bundle();
@@ -110,6 +115,7 @@ public class InputDialogFragment extends DialogFragment {
         return builder.create();
     }
 
+    //s すぐ上の ラムダ式の onClick() から呼ばれる
     private void onPositiveButtonClicked(){
         Intent result = new Intent();
         result.putExtra(INPUT_TEXT, inputText.getText().toString());

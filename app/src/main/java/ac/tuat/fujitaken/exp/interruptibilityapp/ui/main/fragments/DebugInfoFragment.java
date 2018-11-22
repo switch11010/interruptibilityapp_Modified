@@ -142,6 +142,13 @@ public class DebugInfoFragment extends Fragment {
         str += hr;
         str += n;
 
+        //s 表示中の通知の有無
+        str += "NotificationController.hasNotification: " + NotificationController.hasNotification + n;
+        str += n;
+
+        str += hr;
+        str += n;
+
         //s ファイル書き込み権限やらなにやら
         str += "＠適当ファイル書き込み権限確認コーナー＠\n";
         str += "SDK_INT: " + Build.VERSION.SDK_INT + n;

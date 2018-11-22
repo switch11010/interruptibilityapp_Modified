@@ -21,9 +21,9 @@ public class Notify {
     }
 
     //s 通知が配信されてから一定時間内かどうかを判定をする
-    //s interruptTiming.run() から定期的に呼ばれる：引数で渡されるのは たぶん 最新の通知？（よくわからない）
+    //s interruptTiming.run() から定期的に呼ばれる：引数で渡されるのは たぶん 最新の通知 っぽい
     public int judge(String note){
-        noteCount = (!"".equals(note) && !appName.equals(note))? 0: noteCount + 1;
+        noteCount = (!"".equals(note) && !appName.equals(note))? 0: noteCount + 1;  //s 新しい通知が来てたら noteCount のカウント開始
         if(noteCount < NOTE_TIME){
             return NOTIFICATION;
         }
