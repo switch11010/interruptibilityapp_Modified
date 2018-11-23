@@ -27,8 +27,8 @@ public class LogEx {
     //s Settings.settings(), MainService.onCreate() から呼ばれる
     public synchronized static SaveData start() {
         if (saveData == null) {
-            LogEx.d("LogEx.start()", "initialized");
-            saveData = new SaveData("LogEx", "Lv,Tag,Msg");
+            LogEx.d("LogEx.start()", "initialize");
+            saveData = new SaveData("Log", "Lv,Tag,Msg");
         }
         LogEx.d("LogEx.start()", "started");
         return saveData;

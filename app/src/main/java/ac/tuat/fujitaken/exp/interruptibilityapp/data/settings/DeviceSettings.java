@@ -65,15 +65,23 @@ public class DeviceSettings {
         AppOpsManager appOpsManager = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
 
         if(appOpsManager == null){
+            LogEx.e("DSettings.checkPerm()", "appOpsManager == null");  //s 追加
             return false;
         }
         int mode = appOpsManager.checkOp(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(),
                 context.getPackageName());
+        LogEx.d("DSettings.checkPerm()", "appOpsManager.checkOp(): " + mode);  //s 追加
+        LogEx.d("DSettings.checkPerm()", "AppOpsManager.MODE_DEFAULT: " + AppOpsManager.MODE_DEFAULT);  //s 追加
+        LogEx.d("DSettings.checkPerm()", "AppOpsManager.MODE_ALLOWED: " + AppOpsManager.MODE_ALLOWED);  //s 追加
         if (mode == AppOpsManager.MODE_DEFAULT) {
-            return context.checkPermission("android.permission.PACKAGE_USAGE_STATS",
-                    Process.myPid(), Process.myUid()) == PackageManager.PERMISSION_GRANTED;
+            int permissionState = context.checkPermission("android.permission.PACKAGE_USAGE_STATS", Process.myPid(), Process.myUid());  //s 追加：return から分割
+            int granted = PackageManager.PERMISSION_GRANTED;  //s 追加：return から分割
+            LogEx.d("DSettings.checkPerm()", "context.checkPermission(): " + permissionState);  //s 追加
+            LogEx.d("DSettings.checkPerm()", "PackageManager.PERMISSION_GRANTED: " + granted);  //s 追加
+            return permissionState == granted;  //s 変更：↑に分割
         }
 
+        LogEx.d("DSettings.checkPerm()", "checkOp() == MODE_ALLOWED: " + (mode == AppOpsManager.MODE_ALLOWED));  //s 追加
         return mode == AppOpsManager.MODE_ALLOWED;
     }
 
