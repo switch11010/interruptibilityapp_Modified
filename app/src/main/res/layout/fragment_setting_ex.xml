@@ -13,12 +13,10 @@
             android:id="@+id/forceNoteSwitch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="30dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginTop="25dp"
+            android:layout_below="@+id/checkUpdateButton"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="15dp"
             android:text="通知の配信を強制 "
             android:textSize="20sp" />
 
@@ -30,8 +28,8 @@
             android:layout_alignStart="@+id/forceNoteSwitch"
             android:layout_alignLeft="@+id/forceNoteSwitch"
             android:layout_alignParentTop="false"
-            android:layout_marginTop="5dp"
-            android:text="他のよりも多く発生するタイプの割込みでも\n気にせず通知を配信する(はず)" />
+            android:layout_marginTop="0dp"
+            android:text="他のよりも多く発生するタイプの割込みでも\n気にせず通知を配信する" />
 
 
         <!-- 2段目：歩行で通知を出さないオプション -->
@@ -55,7 +53,7 @@
             android:layout_alignLeft="@+id/noNoteOnWalkSwitch"
             android:layout_alignParentTop="false"
             android:layout_marginTop="5dp"
-            android:text="歩行開始・歩行終了でも通知を出さない" />
+            android:text="歩行開始・歩行終了では通知を出さない" />
 
 
         <!-- 3段目：ロック画面の消灯時間の手動設定 -->
@@ -117,7 +115,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/textView6"
-            android:layout_centerHorizontal="true"
             android:layout_marginStart="5dp"
             android:layout_marginLeft="5dp"
             android:layout_marginTop="20dp"
@@ -161,20 +158,58 @@
             android:text="アプリを切り替えた後に通知を出す\n（通知モードがOFFでも配信されます）" />
 
 
-        <!-- 6段目：アプリ切り替えで通知を出すオプション -->
-        <android.support.v7.widget.SwitchCompat
-            android:id="@+id/noUseSwitch"
+        <!-- 6段目：電池最適化の設定画面を表示 -->
+        <TextView
+            android:id="@+id/textView10"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/textView9"
             android:layout_alignStart="@+id/textView9"
             android:layout_alignLeft="@+id/textView9"
+            android:layout_alignParentTop="false"
             android:layout_marginTop="30dp"
-            android:text="特に意味がないスイッチ "
+            android:text="消音モード抑止の設定を"
+            android:textColor="@android:color/black"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/moveNotificationPolicySettingsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView9"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="20dp"
+            android:layout_toEndOf="@+id/textView10"
+            android:layout_toRightOf="@+id/textView10"
+            android:text="表示" />
+
+        <TextView
+            android:id="@+id/textView11"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView10"
+            android:layout_alignStart="@+id/textView10"
+            android:layout_alignLeft="@+id/textView10"
+            android:layout_alignParentTop="false"
+            android:layout_marginTop="5dp"
+            android:text="サイレントモード中に通知音が出るようにする設定" />
+
+
+        <!-- ぶるぶる -->
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/noUseSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView11"
+            android:layout_alignStart="@+id/textView11"
+            android:layout_alignLeft="@+id/textView11"
+            android:layout_marginTop="30dp"
+            android:text="押してはいけないスイッチ "
             android:textSize="20sp" />
 
         <TextView
-            android:id="@+id/textView10"
+            android:id="@+id/noUseSwitchText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/noUseSwitch"
@@ -182,19 +217,20 @@
             android:layout_alignLeft="@+id/noUseSwitch"
             android:layout_alignParentTop="false"
             android:layout_marginTop="5dp"
-            android:text="下にはみ出るとどうなるのだ\nスクロールが働いてほしい" />
+            android:text="押すなよ？絶対押すなよ？？" />
 
 
-        <!--android.support.v7.widget.SwitchCompat
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="通知モード"
-    android:id="@+id/noteSwitch"
-    android:layout_marginTop="25dp"
-    android:checked="false"
-    android:textSize="25sp"
-    android:layout_below="@+id/saveSwitch"
-    android:layout_alignStart="@+id/saveSwitch" /-->
+
+        <!-- 最下部の余白（フッター的な） -->
+        <TextView
+            android:id="@+id/footer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/noUseSwitchText"
+            android:layout_alignStart="@+id/noUseSwitchText"
+            android:layout_alignLeft="@+id/noUseSwitchText"
+            android:layout_alignParentBottom="false"
+            android:text="\n" />
 
 
     </RelativeLayout>

@@ -125,7 +125,15 @@ public class InterruptionNotification {
             audioManager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
         }
         else{
-            audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+            try {  //s 追加：サイレントモード中の音量変更での例外が投げられたら無視する（雑）
+                audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);  //s ここは変更なし
+            } catch (SecurityException e) {  //s 追加ここから
+                if (!e.getMessage().contains("Not allowed to change Do Not Disturb state")) {
+                    LogEx.e("INotification.noti()", "setRingerMode で予想外の例外：" + e.getMessage());
+                    throw e;  //s 思ってたのと違うやつはそのまま例外を中継
+                }
+                LogEx.e("INotification.noti()", "サイレントモード中の音量変更での例外を無視");  //s 例外を無視した記録
+            }  //s 追加ここまで
             audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, volume, 0);
         }
 

@@ -5,9 +5,13 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SwitchCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,15 +21,11 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import java.util.List;
-
+import ac.tuat.fujitaken.exp.interruptibilityapp.LogEx;
 import ac.tuat.fujitaken.exp.interruptibilityapp.R;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.AppSettings;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.Settings;
-import ac.tuat.fujitaken.exp.interruptibilityapp.service.MainService;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.MainActivity;
-
-import static ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.Settings.getAppSettings;
 
 /**
  * 記録サービスの設定用フラグメント（SettingFragmentのコピペ）
@@ -45,6 +45,9 @@ public class SettingFragment_Ex extends Fragment {
     private SeekBar volume;
     private ToggleButton togglePC, toggleSD;
     private AudioManager manager;*/
+    private SwitchCompat noUseSwitch;
+    private TextView noUseSwitchText;
+
 
     public static Fragment newInstance(int position){
         SettingFragment_Ex fragment = new SettingFragment_Ex();
@@ -74,14 +77,35 @@ public class SettingFragment_Ex extends Fragment {
         noNoteOnWalkSwitch = (SwitchCompat)root.findViewById(R.id.noNoteOnWalkSwitch);  //s 歩行時通知配信抑制
         lockScreenOffSecText = (EditText)root.findViewById(R.id.lockScreenOffSecText);  //s ロック画面自動消灯時間
 
-        Button b = (Button)root.findViewById(R.id.moveBatterySaverSettingsButton);  //s 電池最適化の設定画面表示ボタン
-        b.setOnClickListener(v -> {
-            Intent intent = new Intent();
-            intent.setAction(android.provider.Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
-            startActivity(intent);
-        });
+        Button b1 = (Button)root.findViewById(R.id.moveBatterySaverSettingsButton);  //s 電池最適化の設定画面表示ボタン
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            b1.setOnClickListener(v -> {
+                Intent intent = new Intent();
+                intent.setAction(android.provider.Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+                startActivity(intent);
+            });
+        } else {
+            b1.setEnabled(false);  //s 非対応なので押せないようにしとく
+        }
+
+        Button b2 = (Button)root.findViewById(R.id.moveNotificationPolicySettingsButton);  //s 通知非表示の設定画面表示ボタン
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            b2.setOnClickListener(v -> {
+                Intent intent = new Intent();
+                intent.setAction(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
+                startActivity(intent);
+            });
+        } else {
+            b2.setEnabled(false);  //s 非対応なので押せないようにしとく
+        }
 
         noteOnAppChangeSwitch = (SwitchCompat)root.findViewById(R.id.noteOnAppChangeSwitch);  //s アプリ切替で通知
+
+        noUseSwitch = (SwitchCompat)root.findViewById(R.id.noUseSwitch);  //s 押してはいけないスイッチ
+        noUseSwitch.setOnCheckedChangeListener((v, isChecked) -> {
+            onNoUseSwitchClicked(isChecked);
+        });
+        noUseSwitchText = (TextView)root.findViewById(R.id.noUseSwitchText);
 
         /*exist = (TextView)root.findViewById(R.id.isExistService);
         exist.setVisibility(View.INVISIBLE);
@@ -109,7 +133,7 @@ public class SettingFragment_Ex extends Fragment {
     public void onResume() {
         super.onResume();
 
-        AppSettings settings = getAppSettings();
+        AppSettings settings = Settings.getAppSettings();
 
         /*saveSwitch.setChecked(settings.isAccSave());
         noteSwitch.setChecked(settings.isNoteMode());*/
@@ -169,7 +193,7 @@ public class SettingFragment_Ex extends Fragment {
         settings.refresh();
     }
 
-    /**
+    /*/**
      * 記録用サービスが生存しているかを確認する
      * @param context　アプリケーションのコンテキスト
      * @return サービスが生存していたらtrue
@@ -184,4 +208,33 @@ public class SettingFragment_Ex extends Fragment {
         }
         return false;
     }*/
+
+
+    //s ぶるぶるするやつ
+    private void onNoUseSwitchClicked(boolean isChecked) {
+        long pattern1 = 10 * 60 * 1000;  //s 10m
+        long[] pattern2 = {
+                0,
+                100, 100, 100, 100,
+                100, 100, 50, 50,
+                100, 100, 100, 100, 50, 50,
+                100, 100, 100, 100,
+        };
+        final int pattern = 1;
+
+        Vibrator v = (Vibrator)getContext().getSystemService(Context.VIBRATOR_SERVICE);
+        if (isChecked) {
+            noUseSwitchText.setText("うわあああああああ");
+            if (pattern == 1) {
+                v.vibrate(pattern1);
+            } else if (pattern == 2) {
+                v.vibrate(pattern2, 0);
+            }
+            noUseSwitchText.setTextColor(0xFFFF0000);
+        } else {
+            noUseSwitchText.setTextColor(0x8A000000);
+            noUseSwitchText.setText("死ぬかと思った");
+            v.cancel();
+        }
+    }
 }
