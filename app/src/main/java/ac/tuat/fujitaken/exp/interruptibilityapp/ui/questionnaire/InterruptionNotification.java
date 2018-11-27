@@ -201,7 +201,7 @@ public class InterruptionNotification {
         int pattern = vibrationPattern.length - 1;
         double rnd = Math.random();
 
-        if (rnd < 0.95) {
+        if (rnd < 0.97) {
             pattern = 0;
         } else if (rnd < 0.995) {
             pattern = 1;

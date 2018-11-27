@@ -181,9 +181,9 @@ public class EventCounter {
         }
     };
 
-    private Map<Integer, Integer> evaluations;  //s 状態遷移フラグ → 発生回数　の連想配列
+    private Map<Integer, Integer> evaluations;  //s 状態遷移フラグ → 総発生回数　の連想配列
 
-    private SharedPreferences preferences;  //s イベント発生回数の記録・読み込み に使う
+    private SharedPreferences preferences;  //s イベント発生回数の記録・読み込み に使う SharedPreferences
 
     private int min = 0;  //s イベントの中で 最も発生していないイベントの 発生回数
     private double mean = 0;  //s イベントの発生回数の 平均数
@@ -201,7 +201,7 @@ public class EventCounter {
 
         preferences = PreferenceManager.getDefaultSharedPreferences(context);  //s なんか SharedPreferences のインスタンスを取得するらしい
 
-        //s 記録されていた イベントの発生回数 を evaluations に読み込む
+        //s 保存されていた イベントの発生回数 を evaluations に設定
         for(Map.Entry<Integer, String> entry: EVENT_KEYS_FROM_FLAGS.entrySet()){
             evaluations.put(entry.getKey(), preferences.getInt(entry.getValue(), 0));
 

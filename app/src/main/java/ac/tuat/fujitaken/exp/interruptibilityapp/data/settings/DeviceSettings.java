@@ -31,9 +31,24 @@ public class DeviceSettings {
     DeviceSettings(Context context){
         manager = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            isStoragePermissionGranted = context.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-            isPhonePermissionGranted = context.checkSelfPermission(Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED;
-            isLocationPermissionGranted = context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+            //s 変更ここから：ログ出力を追加＆判定式を分離
+            int perm1, perm2;
+
+            perm1 = context.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            perm2 = PackageManager.PERMISSION_GRANTED;
+            LogEx.d("DeviceSettings()", "isStoragePermissionGranted: " + perm1 + " == " + perm2 + " -> " + (perm1 == perm2));
+            isStoragePermissionGranted = (perm1 == perm2);
+
+            perm1 = context.checkSelfPermission(Manifest.permission.READ_PHONE_STATE);
+            perm2 = PackageManager.PERMISSION_GRANTED;
+            LogEx.d("DeviceSettings()", "isPhonePermissionGranted: " + perm1 + " == " + perm2 + " -> " + (perm1 == perm2));
+            isPhonePermissionGranted = (perm1 == perm2);
+
+            perm1 = context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION);
+            perm2 = PackageManager.PERMISSION_GRANTED;
+            LogEx.d("DeviceSettings()", "isLocationPermissionGranted: " + perm1 + " == " + perm2 + " -> " + (perm1 == perm2));
+            isLocationPermissionGranted = (perm1 == perm2);
+            //s 変更ここまで
         }
         else{
             isStoragePermissionGranted = true;

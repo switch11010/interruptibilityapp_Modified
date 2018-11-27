@@ -38,7 +38,7 @@ public class ActiveApp {
         String nowActiveAppName = ( (StringData)data.get(DataReceiver.APPLICATION) ).value;  //s 現在アクティブなアプリ
         //LogEx.d("ActiveApp", "Active: " + nowActiveAppName);
 
-        //s 今回アクティブなアプリがアプリ切替として扱いたくないアプリだった場合は、アプリの切り替わりを無視する
+        //s 今回アクティブなアプリがアプリ切替として扱いたくないアプリだった場合は、アプリが切り替わっていないことにする
         for (String str : ignoreAppPatternSet) {
             if (nowActiveAppName.matches(str)) {
                 nowActiveAppName = prevActiveAppName;
