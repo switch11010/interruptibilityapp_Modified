@@ -5,4 +5,8 @@
     <color name="colorAccent">#FF4081</color>
     <color name="material_blue">#46aff5</color>
     <color name="material_blue_disabled">#77267fa5</color>
+    <!-- s 追加（適当）ここから -->
+    <color name="material_orange">#ffaa00</color>
+    <color name="material_orange_disabled">#77aa4400</color>
+    <!-- s 追加ここまで -->
 </resources>

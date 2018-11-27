@@ -82,7 +82,7 @@ class AccessibilityData implements DataReceiver {
             if (notification.sound == null && notification.vibrate == null) {
                 return;
             }
-            try {  //s 通知を出したアプリの名前を取得してるっぽい（適当）
+            try {  //s 通知を出したアプリの名前を取得してるっぽい…？（適当）
                 CharSequence packageName = event.getPackageName();
                 PackageInfo activityInfo = packageManager.getPackageInfo(packageName.toString(), PackageManager.GET_ACTIVITIES);
                 CharSequence appLabel = activityInfo.applicationInfo.loadLabel(packageManager);
@@ -115,6 +115,7 @@ class AccessibilityData implements DataReceiver {
         return data;
     }
 
+    //s AllData.run() から定期的に呼ばれる
     void refresh() {
         for(Map.Entry<Integer, Data> entry: current.entrySet()){
             Data data = entry.getValue();

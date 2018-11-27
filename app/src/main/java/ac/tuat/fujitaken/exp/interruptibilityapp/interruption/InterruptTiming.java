@@ -129,6 +129,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                         noteFlag = note    //通知モード
                                 && !NotificationController.hasNotification,  //待機状態の通知なし
                         udpComm = (eventFlag & Screen.SCREEN_ON) > 0 || (eventFlag & Walking.WALK_START) > 0;   //UDP通信が必要かどうか
+                udpComm = udpComm || (eventFlag & Screen.UNLOCK) > 0;  //s 追加：ロック解除時にもUDP通信をしてみる
 
                 LogEx.d("InterruptTiming.eTT", "----------------------------------------");  //s 追加ここから（デバッグ）
                 if (!noteFlag) {
@@ -137,7 +138,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                     LogEx.d("InterruptTiming.eTT", "NC.hasNotification: " + NotificationController.hasNotification);
                 }  //s 追加ここまで
 
-                if (event == ActiveApp.APP_SWITCH) {  //s if分岐追加：アプリ切替じゃないときだけUDPでPC操作の有無を調査するように変更
+                if (event != ActiveApp.APP_SWITCH) {  //s if分岐追加：アプリ切替じゃないときだけUDPでPC操作の有無を調査するように変更
                     String message = "null";
                     if (udpConnection != null && udpComm) {
 
@@ -179,7 +180,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
 
                     if ( pcOpsFlag(event) || pResult && isTimePassed ) {  //s pcOpsFlag(event)：変更前のなごり（よくわかっていない）
                         if (forceNote) {
-                            LogEx.w("forceNoteMode", "通知の配信を強制 がオン");
+                            LogEx.e("forceNoteMode", "通知の配信を強制 がオン");
                         }  //s 変更・追加：だいたいこの辺まで
 
                         notificationController.normalNotify(event, line);  //s 通知を配信する
@@ -235,7 +236,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
 
         //s 追加：まだ1回も画面を点灯させていなかったら 確率を 0 にする（サービス開始直後の消灯を飛ばすのが目的）
         if (screen.getScreenOnCount() == 0) {
-            LogEx.e("InterruptTiming.calcP", "まだ画面を点灯させたことがない");
+            LogEx.w("InterruptTiming.calcP", "まだ画面を点灯させたことがない");
             return 0;
         }
 

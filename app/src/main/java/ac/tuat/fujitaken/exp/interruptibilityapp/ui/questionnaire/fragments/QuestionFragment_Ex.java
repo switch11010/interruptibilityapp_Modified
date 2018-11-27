@@ -10,13 +10,13 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import ac.tuat.fujitaken.exp.interruptibilityapp.LogEx;
 import ac.tuat.fujitaken.exp.interruptibilityapp.R;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.EvaluationData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.questionnaire.InterruptionNotification;
@@ -44,14 +44,16 @@ public class QuestionFragment_Ex extends DialogFragment{
 
     private Fragment selfFragment = this;
 
-    private Button interruptibility,
-            task,
-            location,
-            usePurpose,  //s 追加：スマホ使用目的
-            note,  //s 追加：ロック画面で通知を確認したことによる開始か
-            comment;  //s 押されると ListDialogFragment とかのフラグメントの表示に移る
+    //s 変更：接尾辞 Button を追加
+    private Button interruptibilityButton,
+            taskButton,
+            locationButton,
+            usePurposeButton,  //s 追加：スマホ使用目的
+            noteButton,  //s 追加：ロック画面で通知を確認したことによる開始か
+            commentButton;  //s 押されると ListDialogFragment とかのフラグメントの表示に移る
+    private Button[] interruptibilityButtonEx = new Button[5];  //s 追加：5つのボタン
 
-    private boolean mode,  //s 割込み通知が一定時間無反応だった（回答時間が過ぎました）なら false
+    private boolean mode,  //s 割込み通知が一定時間無反応だった（回答時間が過ぎました）なら false …？（それ以外にも普通に用途がある気がする）
             answered = false;  //s 割込み通知に回答があったら true ？
 
     private EvaluationData evaluationData;
@@ -85,15 +87,22 @@ public class QuestionFragment_Ex extends DialogFragment{
         final LinearLayout rootLayout;
         rootLayout = (LinearLayout)inflater.inflate(R.layout.dialog_layout_ex, null, false);
 
-        interruptibility = (Button) rootLayout.findViewById(R.id.interrupt);
-        task = (Button) rootLayout.findViewById(R.id.task);
-        location = (Button) rootLayout.findViewById(R.id.location);
-        usePurpose = (Button) rootLayout.findViewById(R.id.usePurpose);  //s 追加：スマホ使用目的
-        comment = (Button) rootLayout.findViewById(R.id.comment);
+        interruptibilityButton = (Button) rootLayout.findViewById(R.id.interrupt);
+        taskButton = (Button) rootLayout.findViewById(R.id.task);
+        locationButton = (Button) rootLayout.findViewById(R.id.location);
+        usePurposeButton = (Button) rootLayout.findViewById(R.id.usePurpose);  //s 追加：スマホ使用目的
+        commentButton = (Button) rootLayout.findViewById(R.id.comment);
+
+        //s 追加：interruptibilityButton を5つの押しボタンにバラしたver
+        interruptibilityButtonEx[0] = (Button) rootLayout.findViewById(R.id.interrupt1);
+        interruptibilityButtonEx[1] = (Button) rootLayout.findViewById(R.id.interrupt2);
+        interruptibilityButtonEx[2] = (Button) rootLayout.findViewById(R.id.interrupt3);
+        interruptibilityButtonEx[3] = (Button) rootLayout.findViewById(R.id.interrupt4);
+        interruptibilityButtonEx[4] = (Button) rootLayout.findViewById(R.id.interrupt5);
 
 
-        comment.setText(evaluationData.comment);
-        comment.setOnClickListener(new View.OnClickListener() {
+        commentButton.setText(evaluationData.comment);
+        commentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 InputDialogFragment fragment = InputDialogFragment.newInstance("気になったことなど");
@@ -105,11 +114,15 @@ public class QuestionFragment_Ex extends DialogFragment{
         });
 
         if(mode) {
-            interruptibility.setText(String.valueOf(evaluationData.evaluation));
-            interruptibility.setOnClickListener(new View.OnClickListener() {
+            interruptibilityButton.setText(String.valueOf(evaluationData.evaluation));
+            interruptibilityButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ListDialogFragment fragment = ListDialogFragment.newInstance("現在の割り込み拒否度は？\n1（問題なし）～5（嫌）", new String[]{"1", "2", "3", "4", "5"});
+                    String title = "現在の割り込み拒否度は？\n1（問題なし）～5（嫌）";  //s 追加ここから
+                    String[] selection = {
+                            "1（大丈夫）", "2", "3", "4", "5（忙しい）"  //s 最初の1文字は半角数字（そのまま数値に変換される）
+                    };  //s 追加ここまで
+                    ListDialogFragment fragment = ListDialogFragment.newInstance(title, selection);  //s 変更；引数を上に分離
                     fragment.setTargetFragment(selfFragment, INTERRUPTIBILITY_REQUEST_CODE);
                     getActivity().getSupportFragmentManager().beginTransaction()
                             .add(fragment, INTERRUPTIBILITY)
@@ -117,11 +130,41 @@ public class QuestionFragment_Ex extends DialogFragment{
                 }
             });
 
-            task.setText(evaluationData.task);
-            task.setOnClickListener(new View.OnClickListener() {
+            //s 追加：5つのボタンにバラしたver
+            int index = evaluationData.evaluation - 1;
+            if (index < 0 || 4 < index) {
+                index = 0;
+            }
+            interruptibilityButtonEx[index].setBackgroundResource(R.drawable.button_background_highlight);
+            for (int i=0; i<5; i++) {
+                interruptibilityButtonEx[i].setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        int index = 0;
+                        for (int i=0; i<5; i++) {
+                            int resource = R.drawable.button_background;
+                            interruptibilityButtonEx[i].setBackgroundResource(resource);
+                            if (view == interruptibilityButtonEx[i]) {
+                                index = i;
+                            }
+                        }
+                        view.setBackgroundResource(R.drawable.button_background_highlight);  //s 押されたやつをハイライト
+
+                        evaluationData.evaluation = (index + 1);
+                        interruptibilityButton.setText(String.valueOf(index + 1));
+                    }
+                });
+            }
+
+            taskButton.setText(evaluationData.task);
+            taskButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ListDialogFragment fragment = ListDialogFragment.newInstance("割り込み直前の作業内容は？", new String[]{"PC作業", "デスクワーク", "机外作業", "移動", "会話", "休憩",  "自由記述"});
+                    String title = "割り込み直前の作業内容は？";  //s 追加ここから
+                    String[] selection = {
+                            "PC作業", "デスクワーク", "机外作業", "移動", "会話", "休憩",  "自由記述"
+                    };  //s 追加ここまで
+                    ListDialogFragment fragment = ListDialogFragment.newInstance(title, selection);  //s 変更；引数を上に分離
                     fragment.setTargetFragment(selfFragment, TASK_REQUEST_CODE);
                     getActivity().getSupportFragmentManager().beginTransaction()
                             .add(fragment, TASK)
@@ -129,11 +172,15 @@ public class QuestionFragment_Ex extends DialogFragment{
                 }
             });
 
-            location.setText(evaluationData.location);
-            location.setOnClickListener(new View.OnClickListener() {
+            locationButton.setText(evaluationData.location);
+            locationButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ListDialogFragment fragment = ListDialogFragment.newInstance("現在の場所は？", new String[]{"414", "419", "4S", "4Q", "S4", "自由記述"});
+                    String title = "現在の場所は？";  //s 追加ここから
+                    String[] selection = {
+                            "414", "419", "4S", "4Q", "S4",  "自由記述"
+                    };  //s 追加ここまで
+                    ListDialogFragment fragment = ListDialogFragment.newInstance(title, selection);  //s 変更；引数を上に分離
                     fragment.setTargetFragment(selfFragment, LOCATION_REQUEST_CODE);
                     getActivity().getSupportFragmentManager().beginTransaction()
                             .add(fragment, LOCATION)
@@ -142,14 +189,15 @@ public class QuestionFragment_Ex extends DialogFragment{
             });
 
             //s 追加ここから：スマホ使用目的
-            usePurpose.setText(evaluationData.usePurpose);
-            usePurpose.setOnClickListener(new View.OnClickListener() {
+            usePurposeButton.setText(evaluationData.usePurpose);
+            usePurposeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    String title = "スマホの使用目的は？\n（なるべく始めの5つから選択）";
                     String[] selection = {
-                            "時間・通知の確認", "サブPC的利用", "情報アクセス", "私用", "休憩",  "自由記述"
+                            "時間・通知の確認", "サブPC的利用", "情報アクセス", "私用", "休憩",  "それ以外"
                     };
-                    ListDialogFragment fragment = ListDialogFragment.newInstance("スマホの使用目的は？", selection);
+                    ListDialogFragment fragment = ListDialogFragment.newInstance(title, selection);
                     fragment.setTargetFragment(selfFragment, USE_PURPOSE_REQUEST_CODE);
                     getActivity().getSupportFragmentManager().beginTransaction()
                             .add(fragment, USE_PURPOSE)
@@ -160,21 +208,38 @@ public class QuestionFragment_Ex extends DialogFragment{
         }
         else {  //s 時間内に回答をしなかった場合
             TextView interruptibilityText = (TextView)rootLayout.findViewById(R.id.interruptibilityText);
+            TextView interruptibilitySubTextL = (TextView)rootLayout.findViewById(R.id.interruptibilitySubTextL);  //s 追加
+            TextView interruptibilitySubTextR = (TextView)rootLayout.findViewById(R.id.interruptibilitySubTextR);  //s 追加
             TextView taskText = (TextView)rootLayout.findViewById(R.id.taskText);
             TextView locationText = (TextView)rootLayout.findViewById(R.id.locationText);
+            TextView usePurposeText = (TextView)rootLayout.findViewById(R.id.usePurposeText);  //s 追加
             TextView commentText = (TextView)rootLayout.findViewById(R.id.commentText);
 
             rootLayout.removeView(interruptibilityText);
+            rootLayout.removeView(interruptibilitySubTextL);  //s 追加
+            rootLayout.removeView(interruptibilitySubTextR);  //s 追加
             rootLayout.removeView(taskText);
             rootLayout.removeView(locationText);
+            rootLayout.removeView(usePurposeText);  //s 追加
 
-            rootLayout.removeView(interruptibility);
-            rootLayout.removeView(task);
-            rootLayout.removeView(location);
+            rootLayout.removeView(interruptibilityButton);
+            for (int i=0; i<5; i++) {  //s 追加ここから
+                rootLayout.removeView(interruptibilityButtonEx[i]);  //s なぜかこれで消えない（非常にバカっぽいコメント）
+            }  //s 追加ここまで
+            rootLayout.removeView(taskButton);
+            rootLayout.removeView(locationButton);
+            rootLayout.removeView(usePurposeButton);  //s 追加
 
-            interruptibility.setVisibility(View.INVISIBLE);
-            task.setVisibility(View.INVISIBLE);
-            location.setVisibility(View.INVISIBLE);
+            interruptibilityButton.setVisibility(View.INVISIBLE);
+            for (int i=0; i<5; i++) {  //s 追加ここから
+                interruptibilityButtonEx[i].setVisibility(View.GONE);  //s なぜか消えないので GONE を指定
+            }  //s 追加ここまで
+            taskButton.setVisibility(View.INVISIBLE);
+            locationButton.setVisibility(View.INVISIBLE);
+            usePurposeButton.setVisibility(View.INVISIBLE);  //s 追加
+
+            interruptibilitySubTextL.setVisibility(View.GONE);  //s 追加（なぜか消えないので GONE を指定）
+            interruptibilitySubTextR.setVisibility(View.GONE);  //s 追加（同上）
 
             commentText.setText("遅れた理由は？");
         }
@@ -226,24 +291,24 @@ public class QuestionFragment_Ex extends DialogFragment{
         String txt = bundle.getString(ListDialogFragment.TEXT_RESULT, "");
         switch (requestCode){
             case INTERRUPTIBILITY_REQUEST_CODE:
-                this.evaluationData.evaluation = Integer.parseInt(txt);
-                interruptibility.setText(txt);
+                this.evaluationData.evaluation = Integer.parseInt(txt.substring(0, 1));  //s 変更：最初の1文字だけを数値に変換
+                interruptibilityButton.setText(txt.substring(0, 1));  //s 変更：同上
                 break;
             case TASK_REQUEST_CODE:
                 this.evaluationData.task = txt;
-                task.setText(txt);
+                taskButton.setText(txt);
                 break;
             case LOCATION_REQUEST_CODE:
                 this.evaluationData.location = txt;
-                location.setText(txt);
+                locationButton.setText(txt);
                 break;
             case USE_PURPOSE_REQUEST_CODE:  //s 追加ここから：スマホ使用目的
                 this.evaluationData.usePurpose = txt;
-                usePurpose.setText(txt);
+                usePurposeButton.setText(txt);
                 break;  //s 追加ここまで
             case COMMENT_REQUEST_CODE:
                 this.evaluationData.comment = bundle.getString(InputDialogFragment.INPUT_TEXT, "");
-                comment.setText(this.evaluationData.comment);
+                commentButton.setText(this.evaluationData.comment);
                 break;
             default:
                 break;

@@ -9,6 +9,15 @@
         android:layout_height="wrap_content">
 
         <!-- 最上部：apkファイル置き場を開くボタン -->
+        <TextView
+            android:id="@+id/currentVersionName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignStart="@+id/forceNoteSwitch"
+            android:layout_alignLeft="@+id/forceNoteSwitch"
+            android:layout_marginTop="30dp"
+            android:text="Ver0.0.0" />
         <Button
             android:id="@+id/checkUpdateButton"
             android:layout_width="wrap_content"
@@ -27,8 +36,8 @@
             android:layout_below="@+id/checkUpdateButton"
             android:layout_marginStart="20dp"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="15dp"
-            android:text="通知の配信を強制 "
+            android:layout_marginTop="20dp"
+            android:text="通知の配信を抑制しない "
             android:textSize="20sp" />
 
         <TextView
@@ -40,7 +49,7 @@
             android:layout_alignLeft="@+id/forceNoteSwitch"
             android:layout_alignParentTop="false"
             android:layout_marginTop="0dp"
-            android:text="他のよりも多く発生するタイプの割込みでも\n気にせず通知を配信する" />
+            android:text="他のよりも多く発生するタイプの割込みでも\n気にせずに100％通知を配信する" />
 
 
         <!-- 2段目：歩行で通知を出さないオプション -->

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
@@ -20,6 +21,8 @@ import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
+
+import org.w3c.dom.Text;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.LogEx;
 import ac.tuat.fujitaken.exp.interruptibilityapp.R;
@@ -71,6 +74,19 @@ public class SettingFragment_Ex extends Fragment {
                              Bundle savedInstanceState) {
 
         @SuppressLint("InflateParams") View root = inflater.inflate(R.layout.fragment_setting_ex, null);
+
+        //s 現在のバージョンを表示する
+        Context context = Settings.getContext();
+        PackageManager pm = context.getPackageManager();
+        String versionName = "";
+        try {
+            versionName = "Ver" + pm.getPackageInfo(context.getPackageName(), 0).versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            LogEx.e("SettingFragment_Ex", "PackageManager.NameNotFoundException");
+            e.printStackTrace();
+        }
+        TextView versionText = (TextView)root.findViewById(R.id.currentVersionName);  //s バージョン番号
+        versionText.setText(versionName);
 
         Button b0 = (Button)root.findViewById(R.id.checkUpdateButton);  //s 最新版アップデート確認ボタン
         b0.setOnClickListener(v -> {

@@ -44,6 +44,9 @@ public class NotificationController {
             answerLine;
     private InterruptTiming timing;
 
+    private boolean cancelAskTask = false;  //s 追加：askTask の通知配信を中断するフラグ（やっつけ）
+
+
     /**
      * 通知への回答を受け取るレシーバ
      */
@@ -88,6 +91,13 @@ public class NotificationController {
     private Runnable askTask = new Runnable() {
         @Override
         public void run() {
+            //s 追加：cancelAskTask に true が設定されていたら 通知の配信を中断する
+            if (cancelAskTask) {
+                LogEx.w("NC.askTask", "通知配信を中断");
+                cancelAskTask = false;  //s 用は済んだので戻す
+                return;
+            }
+
             interruptionNotification.cancel();
             lateData.setValue(answerData);
             Bundle bundle = new Bundle();
@@ -100,7 +110,7 @@ public class NotificationController {
     };
 
     //通知への回答がなかったとき，通知を消す処理
-    //s　上の BroadcastReceiver receiver でスケジューラに渡される
+    //s 上の BroadcastReceiver receiver でスケジューラに渡される
     private Runnable cancelTask = new Runnable() {
         @Override
         public void run() {
@@ -127,7 +137,7 @@ public class NotificationController {
     //s インスタンスを生成 ＆ 生成したインスタンスを返す
     //s InterruptTiming のコンストラクタから呼ばれる
     public static NotificationController getInstance(AllData allData, InterruptTiming timing){
-        //s if (instance == null) の条件を入れたほうがいいような気がする
+        //s if (instance == null) の条件を入れてもいいような気がする
         instance = new NotificationController(allData, timing);
         return instance;
     }
@@ -149,9 +159,10 @@ public class NotificationController {
         filter.addAction(QuestionActivity.UPDATE_CANCEL);
 
         answerData = new EvaluationData();
-        answerData.evaluation = 1;
+        answerData.evaluation = 5;  //s 変更：デフォルトを 1 から変更（忙しいときにそのまま決定できるように）
         answerData.task = "PC作業";
         answerData.location = "414";
+        answerData.usePurpose = "";  //s 追加：スマホ使用目的
 
         lateData = new EvaluationData();
         lateData.evaluation = -3;
@@ -199,7 +210,18 @@ public class NotificationController {
         bundle.putSerializable(EvaluationData.EVALUATION_DATA, line);
 
         //s 割込み拒否度の評価を要求する通知を配信する（本命）
-        interruptionNotification.normalNotify(bundle, ((event & Screen.UNLOCK) > 0 ? 10000 : 0));  //s 変更：ロック解除時は10秒待機するように
+        delay = ( (event & Screen.UNLOCK) > 0 ? 10000 : 0 );  //s 追加：通知配信を遅延させるミリ秒数
+        boolean isFailed = interruptionNotification.normalNotify(bundle, delay);  //s 変更：ロック解除時は10秒待機するように
+
+        // 追加：通知の遅延配信に失敗（被り）したら askTask のスケジュールを停止する
+        if (isFailed) {
+            LogEx.w("NC.normalNotify", "通知の遅延配信に失敗したので askTask のスケジュールを停止");
+            saveEvent(event, line);  //s そもそも通知を配信しようとしなかったことにする
+            line.task = "";
+            line.location = "";
+            //schedule.shutdownNow();  //s なんかうまくいかない
+            cancelAskTask = true;  //s やっつけ
+        }
 
         hasNotification = true;
         evaluationSave.lock = true;  //s 名前変更：rock → lock

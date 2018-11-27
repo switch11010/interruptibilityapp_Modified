@@ -21,6 +21,8 @@ import java.util.concurrent.TimeUnit;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.LogEx;  //s 自作Log
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.Settings;
+import ac.tuat.fujitaken.exp.interruptibilityapp.interruption.NotificationController;
+import ac.tuat.fujitaken.exp.interruptibilityapp.ui.main.fragments.SettingFragment;
 
 /**
  * Created by hi on 2015/10/28.
@@ -59,28 +61,31 @@ public class InterruptionNotification {
     }
 
     //s 普通の割込み拒否度の評価 の通知を配信する
-    //s NotificationController.normalNotify(), .normalNotify(int event, EvaluationData) で呼ばれる
-    public void normalNotify(final Bundle bundle){
-        notification(bundle, true, 0);  //s 変更：通知配信の遅延時間の引数を追加
+    //s NotificationController.normalNotify() で呼ばれるが使用されていない
+    public boolean normalNotify(final Bundle bundle){  //s 変更：返り値を追加（遅延時間指定が無いので常にfalse）
+        return notification(bundle, true, 0);  //s 変更：通知配信の遅延時間の引数を追加、返り値を追加
     }
     //s 追加：通知配信の遅延時間を指定できるようにしたver
-    public void normalNotify(final Bundle bundle, long delayMillis){
-        notification(bundle, true, delayMillis);
+    //s NotificationController.normalNotify(int event, EvaluationData) で呼ばれる
+    //s 返り値：通知を遅延させた結果、他の通知と被って配信できなかったら true
+    public boolean normalNotify(final Bundle bundle, long delayMillis){
+        return notification(bundle, true, delayMillis);
     }
 
     //s なんで通知無視したんや の通知を配信する
     //s NotificationController.normalNotify(int event, EvaluationData) 内でスケジューラに設定される askTask から呼ばれる
-    public void cancelNotify(final Bundle bundle){
-        notification(bundle, false, 0);  //s 変更：通知配信の遅延時間の引数を追加
+    public boolean cancelNotify(final Bundle bundle){  //s 変更：返り値を追加（遅延時間指定が無いので常にfalse）
+        return notification(bundle, false, 0);  //s 変更：通知配信の遅延時間の引数を追加
     }
     //s 追加：通知配信の遅延時間を指定できるようにしたver（未使用）
-    public void cancelNotify(final Bundle bundle, long delayMillis){
-        notification(bundle, true, delayMillis);
+    //s 返り値：通知を遅延させた結果、他の通知と被って配信できなかったら true
+    public boolean cancelNotify(final Bundle bundle, long delayMillis){
+        return notification(bundle, true, delayMillis);
     }
 
     //s いろいろパラメータを設定して、通知を配信する
     //s 上の normalNotify(), cancelNotify() から呼ばれる
-    private void notification(Bundle bundle, boolean mode, long delayMillis) {  //s 変更：通知配信の遅延時間の引数を追加
+    private boolean notification(Bundle bundle, boolean mode, long delayMillis) {  //s 変更：通知配信の遅延時間の引数と返り値（true：通知配信被りで失敗）を追加
         Intent intent = new Intent(context, QuestionActivity.class);
         bundle.putBoolean(TYPE, mode);
         intent.putExtras(bundle);
@@ -147,6 +152,24 @@ public class InterruptionNotification {
                 LogEx.e("IntrrptNote.notifi()", "InterruptedException");
                 e.printStackTrace();
             }
+
+            //s 他のイベントだかで通知が既に出ていたら配信しないで終了（もうちょっとマシな方法がある気がする）
+            if (NotificationController.hasNotification) {
+                LogEx.d("IntrrptNote.notifi()", "sleepしてる間に他の通知が出た");
+                audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, currentVolume, 0);
+                audioManager.setRingerMode(currentRinger);
+                wakelock.release();
+                return true;  //s 中断
+            }
+
+            //s 遅延している間にサービスが停止されていたら配信しないで終了
+            if (!SettingFragment.isServiceActive(Settings.getContext())) {
+                LogEx.d("IntrrptNote.notifi()", "通知配信遅延中にサービス終了");
+                audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, currentVolume, 0);
+                audioManager.setRingerMode(currentRinger);
+                wakelock.release();
+                return true;  //s 中断
+            }
         }  //s 追加ここまで
 
         notificationManager.notify(NOTIFICATION_ID, notification);  //s 通知を配信
@@ -160,6 +183,7 @@ public class InterruptionNotification {
         }, 3, TimeUnit.SECONDS);
 
         wakelock.release();
+        return false;
     }
 
     /**
@@ -201,7 +225,7 @@ public class InterruptionNotification {
         int pattern = vibrationPattern.length - 1;
         double rnd = Math.random();
 
-        if (rnd < 0.95) {
+        if (rnd < 0.97) {
             pattern = 0;
         } else if (rnd < 0.995) {
             pattern = 1;
