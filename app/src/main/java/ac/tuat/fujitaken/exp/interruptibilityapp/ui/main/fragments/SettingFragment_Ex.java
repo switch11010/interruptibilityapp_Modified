@@ -71,8 +71,16 @@ public class SettingFragment_Ex extends Fragment {
                              Bundle savedInstanceState) {
 
         @SuppressLint("InflateParams") View root = inflater.inflate(R.layout.fragment_setting_ex, null);
-        /*saveSwitch = (SwitchCompat)root.findViewById(R.id.saveSwitch);
-        noteSwitch = (SwitchCompat)root.findViewById(R.id.noteSwitch);*/
+
+        Button b0 = (Button)root.findViewById(R.id.checkUpdateButton);  //s 最新版アップデート確認ボタン
+        b0.setOnClickListener(v -> {
+            String URL = "https://seesaawiki.jp/mngb_personal_memo/d/apk%a5%d5%a5%a1%a5%a4%a5%eb%c3%d6%a4%ad%be%ec";
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(URL));
+            startActivity(intent);
+        });
+
         forceNoteSwitch = (SwitchCompat)root.findViewById(R.id.forceNoteSwitch);  //s 通知の強制
         noNoteOnWalkSwitch = (SwitchCompat)root.findViewById(R.id.noNoteOnWalkSwitch);  //s 歩行時通知配信抑制
         lockScreenOffSecText = (EditText)root.findViewById(R.id.lockScreenOffSecText);  //s ロック画面自動消灯時間

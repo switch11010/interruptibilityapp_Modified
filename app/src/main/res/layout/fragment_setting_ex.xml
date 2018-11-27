@@ -8,6 +8,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <!-- 最上部：apkファイル置き場を開くボタン -->
+        <Button
+            android:id="@+id/checkUpdateButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="15dp"
+            android:text="最新版のアップデートを確認" />
+
+
         <!-- 1段目：遠慮せずに通知をガシガシ出すオプション -->
         <android.support.v7.widget.SwitchCompat
             android:id="@+id/forceNoteSwitch"
