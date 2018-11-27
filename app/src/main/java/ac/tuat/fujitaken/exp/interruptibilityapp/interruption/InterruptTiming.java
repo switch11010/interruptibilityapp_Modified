@@ -129,6 +129,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                         noteFlag = note    //通知モード
                                 && !NotificationController.hasNotification,  //待機状態の通知なし
                         udpComm = (eventFlag & Screen.SCREEN_ON) > 0 || (eventFlag & Walking.WALK_START) > 0;   //UDP通信が必要かどうか
+
                 LogEx.d("InterruptTiming.eTT", "----------------------------------------");  //s 追加ここから（デバッグ）
                 if (!noteFlag) {
                     LogEx.d("InterruptTiming.eTT", "通知を配信しない判断");
@@ -136,7 +137,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                     LogEx.d("InterruptTiming.eTT", "NC.hasNotification: " + NotificationController.hasNotification);
                 }  //s 追加ここまで
 
-                if (event == ActiveApp.APP_SWITCH) {  //s 追加：アプリ切替じゃないときだけUDPでPC操作の有無を調査するように変更
+                if (event == ActiveApp.APP_SWITCH) {  //s if分岐追加：アプリ切替じゃないときだけUDPでPC操作の有無を調査するように変更
                     String message = "null";
                     if (udpConnection != null && udpComm) {
 
@@ -148,45 +149,39 @@ public class InterruptTiming implements RegularThread.ThreadListener {
 
                 //LogEx.d("EVENT", "Num is " + Integer.toBinaryString(event));  //s コメントアウト
                 //LogEx.d("EVENT", Settings.getEventCounter().getEventName(event));  //s コメントアウト
-                //LogEx.d("InterruptTiming.eTT", "--------------------");  //s 追加ここから
                 String str = "イベント発生：" + Integer.toBinaryString(event);
                 str += " -> " + Settings.getEventCounter().getEventName(event);
                 LogEx.d("InterruptTiming.eTT", str);
                 /*for (int i=0; i<line.data.size(); i++) {
                     LogEx.e("EvalData line.data", DataReceiver.NAMES[i] + ":\t" + line.data.get(i).getString());
                 }*/
-                LogEx.e("EvalData prevTime", new java.util.Date(prevTime).toString());
-                LogEx.e("EvalData line.time", new java.util.Date(line.time).toString());  //s 追加ここまで
+                LogEx.w("EvalData prevTime", new java.util.Date(prevTime).toString());
+                LogEx.w("EvalData line.time", new java.util.Date(line.time).toString());  //s 追加ここまで
 
                 //s 設定で通知モードが ON なら、通知を配信するか判断する　＆アプリ切替で通知配信がオンでアプリ切替イベントだった場合も追加
                 //if (noteFlag) {  //s コメントアウト：変更前
                 if (noteFlag || event == ActiveApp.APP_SWITCH) {  //s 変更：アプリ切替のイベントの対応を追加
-                    //一時的に確率変更
+                    //一時的に確率変更  //s 恒久的な気がする
                     double p = calcP(event);
                     LogEx.d("EVENT_P", "time " + (line.time - prevTime));
                     LogEx.d("EVENT_P", "P " + p);
                     LogEx.d("EVENT_P", "PC Flag " + pc.isPcFlag());
 
-                    boolean forceNote = Settings.getAppSettings().isForceNoteMode();  //s 追加：通知を強制する設定
-                    boolean isTimePassed = line.time - prevTime > Constants.NOTIFICATION_INTERVAL;  //s 追加：前の通知から一定時間経過（ifの判定式から独立）
-                    /*if (p >= 2  //評価数が平均より1/2以下では時間に関係なく通知
-                            || pcOpsFlag(event)
-                            //||( Math.random() < p && line.time - prevTime > Constants.NOTIFICATION_INTERVAL)) {    //前の通知から一定時間経過  //s コメントアウト
-                            || ( (Math.random() < p || p > 0 && forceNote) && isTimePassed )) {  //s 変更：確率(>0)で false でも Setting_Ex の 通知を強制 がオンなら通知を配信*/
-                    double rnd = Math.random();  //s デバッグ用 ここから（上のブロックコメントが変更前）
-                    boolean eval1 = rnd < p, eval2 = ( (eval1 || p > 0 && forceNote) && isTimePassed );
-                    LogEx.d("InterruptTiming", "rnd: "+rnd);
-                    LogEx.d("InterruptTiming", "eval1: "+eval1);
-                    LogEx.d("InterruptTiming", "eval2: "+eval2);
-                    LogEx.d("InterruptTiming", "├ rnd()<p 確率当選？: "+(eval1 || p > 0 && forceNote));
-                    LogEx.d("InterruptTiming", "└ 前回通知から時間経過？: "+isTimePassed);
-                    if (p >= 2  //評価数が平均より1/2以下では時間に関係なく通知
-                            || pcOpsFlag(event)
-                            //||( Math.random() < p && line.time - prevTime > Constants.NOTIFICATION_INTERVAL)) {    //前の通知から一定時間経過  //s コメントアウト
-                            || eval2) {  //s 変更：確率(>0)で false でも Setting_Ex の 通知を強制 がオンなら通知を配信  //s デバッグ用 ここまで
-                        if (forceNote) {  //s 追加ここから
-                            LogEx.d("forceNoteMode", "通知の配信を強制 がオン");
-                        }  //s 追加ここまで
+                    //s 変更・追加：だいたいこの辺から（変更前のよくわからない式は消滅）
+                    double rnd = Math.random();  //s 乱数を一時記憶
+                    boolean forceNote = Settings.getAppSettings().isForceNoteMode();  //s 通知を強制する設定
+                    boolean pResult = rnd < p || p > 0 && forceNote;  //s 確率に当選、または、確率(>0)で false でも Setting_Ex の 通知を強制 がオンなら通知を配信
+                    boolean isTimePassed = line.time - prevTime > Constants.NOTIFICATION_INTERVAL;  //s 前の通知から一定時間経過
+                    LogEx.d("InterruptTiming.eTT", "rnd: " + rnd);
+                    LogEx.d("InterruptTiming.eTT", "通知配信判断: " + (pResult && isTimePassed) );
+                    LogEx.d("InterruptTiming.eTT", "├ rnd<p 確率当選？: " + pResult);
+                    LogEx.d("InterruptTiming.eTT", "└ 前回通知から間を空けた？: " + isTimePassed);
+
+                    if ( pcOpsFlag(event) || pResult && isTimePassed ) {  //s pcOpsFlag(event)：変更前のなごり（よくわかっていない）
+                        if (forceNote) {
+                            LogEx.w("forceNoteMode", "通知の配信を強制 がオン");
+                        }  //s 変更・追加：だいたいこの辺まで
+
                         notificationController.normalNotify(event, line);  //s 通知を配信する
                         eval = true;
                     }
@@ -202,11 +197,11 @@ public class InterruptTiming implements RegularThread.ThreadListener {
     private boolean pcOpsFlag(int event){
         if(pc.isPcFlag()) {
             if ((event & (Screen.SCREEN_ON)) > 0) {  //s PC使用＆スマホも使い始めた…？
-                LogEx.d("InterruptTiming", "pcOpsFlag: true1");  //s 追加
+                LogEx.d("InterruptTiming", "pcOpsFlag: random (on)");  //s 追加
                 return Math.random() < 0.5;
             }
             else if ((event & (Screen.SCREEN_OFF)) > 0) {  //s PC使用＆スマホを使い終えた？
-                LogEx.d("InterruptTiming", "pcOpsFlag: true2");  //s 追加
+                LogEx.d("InterruptTiming", "pcOpsFlag: true (off)");  //s 追加
                 return true;
             }
         }
@@ -238,6 +233,12 @@ public class InterruptTiming implements RegularThread.ThreadListener {
             return 0;
         }
 
+        //s 追加：まだ1回も画面を点灯させていなかったら 確率を 0 にする（サービス開始直後の消灯を飛ばすのが目的）
+        if (screen.getScreenOnCount() == 0) {
+            LogEx.e("InterruptTiming.calcP", "まだ画面を点灯させたことがない");
+            return 0;
+        }
+
         //対象となる遷移のサンプル数
         int s = counter.getEvaluations(event);  //s 今回のイベントの発生回数
         s = s == 0? 1: s;
@@ -247,6 +248,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
          */
         if((event & (EventCounter.WALK_START_FLAG | EventCounter.WALK_STOP_FLAG)) >0){
             if(s == 1024){
+                LogEx.w("InterruptTiming.calcP", "歩行回数が1024回に到達");  //s 追加
                 return 0;
             }
             if (settings.isNoNoteOnWalkMode()) {   //s 追加ここから

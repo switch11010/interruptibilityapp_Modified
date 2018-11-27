@@ -37,6 +37,10 @@ public class Screen {
     private String appName = "";
     private boolean prevUnlocked = true;  //s 追加：前回にロック解除済だったかの状態
 
+    private int screenOnCount = 0;  //s 追加：サービス開始から画面を点灯した回数
+    private int unlockedCount = 0;  //s 追加：ロックを解除した回数
+
+
     //s MainService.onCreate()→InterruptTiming() から呼ばれる
     public Screen(Context context){
         //s 可変長配列 buffer の初期化（全部 0：操作なし で埋めて、最新値だけ 1：操作あり にする）
@@ -95,7 +99,7 @@ public class Screen {
             bufferL.add(ops);
         }  //s 追加ここまで
 
-        //s 画面がオンになったかどうか、オフになったかどうか（両方 false もあり得る）
+        //s 画面がオンになったか などのイベントの判断（オンとオフの両方 false もあり得る）
         boolean on = latestValue && !prevState && !(prevConnect && !connect) && !appName.equals(noteApp),  //s 今回入＆前回切＆（前回接続＆今回非接続）ではない＆通知が自分のではない
         //off = !latestValue && prevState && sumOps > 0;  //s コメントアウト：今回切＆前回入＆無操作による画面切ではない
         off = !latestValue && prevState && (prevUnlocked && sumOps > 0 || bufferL != null && !prevUnlocked && sumOpsL > 0);  //s 変更：ロック画面での無操作画面切に対応
@@ -119,12 +123,31 @@ public class Screen {
         int ret = 0;
         if(on){  //s 画面をつけた
             ret = SCREEN_ON;
+            screenOnCount++;  //s 追加：画面点灯のカウンタを更新
         }
         else if(off){  //s 画面を消した
             ret = SCREEN_OFF;
         }
-        ret = ret | (unlock ? UNLOCK : 0);  //s 追加：ロック解除がされたかどうかも返り値のビットに追加
-        ret = ret | (lock ? LOCK : 0);  //s 追加：ロック設定についても同様
+        //s 追加ここから：ロック解除 / ロック設定 についても画面オンオフと同様に
+        if (unlock) {
+            ret = ret | UNLOCK;  //s ロック解除がされたかどうかも返り値のビットに追加
+            unlockedCount++;  //s ロック解除のカウンタを更新
+        } else if (lock) {
+            ret = ret | LOCK;  //s ロック設定がされたかどうかも返り値のビットに追加
+        }
+        //s 追加ここまで
+
         return ret;
+    }
+
+
+    //s 追加：画面点灯の回数を取得する（ただのゲッタ）
+    public int getScreenOnCount() {
+        return screenOnCount;
+    }
+
+    //s 追加：ロック解除の回数を取得する（ただのゲッタ）
+    public int getUnlockedCount() {
+        return unlockedCount;
     }
 }
