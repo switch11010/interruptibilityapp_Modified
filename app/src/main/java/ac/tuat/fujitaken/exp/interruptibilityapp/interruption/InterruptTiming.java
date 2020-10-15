@@ -31,6 +31,8 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.flow.RegularThread;
 /**
  * 通知タイミング検出用
  * Created by hi on 2015/11/17.
+ * Modified by s on 2018
+ * Modified by ny on 2020
  */
 public class InterruptTiming implements RegularThread.ThreadListener {
 
