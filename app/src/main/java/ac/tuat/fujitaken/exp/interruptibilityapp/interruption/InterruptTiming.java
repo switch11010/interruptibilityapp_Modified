@@ -46,7 +46,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
     private Screen screen;
     private Notify notify;
     private PC pc;
-
+    private ActiveApp activeApp; //ny 追加：アプリ遷移イベント
     //通知モードになっているか
     private boolean note;
 
@@ -74,6 +74,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
         screen = new Screen(context);
         notify = new Notify(context);
         pc = new PC();
+        activeApp = new ActiveApp(); //ny 追加
     }
 
     //s MainService.onDestroy() から呼ばれる
@@ -103,10 +104,10 @@ public class InterruptTiming implements RegularThread.ThreadListener {
         int w = walking.judge(((BoolData)map.get(DataReceiver.WALK)).value);  //s 歩行の開始終了の有無
         int s = screen.judge(mAllData.getData());                             //s 画面の点灯消灯の有無
         int n = notify.judge(((StringData)map.get(DataReceiver.NOTIFICATION)).value);  //s 新しい通知の有無
-        int a = ActiveApp.judge(mAllData.getData());  //s 追加：アプリの切り替えの有無
+        int a = activeApp.judge(mAllData.getData());  //s 追加：アプリの切り替えの有無
 
-        final int eventFlag = w | s | n;  //s 歩行・画面・通知 での状態変化のイベントのフラグ
-
+        final int eventFlag = w | s | n ;  //s 歩行・画面・通知 での状態変化のイベントのフラグ
+        //final int eventFlag = w | s | n | a;   //ny 追加：アプリ遷移
         EvaluationData evaluationData = new EvaluationData();  //s なんか RowData のやつ
         evaluationData.setValue(line);
         notificationController.save(evaluationData);  //s 通知配信無しでそのまま csv に書き込む？
@@ -114,6 +115,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
         //if((eventFlag & (Walking.WALK_START | Walking.WALK_STOP | Screen.SCREEN_ON | Screen.SCREEN_OFF)) > 0) {  //s コメントアウト
         int eventFlagToNotify = Walking.WALK_START | Walking.WALK_STOP | Screen.SCREEN_ON | Screen.SCREEN_OFF;  //s 分離
         eventFlagToNotify = eventFlagToNotify | Screen.UNLOCK;  //s 追加
+        //eventFlagToNotify = eventFlagToNotify | Screen.UNLOCK | ActiveApp.APP_SWITCH;  //ny 追加
         if((eventFlag & eventFlagToNotify) > 0) {  //s 変更：ロック解除の追加（ロックはオフで兼用）
             eventTriggeredThread(eventFlag, evaluationData);
             mAllData.scan();  //s WifiReceiver.scan()：よくわからない
@@ -131,7 +133,8 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                         noteFlag = note    //通知モード
                                 && !NotificationController.hasNotification,  //待機状態の通知なし
                         udpComm = (eventFlag & Screen.SCREEN_ON) > 0 || (eventFlag & Walking.WALK_START) > 0;   //UDP通信が必要かどうか
-                udpComm = udpComm || (eventFlag & Screen.UNLOCK) > 0;  //s 追加：ロック解除時にもUDP通信をしてみる
+                        udpComm = udpComm || (eventFlag & Screen.UNLOCK) > 0;  //s 追加：ロック解除時にもUDP通信をしてみる
+                        udpComm = udpComm || (eventFlag & ActiveApp.APP_SWITCH) > 0 || (eventFlag & Screen.LOCK) > 0; //ny 追加：ロック時（画面OFF）とアプリ遷移時もUDP通信
 
                 LogEx.d("InterruptTiming.eTT", "----------------------------------------");  //s 追加ここから（デバッグ）
                 if (!noteFlag) {
@@ -140,15 +143,18 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                     LogEx.d("InterruptTiming.eTT", "NC.hasNotification: " + NotificationController.hasNotification);
                 }  //s 追加ここまで
 
-                if (event != ActiveApp.APP_SWITCH) {  //s if分岐追加：アプリ切替じゃないときだけUDPでPC操作の有無を調査するように変更
-                    String message = "null";
-                    if (udpConnection != null && udpComm) {
+                //
+//                if (event != ActiveApp.APP_SWITCH) {  //s if分岐追加：アプリ切替じゃないときだけUDPでPC操作の有無を調査するように変更
+//                    String message = "null";
+//                    if (udpConnection != null && udpComm) {
+//
+//                        udpConnection.sendRequest(line);
+//                        message = udpConnection.receiveData();
+//                    }
+//                    event |= pc.judge(message);  //s PC のビットも追加
+//                }  //s 追加：ifによる分岐の終了
 
-                        udpConnection.sendRequest(line);
-                        message = udpConnection.receiveData();
-                    }
-                    event |= pc.judge(message);  //s PC のビットも追加
-                }  //s 追加：ifによる分岐の終了
+
 
                 //LogEx.d("EVENT", "Num is " + Integer.toBinaryString(event));  //s コメントアウト
                 //LogEx.d("EVENT", Settings.getEventCounter().getEventName(event));  //s コメントアウト
@@ -163,7 +169,8 @@ public class InterruptTiming implements RegularThread.ThreadListener {
 
                 //s 設定で通知モードが ON なら、通知を配信するか判断する　＆アプリ切替で通知配信がオンでアプリ切替イベントだった場合も追加
                 //if (noteFlag) {  //s コメントアウト：変更前
-                if (noteFlag || event == ActiveApp.APP_SWITCH) {  //s 変更：アプリ切替のイベントの対応を追加
+                //if (noteFlag || event == ActiveApp.APP_SWITCH) {  //s 変更：アプリ切替のイベントの対応を追加
+                if (noteFlag) {  //ny 一度戻す
                     //一時的に確率変更  //s 恒久的な気がする
                     double p = calcP(event);
                     LogEx.d("EVENT_P", "time " + (line.time - prevTime));
@@ -185,8 +192,19 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                             LogEx.e("forceNoteMode", "通知の配信を強制 がオン");
                         }  //s 変更・追加：だいたいこの辺まで
 
+                        //ny　変更：通知時にUDP通信
+                        String message = "null";
+                        if (udpConnection != null && udpComm) {
+                            udpConnection.sendRequest(line);
+                            // message = udpConnection.receiveData();
+                        }
+
+
                         notificationController.normalNotify(event, line);  //s 通知を配信する
                         eval = true;
+
+
+
                     }
                 }
                 if(!eval){
@@ -277,98 +295,115 @@ public class InterruptTiming implements RegularThread.ThreadListener {
         int eventCount1 = 1;
         int eventCount2 = 1;
         int eventCount3 = 1;  //s 値の正確性はそれほど重要ではないので 最少数として 1 を設定
+        int eventCount4 = 1; //ny 追加：アプリ遷移
 
         //s 画面オン＆ロック状態 → 画面オン＆ロック解除状態　の通知回答回数
         eventCount1 += counter.getEvaluations(EventCounter.SELF_UNLOCK_FLAG);
         eventCount1 += counter.getEvaluations(EventCounter.NOTE_UNLOCK_FLAG);
-        eventCount1 += counter.getEvaluations(EventCounter.PC_TO_SP_BY_SELF_UNLOCK_FLAG);
-        eventCount1 += counter.getEvaluations(EventCounter.PC_TO_SP_BY_NOTE_UNLOCK_FLAG);
+        //ny 今回は以下は使われない
+//        eventCount1 += counter.getEvaluations(EventCounter.PC_TO_SP_BY_SELF_UNLOCK_FLAG);
+//        eventCount1 += counter.getEvaluations(EventCounter.PC_TO_SP_BY_NOTE_UNLOCK_FLAG);
 
         //s 画面オフ状態 → 画面オン＆ロック解除状態（複合型）　の通知回答回数
         eventCount1 += counter.getEvaluations(EventCounter.SELF_SCREEN_ON_UNLOCK_FLAG);  //s 複合型
         eventCount1 += counter.getEvaluations(EventCounter.NOTE_SCREEN_ON_UNLOCK_FLAG);  //s 複合型
-        eventCount1 += counter.getEvaluations(EventCounter.PC_TO_SP_BY_SELF_ON_UNLOCK_FLAG);  //s 複合型
-        eventCount1 += counter.getEvaluations(EventCounter.PC_TO_SP_BY_NOTE_ON_UNLOCK_FLAG);  //s 複合型
+        //ny 今回は以下は使われない
+//        eventCount1 += counter.getEvaluations(EventCounter.PC_TO_SP_BY_SELF_ON_UNLOCK_FLAG);  //s 複合型
+//        eventCount1 += counter.getEvaluations(EventCounter.PC_TO_SP_BY_NOTE_ON_UNLOCK_FLAG);  //s 複合型
 
         //s 画面オン＆ロック状態 → 画面オフ状態　の通知回答回数
         eventCount2 += counter.getEvaluations(EventCounter.SELF_SCREEN_OFF_FLAG);
         eventCount2 += counter.getEvaluations(EventCounter.NOTE_SCREEN_OFF_FLAG);
-        eventCount2 += counter.getEvaluations(EventCounter.SP_TO_PC_BY_SELF_FLAG);
-        eventCount2 += counter.getEvaluations(EventCounter.SP_TO_PC_BY_NOTE_FLAG);
+        //ny 今回は以下は使われない
+//        eventCount2 += counter.getEvaluations(EventCounter.SP_TO_PC_BY_SELF_FLAG);
+//        eventCount2 += counter.getEvaluations(EventCounter.SP_TO_PC_BY_NOTE_FLAG);
 
         //s 画面オン＆ロック解除状態 → 画面オフ状態　の通知回答回数
         eventCount3 += counter.getEvaluations(EventCounter.SELF_SCREEN_OFF_LOCK_FLAG);
         eventCount3 += counter.getEvaluations(EventCounter.NOTE_SCREEN_OFF_LOCK_FLAG);
-        eventCount3 += counter.getEvaluations(EventCounter.SP_TO_PC_BY_SELF_LOCK_FLAG);
-        eventCount3 += counter.getEvaluations(EventCounter.SP_TO_PC_BY_NOTE_LOCK_FLAG);
+        //ny 今回は以下は使われない
+//        eventCount3 += counter.getEvaluations(EventCounter.SP_TO_PC_BY_SELF_LOCK_FLAG);
+//        eventCount3 += counter.getEvaluations(EventCounter.SP_TO_PC_BY_NOTE_LOCK_FLAG);
+
+        //ny 追加：アプリ遷移の通知回答回数
+        eventCount4 += counter.getEvaluations(EventCounter.APP_SWITCH_FLAG);
 
         switch (event) {
             // 画面点灯 のみ
             case EventCounter.SELF_SCREEN_ON_FLAG:
             case EventCounter.NOTE_SCREEN_ON_FLAG:
-            case EventCounter.PC_TO_SP_BY_SELF_FLAG:
-            case EventCounter.PC_TO_SP_BY_NOTE_FLAG:
+                //ny 今回は以下は使われない
+//            case EventCounter.PC_TO_SP_BY_SELF_FLAG:
+//            case EventCounter.PC_TO_SP_BY_NOTE_FLAG:
                 eventPattern = 0;
                 break;
 
             // ロック解除 のみ
             case EventCounter.SELF_UNLOCK_FLAG:
             case EventCounter.NOTE_UNLOCK_FLAG:
-            case EventCounter.PC_TO_SP_BY_SELF_UNLOCK_FLAG:
-            case EventCounter.PC_TO_SP_BY_NOTE_UNLOCK_FLAG:
+                //ny 今回は以下は使われない
+//            case EventCounter.PC_TO_SP_BY_SELF_UNLOCK_FLAG:
+//            case EventCounter.PC_TO_SP_BY_NOTE_UNLOCK_FLAG:
                 eventPattern = 1;
                 break;
 
             // ロック未解除状態での 画面消灯
             case EventCounter.SELF_SCREEN_OFF_FLAG:
             case EventCounter.NOTE_SCREEN_OFF_FLAG:
-            case EventCounter.SP_TO_PC_BY_SELF_FLAG:
-            case EventCounter.SP_TO_PC_BY_NOTE_FLAG:
+                //ny 今回は以下は使われない
+//            case EventCounter.SP_TO_PC_BY_SELF_FLAG:
+//            case EventCounter.SP_TO_PC_BY_NOTE_FLAG:
                 eventPattern = 2;
                 break;
 
             // ロック解除済の状態での 画面消灯
             case EventCounter.SELF_SCREEN_OFF_LOCK_FLAG:
             case EventCounter.NOTE_SCREEN_OFF_LOCK_FLAG:
-            case EventCounter.SP_TO_PC_BY_SELF_LOCK_FLAG:
-            case EventCounter.SP_TO_PC_BY_NOTE_LOCK_FLAG:
+                //ny 今回は以下は使われない
+//            case EventCounter.SP_TO_PC_BY_SELF_LOCK_FLAG:
+//            case EventCounter.SP_TO_PC_BY_NOTE_LOCK_FLAG:
                 eventPattern = 3;
                 break;
 
             // 画面点灯 と ロック解除 がいっぺんに行われた希少パターン
             case EventCounter.SELF_SCREEN_ON_UNLOCK_FLAG:  //s 複合型
             case EventCounter.NOTE_SCREEN_ON_UNLOCK_FLAG:  //s 複合型
-            case EventCounter.PC_TO_SP_BY_SELF_ON_UNLOCK_FLAG:  //s 複合型
-            case EventCounter.PC_TO_SP_BY_NOTE_ON_UNLOCK_FLAG:  //s 複合型
+                //ny 今回は以下は使われない
+//            case EventCounter.PC_TO_SP_BY_SELF_ON_UNLOCK_FLAG:  //s 複合型
+//            case EventCounter.PC_TO_SP_BY_NOTE_ON_UNLOCK_FLAG:  //s 複合型
                 eventPattern = 1;
-                break;
-
-            // 歩行開始（旧型式のなごり）
-            case EventCounter.WALK_START_FLAG:
-                eventPattern = -1;
-                start = true;
-                e = counter.getEvaluations(EventCounter.WALK_STOP_FLAG);
-                break;
-            case EventCounter.PC_TO_WALK_FLAG:
-                eventPattern = -1;
-                start = true;
-                e = counter.getEvaluations(EventCounter.WALK_TO_PC_FLAG);
-                break;
-
-            // 歩行終了（旧型式のなごり）
-            case EventCounter.WALK_STOP_FLAG:
-                eventPattern = -2;
-                e = counter.getEvaluations(EventCounter.WALK_START_FLAG);
-                break;
-            case EventCounter.WALK_TO_PC_FLAG:
-                eventPattern = -2;
-                e = counter.getEvaluations(EventCounter.PC_TO_WALK_FLAG);
                 break;
 
             // アプリ切替
             case EventCounter.APP_SWITCH_FLAG:
-                eventPattern = -3;
-                return 1;
+                eventPattern = 4;
+                break;
+
+
+
+            // 歩行開始（旧型式のなごり）
+            //ny 今回は以下は使われない
+//            case EventCounter.WALK_START_FLAG:
+//                eventPattern = -1;
+//                start = true;
+//                e = counter.getEvaluations(EventCounter.WALK_STOP_FLAG);
+//                break;
+//            case EventCounter.PC_TO_WALK_FLAG:
+//                eventPattern = -1;
+//                start = true;
+//                e = counter.getEvaluations(EventCounter.WALK_TO_PC_FLAG);
+//                break;
+//
+//            // 歩行終了（旧型式のなごり）
+//            case EventCounter.WALK_STOP_FLAG:
+//                eventPattern = -2;
+//                e = counter.getEvaluations(EventCounter.WALK_START_FLAG);
+//                break;
+//            case EventCounter.WALK_TO_PC_FLAG:
+//                eventPattern = -2;
+//                e = counter.getEvaluations(EventCounter.PC_TO_WALK_FLAG);
+//                break;
+
 
             // よくわかんないの
             default:
@@ -376,27 +411,36 @@ public class InterruptTiming implements RegularThread.ThreadListener {
         }
 
         double p = -1;  //s 通知を配信する確率
+        //ny 追加（11/18）一旦確率変更
         switch (eventPattern) {
             case 0:
-                p = 0;
+                p = 0.5;
+                //p = 0;
                 break;
             case 1:
-                p = (double)eventCount3 / (eventCount1 + eventCount3);
+                p = 0.5;
+                //p = (double)eventCount3 / (eventCount1 + eventCount3);
                 break;
             case 2:
-                int min13 = Math.min(eventCount1, eventCount3);
-                p = (double)min13 / (eventCount2 + min13);
-                p = (p + 2) / 3;
+                //int min13 = Math.min(eventCount1, eventCount3);
+                //p = (double)min13 / (eventCount2 + min13);
+                //p = (p + 2) / 3;
+                p = 0.5;
                 break;
             case 3:
-                p = (double)eventCount1 / (eventCount1 + eventCount3);
-                p = (p + 1) / 2;
+                //p = (double)eventCount1 / (eventCount1 + eventCount3);
+                //p = (p + 1) / 2;
+                p = 0.5;
+                break;
+            case 4:
+                p =  0.1;
                 break;
         }
         LogEx.d("calcP", "eventPattern: " + eventPattern);
         LogEx.d("calcP", "eventCount1: " + eventCount1);
         LogEx.d("calcP", "eventCount2: " + eventCount2);
         LogEx.d("calcP", "eventCount3: " + eventCount3);
+        LogEx.d("calcP", "eventCount4: " + eventCount4);
         if (p >= 0) {
             return p;  //s 確率が設定されたならそれを返して終了
         }

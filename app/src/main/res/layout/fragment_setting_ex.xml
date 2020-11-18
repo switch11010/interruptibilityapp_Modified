@@ -17,7 +17,7 @@
             android:layout_alignStart="@+id/forceNoteSwitch"
             android:layout_alignLeft="@+id/forceNoteSwitch"
             android:layout_marginTop="30dp"
-            android:text="Ver0.0.0" />
+            android:text="@string/ver0_0_0" />
         <Button
             android:id="@+id/checkUpdateButton"
             android:layout_width="wrap_content"
@@ -25,7 +25,7 @@
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="15dp"
-            android:text="最新版のアップデートを確認" />
+            android:text="@string/check_version" />
 
 
         <!-- 1段目：遠慮せずに通知をガシガシ出すオプション -->
@@ -37,7 +37,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="20dp"
-            android:text="通知の配信を抑制しない "
+            android:text="@string/force"
             android:textSize="20sp" />
 
         <TextView
@@ -49,7 +49,7 @@
             android:layout_alignLeft="@+id/forceNoteSwitch"
             android:layout_alignParentTop="false"
             android:layout_marginTop="0dp"
-            android:text="他のよりも多く発生するタイプの割込みでも\n気にせずに100％通知を配信する" />
+            android:text="@string/force2" />
 
 
         <!-- 2段目：歩行で通知を出さないオプション -->
@@ -61,7 +61,7 @@
             android:layout_alignStart="@+id/textView3"
             android:layout_alignLeft="@+id/textView3"
             android:layout_marginTop="30dp"
-            android:text="歩行で通知を出さない "
+            android:text="@string/walk"
             android:textSize="20sp" />
 
         <TextView
@@ -73,7 +73,7 @@
             android:layout_alignLeft="@+id/noNoteOnWalkSwitch"
             android:layout_alignParentTop="false"
             android:layout_marginTop="5dp"
-            android:text="歩行開始・歩行終了では通知を出さない" />
+            android:text="@string/walk2" />
 
 
         <!-- 3段目：ロック画面の消灯時間の手動設定 -->
@@ -86,7 +86,7 @@
             android:layout_alignLeft="@+id/textView4"
             android:layout_alignParentTop="false"
             android:layout_marginTop="30dp"
-            android:text="ロック画面自動消灯時間"
+            android:text="@string/lock_off"
             android:textColor="@android:color/black"
             android:textSize="20sp" />
 
@@ -101,7 +101,7 @@
             android:layout_toEndOf="@+id/textView5"
             android:layout_toRightOf="@+id/textView5"
             android:ems="2"
-            android:hint="秒"
+            android:hint="@string/second"
             android:inputType="numberDecimal" />
 
         <TextView
@@ -113,7 +113,7 @@
             android:layout_alignLeft="@+id/textView5"
             android:layout_alignParentTop="false"
             android:layout_marginTop="5dp"
-            android:text="画面をオンにした後に無操作で自動消灯する秒数\n1以上を設定で自動消灯の際に通知が来なくなる\n（変更後はサービスの再起動が必要）" />
+            android:text="@string/auto_off" />
 
 
         <!-- 4段目：電池最適化の設定画面を表示 -->
@@ -126,7 +126,7 @@
             android:layout_alignLeft="@+id/textView6"
             android:layout_alignParentTop="false"
             android:layout_marginTop="30dp"
-            android:text="電池最適化の設定を"
+            android:text="@string/optimize_battery"
             android:textColor="@android:color/black"
             android:textSize="20sp" />
 
@@ -140,7 +140,7 @@
             android:layout_marginTop="20dp"
             android:layout_toEndOf="@+id/textView7"
             android:layout_toRightOf="@+id/textView7"
-            android:text="表示" />
+            android:text="@string/hyouji" />
 
         <TextView
             android:id="@+id/textView8"
@@ -151,7 +151,7 @@
             android:layout_alignLeft="@+id/textView7"
             android:layout_alignParentTop="false"
             android:layout_marginTop="5dp"
-            android:text="スリープ中に処理が停止しないようにする設定\n（すべてのアプリ を選択で未設定リストが出ます）" />
+            android:text="@string/sleep" />
 
 
         <!-- 5段目：アプリ切り替えで通知を出すオプション -->
@@ -163,7 +163,7 @@
             android:layout_alignStart="@+id/textView8"
             android:layout_alignLeft="@+id/textView8"
             android:layout_marginTop="30dp"
-            android:text="アプリ切り替えで通知を出す "
+            android:text="@string/AS"
             android:textSize="20sp" />
 
         <TextView
@@ -175,7 +175,7 @@
             android:layout_alignLeft="@+id/noteOnAppChangeSwitch"
             android:layout_alignParentTop="false"
             android:layout_marginTop="5dp"
-            android:text="アプリを切り替えた後に通知を出す\n（通知モードがOFFでも配信されます）" />
+            android:text="@string/AS2" />
 
 
         <!-- 6段目：電池最適化の設定画面を表示 -->
@@ -188,7 +188,7 @@
             android:layout_alignLeft="@+id/textView9"
             android:layout_alignParentTop="false"
             android:layout_marginTop="30dp"
-            android:text="消音モード抑止の設定を"
+            android:text="@string/silent"
             android:textColor="@android:color/black"
             android:textSize="20sp" />
 
@@ -202,7 +202,7 @@
             android:layout_marginTop="20dp"
             android:layout_toEndOf="@+id/textView10"
             android:layout_toRightOf="@+id/textView10"
-            android:text="表示" />
+            android:text="@string/hyouji" />
 
         <TextView
             android:id="@+id/textView11"
@@ -213,21 +213,11 @@
             android:layout_alignLeft="@+id/textView10"
             android:layout_alignParentTop="false"
             android:layout_marginTop="5dp"
-            android:text="サイレントモード中に通知音が出るようにする設定" />
+            android:text="@string/silent2" />
 
 
         <!-- ぶるぶる -->
-        <android.support.v7.widget.SwitchCompat
-            android:id="@+id/noUseSwitch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/textView11"
-            android:layout_alignStart="@+id/textView11"
-            android:layout_alignLeft="@+id/textView11"
-            android:layout_marginTop="30dp"
-            android:text="押してはいけないスイッチ "
-            android:textSize="20sp" />
-
+        <!--
         <TextView
             android:id="@+id/noUseSwitchText"
             android:layout_width="wrap_content"
@@ -241,7 +231,7 @@
 
 
 
-        <!-- 最下部の余白（フッター的な） -->
+         最下部の余白（フッター的な）
         <TextView
             android:id="@+id/footer"
             android:layout_width="wrap_content"
@@ -251,7 +241,7 @@
             android:layout_alignLeft="@+id/noUseSwitchText"
             android:layout_alignParentBottom="false"
             android:text="\n" />
-
+        -->
 
     </RelativeLayout>
 </ScrollView>

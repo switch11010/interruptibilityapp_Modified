@@ -46,12 +46,17 @@ public class QuestionFragment_Ex extends DialogFragment{
 
     //s 変更：接尾辞 Button を追加
     private Button interruptibilityButton,
+//            timingButton, //ny 追加：タイミング
+//            newsButton, //ny　追加：ニュース
             taskButton,
             locationButton,
             usePurposeButton,  //s 追加：スマホ使用目的
             noteButton,  //s 追加：ロック画面で通知を確認したことによる開始か
             commentButton;  //s 押されると ListDialogFragment とかのフラグメントの表示に移る
     private Button[] interruptibilityButtonEx = new Button[5];  //s 追加：5つのボタン
+
+    private Button[] timingButtonEx = new Button[5];  //ny 追加：タイミング用5つのボタン
+    private Button[] newsButtonEx = new Button[5];  //ny 追加：ニュース用5つのボタン
 
     private boolean mode,  //s 割込み通知が一定時間無反応だった（回答時間が過ぎました）なら false …？（それ以外にも普通に用途がある気がする）
             answered = false;  //s 割込み通知に回答があったら true ？
@@ -87,11 +92,28 @@ public class QuestionFragment_Ex extends DialogFragment{
         final LinearLayout rootLayout;
         rootLayout = (LinearLayout)inflater.inflate(R.layout.dialog_layout_ex, null, false);
 
+        //ny 追加：タイミングとニュース
+//        timingButton = (Button) rootLayout.findViewById(R.id.interrupt);
+//        newsButton = (Button) rootLayout.findViewById(R.id.interrupt);
+
         interruptibilityButton = (Button) rootLayout.findViewById(R.id.interrupt);
         taskButton = (Button) rootLayout.findViewById(R.id.task);
         locationButton = (Button) rootLayout.findViewById(R.id.location);
         usePurposeButton = (Button) rootLayout.findViewById(R.id.usePurpose);  //s 追加：スマホ使用目的
         commentButton = (Button) rootLayout.findViewById(R.id.comment);
+
+        //ny　追加：タイミングとニュースへの興味への評価
+        timingButtonEx[0] = (Button) rootLayout.findViewById(R.id.timing1);
+        timingButtonEx[1] = (Button) rootLayout.findViewById(R.id.timing2);
+        timingButtonEx[2] = (Button) rootLayout.findViewById(R.id.timing3);
+        timingButtonEx[3] = (Button) rootLayout.findViewById(R.id.timing4);
+        timingButtonEx[4] = (Button) rootLayout.findViewById(R.id.timing5);
+
+        newsButtonEx[0] = (Button) rootLayout.findViewById(R.id.news1);
+        newsButtonEx[1] = (Button) rootLayout.findViewById(R.id.news2);
+        newsButtonEx[2] = (Button) rootLayout.findViewById(R.id.news3);
+        newsButtonEx[3] = (Button) rootLayout.findViewById(R.id.news4);
+        newsButtonEx[4] = (Button) rootLayout.findViewById(R.id.news5);
 
         //s 追加：interruptibilityButton を5つの押しボタンにバラしたver
         interruptibilityButtonEx[0] = (Button) rootLayout.findViewById(R.id.interrupt1);
@@ -99,6 +121,7 @@ public class QuestionFragment_Ex extends DialogFragment{
         interruptibilityButtonEx[2] = (Button) rootLayout.findViewById(R.id.interrupt3);
         interruptibilityButtonEx[3] = (Button) rootLayout.findViewById(R.id.interrupt4);
         interruptibilityButtonEx[4] = (Button) rootLayout.findViewById(R.id.interrupt5);
+
 
 
         commentButton.setText(evaluationData.comment);
@@ -114,13 +137,14 @@ public class QuestionFragment_Ex extends DialogFragment{
         });
 
         if(mode) {
+            //ny 使われていない
             interruptibilityButton.setText(String.valueOf(evaluationData.evaluation));
             interruptibilityButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String title = "現在の割り込み拒否度は？\n1（問題なし）～5（嫌）";  //s 追加ここから
+                    String title = "現在の通知許容度は？\n1（問題なし）～5（嫌）";  //s 追加ここから
                     String[] selection = {
-                            "1（大丈夫）", "2", "3", "4", "5（忙しい）"  //s 最初の1文字は半角数字（そのまま数値に変換される）
+                            "1（忙しい）", "2", "3", "4", "5（大丈夫）"  //s 最初の1文字は半角数字（そのまま数値に変換される）
                     };  //s 追加ここまで
                     ListDialogFragment fragment = ListDialogFragment.newInstance(title, selection);  //s 変更；引数を上に分離
                     fragment.setTargetFragment(selfFragment, INTERRUPTIBILITY_REQUEST_CODE);
@@ -131,6 +155,57 @@ public class QuestionFragment_Ex extends DialogFragment{
             });
 
             //s 追加：5つのボタンにバラしたver
+            //ny 追加：タイミングとニュースの評価
+            int index_t = evaluationData.timing - 1;
+            if (index_t < 0 || 4 < index_t) {
+                index_t = 0;
+            }
+            timingButtonEx[index_t].setBackgroundResource(R.drawable.button_background_highlight);
+            for (int i=0; i<5; i++) {
+               timingButtonEx[i].setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        int index_t = 0;
+                        for (int i=0; i<5; i++) {
+                            int resource = R.drawable.button_background;
+                            timingButtonEx[i].setBackgroundResource(resource);
+                            if (view == timingButtonEx[i]) {
+                                index_t = i;
+                            }
+                        }
+                        view.setBackgroundResource(R.drawable.button_background_highlight);  //s 押されたやつをハイライト
+
+                        evaluationData.timing = (index_t + 1);
+                       //timingButton.setText(String.valueOf(index_t + 1));
+                    }
+                });
+            }
+
+            int index_n = evaluationData.news - 1;
+            if (index_n < 0 || 4 < index_n) {
+                index_n = 0;
+            }
+            newsButtonEx[index_n].setBackgroundResource(R.drawable.button_background_highlight);
+            for (int i=0; i<5; i++) {
+                newsButtonEx[i].setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        int index_n = 0;
+                        for (int i=0; i<5; i++) {
+                            int resource = R.drawable.button_background;
+                            newsButtonEx[i].setBackgroundResource(resource);
+                            if (view == newsButtonEx[i]) {
+                                index_n = i;
+                            }
+                        }
+                        view.setBackgroundResource(R.drawable.button_background_highlight);  //s 押されたやつをハイライト
+
+                        evaluationData.news = (index_n + 1);
+                        //interruptibilityButton.setText(String.valueOf(index + 1));
+                    }
+                });
+            }
+
             int index = evaluationData.evaluation - 1;
             if (index < 0 || 4 < index) {
                 index = 0;
@@ -151,18 +226,19 @@ public class QuestionFragment_Ex extends DialogFragment{
                         view.setBackgroundResource(R.drawable.button_background_highlight);  //s 押されたやつをハイライト
 
                         evaluationData.evaluation = (index + 1);
-                        interruptibilityButton.setText(String.valueOf(index + 1));
+                        //interruptibilityButton.setText(String.valueOf(index + 1));
                     }
                 });
             }
+
 
             taskButton.setText(evaluationData.task);
             taskButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String title = "割り込み直前の作業内容は？";  //s 追加ここから
+                    String title = "情報提供直前の活動内容は？";  //s 追加ここから
                     String[] selection = {
-                            "PC作業", "デスクワーク", "机外作業", "移動", "会話", "休憩",  "自由記述"
+                            "テレビ", "PC", "スマホ", "家事", "移動", "会話", "休憩",  "自由記述"
                     };  //s 追加ここまで
                     ListDialogFragment fragment = ListDialogFragment.newInstance(title, selection);  //s 変更；引数を上に分離
                     fragment.setTargetFragment(selfFragment, TASK_REQUEST_CODE);
@@ -178,7 +254,7 @@ public class QuestionFragment_Ex extends DialogFragment{
                 public void onClick(View v) {
                     String title = "現在の場所は？";  //s 追加ここから
                     String[] selection = {
-                            "414", "419", "4S", "4Q", "S4",  "自由記述"
+                            "テーブル", "机", "ベッド", "キッチン",  "自由記述"
                     };  //s 追加ここまで
                     ListDialogFragment fragment = ListDialogFragment.newInstance(title, selection);  //s 変更；引数を上に分離
                     fragment.setTargetFragment(selfFragment, LOCATION_REQUEST_CODE);
@@ -195,7 +271,7 @@ public class QuestionFragment_Ex extends DialogFragment{
                 public void onClick(View v) {
                     String title = "スマホの使用目的は？\n（なるべく始めの5つから選択）";
                     String[] selection = {
-                            "時間・通知の確認", "サブPC的利用", "情報アクセス", "私用", "休憩",  "それ以外"
+                            "時間・通知の確認",  "ブラウジング", "コミュニケーション", "ゲーム", "目的なし", "それ以外"
                     };
                     ListDialogFragment fragment = ListDialogFragment.newInstance(title, selection);
                     fragment.setTargetFragment(selfFragment, USE_PURPOSE_REQUEST_CODE);
@@ -247,7 +323,7 @@ public class QuestionFragment_Ex extends DialogFragment{
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(rootLayout);
         if(mode){
-            builder.setTitle("★割込みシミュレーション★");//"話しかけを受け、\n5分間の作業中断発生");
+            builder.setTitle("評価アンケート");//"話しかけを受け、\n5分間の作業中断発生");
         } else{
             builder.setTitle("回答時間を過ぎました\n" + String.valueOf((evaluationData.answerTime - evaluationData.time) / 1000) + "秒経過");
         }

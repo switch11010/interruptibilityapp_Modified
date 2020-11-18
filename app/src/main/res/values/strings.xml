@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">★操作記録★</string>
-    <string name="description">スマホ情報記録＆割込み通知アプリです。\n\n・このページでスイッチをONにすると記録を開始します。\n　バッテリーを消費しまくるので大学を出たらオフにしてください。\n\n【必要なアクセス許可】\n・設定＞アプリ から通知およびデータのアクセスの許可\n・設定＞セキュリティ＞使用履歴にアクセスできるアプリ の許可\n\n・設定＞電池＞右上の…＞電池の最適化＞すべてのアプリ から「最適化しない」を設定\n\n※ Androidのバージョンによって設定項目が無かったりします。いい感じに。</string>
+    <string name="app_name">スマホ用センシングアプリ</string>
+    <string name="description">スマホ情報記録＆アンケート回答アプリです。\n\n・このページでスイッチをONにすると記録を開始します。\n　バッテリーを多く消費する場合がありますので使わないときはOFFにしてください。\n\n【必要なアクセス許可】\n・設定＞アプリ から通知およびデータのアクセスの許可\n・設定＞セキュリティ＞使用履歴にアクセスできるアプリ の許可\n\n・設定＞電池＞右上の…＞電池の最適化＞すべてのアプリ から「最適化しない」を設定\n\n※ Androidのバージョンによって設定項目が無い場合もあります。</string>
 
     <!-- 通知用文字 -->
     <string name="positive_dialog_text">OK</string>
-    <string name="current_interruptibility">現在の割り込み拒否度は？</string>
+    <string name="current_interruptibility">現在の通知許容度は？</string>
     <string name="current_task">現在のタスクは？</string>
     <string name="current_location">現在の場所は？</string>
     <string name="input_text">入力してください</string>
@@ -28,4 +28,32 @@
     <string name="action_input">Input DB</string>
     <string name="action_dump_csv">Dump to CSV</string>
     <string name="action_clear">Clear</string>
+    <string name="ver0_0_0">Ver0.0.0</string>
+    <string name="check_version">最新版のアップデートを確認</string>
+    <string name="force">通知の配信を抑制しない</string>
+    <string name="force2">他のよりも多く発生するタイプの割込みでも\n気にせずに100％通知を配信する</string>
+    <string name="walk">歩行で通知を出さない</string>
+    <string name="walk2">歩行開始・歩行終了では通知を出さない</string>
+    <string name="lock_off">ロック画面自動消灯時間</string>
+    <string name="second">秒</string>
+    <string name="auto_off">画面をオンにした後に無操作で自動消灯する秒数\n1以上を設定で自動消灯の際に通知が来なくなる\n（変更後はサービスの再起動が必要）</string>
+    <string name="optimize_battery">電池最適化の設定を</string>
+    <string name="hyouji">表示</string>
+    <string name="sleep">スリープ中に処理が停止しないようにする設定\n（すべてのアプリ を選択で未設定リストが出ます）</string>
+    <string name="AS">アプリ切り替えで通知を出す</string>
+    <string name="AS2">アプリを切り替えた後に通知を出す\n</string>
+    <string name="silent">消音モード抑止の設定を</string>
+    <string name="silent2">サイレントモード中に通知音が出るようにする設定</string>
+    <string name="tosetting">設定画面へ移動（ON/OFF）</string>
+    <string name="note_mode">通知モード</string>
+    <string name="ACC_mode">加速度保存</string>
+    <string name="Volume">通知音量</string>
+    <string name="id">スマホID</string>
+    <string name="ip">通信相手IP</string>
+    <string name="run">サービス実行中</string>
+    <string name="port">送信ポート</string>
+    <string name="pc_n">PC関係の遷移\nでのみ通知</string>
+    <string name="sd">SDカード</string>
+    <string name="pc">ToggleButton</string>
+    <string name="sd_button">ToggleButton</string>
 </resources>

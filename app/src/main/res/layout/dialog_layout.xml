@@ -6,11 +6,12 @@
     android:orientation="vertical"
     style="@style/Theme.AppCompat.Light.Dialog">
 
+    <!-- ny　通知許容度に変更-->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="割り込み拒否度"
+        android:text="通知許容度"
         android:id="@+id/interruptibilityText"
         android:layout_gravity="center_horizontal" />
 
@@ -31,7 +32,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="直前の作業内容"
+        android:text="直前の活動内容"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <Button

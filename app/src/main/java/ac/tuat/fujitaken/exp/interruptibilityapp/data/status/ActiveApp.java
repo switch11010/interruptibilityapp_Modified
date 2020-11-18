@@ -34,7 +34,7 @@ public class ActiveApp {
     //s アクティブなアプリが変わったか判定をする
     //s InterruptTiming.run() から定期的に呼ばれる：引数で渡されるのは mAllData.getData
     //s 返り値は イベントのフラグの アプリ切替 に関連するビット
-    public static int judge(Map<String, Data> data){
+    public int judge(Map<String, Data> data){
         String nowActiveAppName = ( (StringData)data.get(DataReceiver.APPLICATION) ).value;  //s 現在アクティブなアプリ
         //LogEx.d("ActiveApp", "Active: " + nowActiveAppName);
 

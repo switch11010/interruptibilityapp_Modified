@@ -93,7 +93,7 @@ public class InterruptionNotification {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         builder.setSmallIcon(android.R.drawable.ic_dialog_alert)
-                .setContentTitle("割り込み通知")
+                .setContentTitle("評価アンケート")
                 .setAutoCancel(true)
                 .setContentIntent(pi)
                 .setPriority(Integer.MAX_VALUE)  //s 優先度を激MAXにすることで常に最上位に表示されるようになるハイパーテクニックらしい
@@ -103,8 +103,8 @@ public class InterruptionNotification {
                 .setOnlyAlertOnce(true);
 
         if(mode){
-            builder.setContentText("話しかけを受け、5分間の作業中断発生")
-                    .setTicker("話しかけを受け、5分間の作業中断発生");
+            builder.setContentText("今の情報提供はどうでしたか？")
+                    .setTicker("今の情報提供はどうでしたか？");
         }
         else{
             builder.setContentText("回答時間を過ぎました")
@@ -217,22 +217,27 @@ public class InterruptionNotification {
                 100
         };  //s 控えめに一応震えてみるパターン
 
+        //ny 評価アンケートなので控えめな振動
+        return vibrationPatternSmall;
+
+        //ny 以下、以前のもの
+
         //s 通知の回答期限が過ぎたときの通知だったら 控えめパターンにする
-        if (!mode) {
-            return vibrationPatternSmall;
-        }
-
-        int pattern = vibrationPattern.length - 1;
-        double rnd = Math.random();
-
-        if (rnd < 0.97) {
-            pattern = 0;
-        } else if (rnd < 0.995) {
-            pattern = 1;
-        } else {
-            pattern = 2;
-        }
-
-        return vibrationPattern[pattern];
+//        if (!mode) {
+//            return vibrationPatternSmall;
+//        }
+//
+//        int pattern = vibrationPattern.length - 1;
+//        double rnd = Math.random();
+//
+//        if (rnd < 0.97) {
+//            pattern = 0;
+//        } else if (rnd < 0.995) {
+//            pattern = 1;
+//        } else {
+//            pattern = 2;
+//        }
+//
+//        return vibrationPattern[pattern];
     }
 }

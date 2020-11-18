@@ -19,18 +19,18 @@
         android:layout_alignEnd="@+id/noteSwitch" />
 
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="設定画面へ移動"
         android:id="@+id/moveSettings"
-        android:layout_marginTop="22dp"
+        android:layout_width="138dp"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/volume"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="22dp"
+        android:text="@string/tosetting" />
 
     <android.support.v7.widget.SwitchCompat
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="通知モード"
+        android:text="@string/note_mode"
         android:id="@+id/noteSwitch"
         android:layout_marginTop="25dp"
         android:checked="false"
@@ -41,7 +41,7 @@
     <android.support.v7.widget.SwitchCompat
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="加速度保存"
+        android:text="@string/ACC_mode"
         android:id="@+id/saveSwitch"
         android:layout_marginTop="25dp"
         android:textSize="25sp"
@@ -51,7 +51,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="通知音量"
+        android:text="@string/Volume"
         android:id="@+id/textView"
         android:layout_marginTop="24dp"
         android:textSize="25sp"
@@ -60,7 +60,7 @@
         android:layout_centerHorizontal="true" />
 
     <TextView
-        android:text="スマホID"
+        android:text="@string/id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/sp_id_text"
@@ -79,7 +79,7 @@
         android:inputType="number" />
 
     <TextView
-        android:text="通信相手IP"
+        android:text="@string/ip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/ip_address_text"
@@ -103,7 +103,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="サービス実行中"
+        android:text="@string/run"
         android:id="@+id/isExistService"
         android:layout_marginBottom="31dp"
         android:textColor="@color/colorAccent"
@@ -120,7 +120,7 @@
         android:inputType="number" />
 
     <TextView
-        android:text="送信ポート"
+        android:text="@string/port"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/textView2"
@@ -129,13 +129,43 @@
         android:layout_alignBottom="@+id/port_num"
         android:layout_alignStart="@+id/ip_address_text" />
 
+
+    <!-- s 追加ここから -->
+    <!-- ny 一旦コメントアウト　-->
+
+    <TextView
+        android:id="@+id/togglePCNote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="-84dp"
+        android:layout_marginLeft="-84dp"
+        android:layout_marginBottom="46dp"
+        android:layout_toEndOf="@+id/togglePC"
+        android:layout_toRightOf="@+id/togglePC"
+        android:text="@string/pc_n"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/toggleSDNote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="-72dp"
+        android:layout_marginRight="-72dp"
+        android:layout_marginBottom="52dp"
+        android:layout_toStartOf="@+id/toggleSD"
+        android:layout_toLeftOf="@+id/toggleSD"
+        android:text="@string/sd"
+        android:textSize="12sp" />
+
     <ToggleButton
         android:id="@+id/togglePC"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:text="ToggleButton" />
+        android:text="@string/pc" />
 
     <ToggleButton
         android:id="@+id/toggleSD"
@@ -143,28 +173,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:text="ToggleButton" />
+        android:text="@string/sd_button" />
 
-    <!-- s 追加ここから -->
-    <TextView
-        android:text="PC関係の遷移\nでのみ通知"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/togglePCNote"
-        android:textSize="12sp"
-        android:layout_alignParentBottom="true"
-        android:layout_toEndOf="@+id/togglePC"
-        android:layout_toRightOf="@+id/togglePC" />
-
-    <TextView
-        android:text="SDカード"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/toggleSDNote"
-        android:textSize="12sp"
-        android:layout_alignParentBottom="true"
-        android:layout_toStartOf="@+id/toggleSD"
-        android:layout_toLeftOf="@+id/toggleSD" />
     <!-- s 追加ここまで -->
 
 </RelativeLayout>

@@ -1,5 +1,5 @@
-<!-- Created by Komuro in 2015~2017 >>> Modified by Sonoda in 2018 >>> Modified by Nakazawa in 2020 -->
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Created by Komuro in 2015~2017 >>> Modified by Sonoda in 2018 >>> Modified by Nakazawa in 2020 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ac.tuat.fujitaken.exp.interruptibilityapp">
 

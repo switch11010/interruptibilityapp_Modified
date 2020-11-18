@@ -103,7 +103,7 @@ public class QuestionFragment extends DialogFragment{
             interruptibility.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ListDialogFragment fragment = ListDialogFragment.newInstance("現在の割り込み拒否度は？\n1（問題なし）～5（嫌）", new String[]{"1", "2", "3", "4", "5"});
+                    ListDialogFragment fragment = ListDialogFragment.newInstance("現在の通知許容度は？\n1（嫌）～5（問題無し）", new String[]{"1", "2", "3", "4", "5"});
                     fragment.setTargetFragment(selfFragment, INTERRUPTIBILITY_REQUEST_CODE);
                     getActivity().getSupportFragmentManager().beginTransaction()
                             .add(fragment, INTERRUPTIBILITY)
@@ -115,7 +115,7 @@ public class QuestionFragment extends DialogFragment{
             task.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ListDialogFragment fragment = ListDialogFragment.newInstance("割り込み直前の作業内容は？", new String[]{"PC作業", "デスクワーク", "机外作業", "移動", "会話", "休憩",  "自由記述"});
+                    ListDialogFragment fragment = ListDialogFragment.newInstance("通知直前のタスク内容は？", new String[]{"TV", "スマホ", "家事", "ゲーム", "会話", "休憩",  "自由記述"});
                     fragment.setTargetFragment(selfFragment, TASK_REQUEST_CODE);
                     getActivity().getSupportFragmentManager().beginTransaction()
                             .add(fragment, TASK)
@@ -127,7 +127,7 @@ public class QuestionFragment extends DialogFragment{
             location.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ListDialogFragment fragment = ListDialogFragment.newInstance("現在の場所は？", new String[]{"414", "419", "4S", "4Q", "S4", "自由記述"});
+                    ListDialogFragment fragment = ListDialogFragment.newInstance("現在の場所は？", new String[]{"テーブル前", "ベッド", "デスク", "キッチン", "自由記述"});
                     fragment.setTargetFragment(selfFragment, LOCATION_REQUEST_CODE);
                     getActivity().getSupportFragmentManager().beginTransaction()
                             .add(fragment, LOCATION)
@@ -159,7 +159,7 @@ public class QuestionFragment extends DialogFragment{
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(rootLayout);
         if(mode){
-            builder.setTitle("話しかけを受け、\n5分間の作業中断発生");
+            builder.setTitle("話しかけを受け、\n最近のニュース提供が提供されました");
         } else{
             builder.setTitle("回答時間を過ぎました\n" + String.valueOf((evaluationData.answerTime - evaluationData.time) / 1000) + "秒経過");
         }

@@ -90,7 +90,7 @@ public class SettingFragment_Ex extends Fragment {
 
         Button b0 = (Button)root.findViewById(R.id.checkUpdateButton);  //s 最新版アップデート確認ボタン
         b0.setOnClickListener(v -> {
-            String URL = "https://seesaawiki.jp/mngb_personal_memo/d/apk%a5%d5%a5%a1%a5%a4%a5%eb%c3%d6%a4%ad%be%ec";
+            String URL = "http://www.fujitaken.org/"; //"https://seesaawiki.jp/mngb_personal_memo/d/apk%a5%d5%a5%a1%a5%a4%a5%eb%c3%d6%a4%ad%be%ec";
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_VIEW);
             intent.setData(Uri.parse(URL));
@@ -125,11 +125,12 @@ public class SettingFragment_Ex extends Fragment {
 
         noteOnAppChangeSwitch = (SwitchCompat)root.findViewById(R.id.noteOnAppChangeSwitch);  //s アプリ切替で通知
 
-        noUseSwitch = (SwitchCompat)root.findViewById(R.id.noUseSwitch);  //s 押してはいけないスイッチ
+        /*noUseSwitch = (SwitchCompat)root.findViewById(R.id.noUseSwitch);  //s 押してはいけないスイッチ
         noUseSwitch.setOnCheckedChangeListener((v, isChecked) -> {
             onNoUseSwitchClicked(isChecked);
         });
         noUseSwitchText = (TextView)root.findViewById(R.id.noUseSwitchText);
+        */
 
         /*exist = (TextView)root.findViewById(R.id.isExistService);
         exist.setVisibility(View.INVISIBLE);

@@ -15,7 +15,9 @@ public class EvaluationData extends RowData {
             usePurpose = "",  //s 追加：スマホ使用目的
             comment = "";
     public int evaluation = 0,
-            event = 0;
+                timing = 0, //ny 追加：タイミング
+                news = 0, //ny 追加：ニュース
+                event = 0;
 
     public EvaluationData(){
         super();
@@ -32,6 +34,10 @@ public class EvaluationData extends RowData {
         builder.append(DATE_FORMAT.format(time));
         builder.append(",");
         builder.append(answerTime == 0 ? "" : (answerTime- time)/1000);
+        builder.append(",");
+        builder.append(timing == 0? "": timing); //ny 追加
+        builder.append(",");
+        builder.append(news == 0? "": news); //ny 追加
         builder.append(",");
         builder.append(evaluation == 0? "": evaluation);
         builder.append(",");
@@ -70,5 +76,7 @@ public class EvaluationData extends RowData {
         this.usePurpose = setData.usePurpose;  //s 追加
         this.comment = setData.comment;
         this.evaluation = setData.evaluation;
+        this.timing = setData.timing; //ny 追加
+        this.news = setData.news; //ny 追加
     }
 }

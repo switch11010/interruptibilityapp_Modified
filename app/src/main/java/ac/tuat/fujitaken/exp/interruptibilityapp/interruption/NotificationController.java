@@ -27,7 +27,7 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.ui.questionnaire.QuestionActivi
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.questionnaire.fragments.QuestionFragment;
 
 /**
- * 通知制御くらす
+ * 通知制御クラス
  * +α，監視データ+評価データを統合して記録するクラス
  * Created by hi on 2015/11/17.
  */
@@ -100,12 +100,12 @@ public class NotificationController {
 
             interruptionNotification.cancel();
             lateData.setValue(answerData);
-            Bundle bundle = new Bundle();
-            bundle.putSerializable(EvaluationData.EVALUATION_DATA, lateData);
-            interruptionNotification.cancelNotify(bundle);  //s 通知を配信する
-            schedule = Executors.newSingleThreadScheduledExecutor();
-            long delete = 60 * 1000;
-            schedule.schedule(cancelTask, delete, TimeUnit.MILLISECONDS);
+//            Bundle bundle = new Bundle();
+//            bundle.putSerializable(EvaluationData.EVALUATION_DATA, lateData);
+//            interruptionNotification.cancelNotify(bundle);  //s 通知を配信する
+//            schedule = Executors.newSingleThreadScheduledExecutor();
+//            long delete = 60 * 1000;
+//            schedule.schedule(cancelTask, delete, TimeUnit.MILLISECONDS);
         }
     };
 
@@ -151,7 +151,7 @@ public class NotificationController {
     //s コンストラクタ（↑の getInstance(AllData, InterruptTiming) でインスタンスが生成される）
     private NotificationController(AllData allData, InterruptTiming timing){
         this.timing = timing;
-        evaluationSave = new SaveData("Evaluation", "AnswerTime,Evaluation,Task,Location,UsePurpose,Comment,Event," + allData.getHeader());
+        evaluationSave = new SaveData("Evaluation", "AnswerTime,Timing,News,Interrupt,Task,Location,UsePurpose,Comment,Event," + allData.getHeader());
         interruptionNotification = new InterruptionNotification(Settings.getContext());
         IntentFilter filter = new IntentFilter();
         filter.addAction(QuestionFragment.BROADCAST_ANSWER_ACTION);
@@ -159,10 +159,12 @@ public class NotificationController {
         filter.addAction(QuestionActivity.UPDATE_CANCEL);
 
         answerData = new EvaluationData();
-        answerData.evaluation = 5;  //s 変更：デフォルトを 1 から変更（忙しいときにそのまま決定できるように）
-        answerData.task = "PC作業";
-        answerData.location = "414";
-        answerData.usePurpose = "";  //s 追加：スマホ使用目的
+        answerData.evaluation = 3;  //s 変更：デフォルトを 1 から変更（忙しいときにそのまま決定できるように）
+        answerData.timing = 3; //ny 追加：タイミング
+        answerData.news = 3; //ny　追加：ニュース
+        answerData.task = "TV";
+        answerData.location = "テーブル前";
+        answerData.usePurpose = "ブラウジング";  //s 追加：スマホ使用目的
 
         lateData = new EvaluationData();
         lateData.evaluation = -3;
@@ -199,7 +201,8 @@ public class NotificationController {
         }
         schedule = Executors.newSingleThreadScheduledExecutor();
         long delay = Constants.NOTIFICATION_THRESHOLD;
-        schedule.schedule(askTask, delay, TimeUnit.MILLISECONDS);  //s delay (ms) 後に askTask 処理を開始する（通知無視の理由を聞く通知）
+        //ny 通知無視されたら流す
+        // schedule.schedule(askTask, delay, TimeUnit.MILLISECONDS);  //s delay (ms) 後に askTask 処理を開始する（通知無視の理由を聞く通知）
         Bundle bundle = new Bundle();
 
         line.event = event;
@@ -210,7 +213,10 @@ public class NotificationController {
         bundle.putSerializable(EvaluationData.EVALUATION_DATA, line);
 
         //s 割込み拒否度の評価を要求する通知を配信する（本命）
-        delay = ( (event & Screen.UNLOCK) > 0 ? 10000 : 0 );  //s 追加：通知配信を遅延させるミリ秒数
+        //delay = ( (event & Screen.UNLOCK) > 0 ? 10000 : 0 );  //s 追加：通知配信を遅延させるミリ秒数
+        //ny 情報提供開始から10秒後に評価アンケート配信
+        delay = 10000;
+
         boolean isFailed = interruptionNotification.normalNotify(bundle, delay);  //s 変更：ロック解除時は10秒待機するように
 
         // 追加：通知の遅延配信に失敗（被り）したら askTask のスケジュールを停止する

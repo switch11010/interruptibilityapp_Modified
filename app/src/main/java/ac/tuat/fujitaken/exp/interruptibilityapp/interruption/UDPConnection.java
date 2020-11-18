@@ -9,6 +9,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Random;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.Constants;
 import ac.tuat.fujitaken.exp.interruptibilityapp.LogEx;  //s 自作Log
@@ -44,7 +45,9 @@ public class UDPConnection {
     public boolean sendRequest(RowData data){
         if(client == null) {
             try {
-                String sndStr = id + "," + data.getLine();
+                //ny ランダムで話しかけ/アピールを送る
+                Random r = new Random();
+                String sndStr = (r.nextInt(2) + 1) + "," + id + "," + data.getLine();
                 DatagramPacket sendPacket = new DatagramPacket(sndStr.getBytes("UTF-8"), sndStr.length(), ipAddress, port);
                 client = new DatagramSocket();
                 LogEx.d("UDP(Send)", "Sending : " + sndStr);
