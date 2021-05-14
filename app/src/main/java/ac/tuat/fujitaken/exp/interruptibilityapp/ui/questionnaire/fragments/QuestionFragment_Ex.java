@@ -238,7 +238,7 @@ public class QuestionFragment_Ex extends DialogFragment{
                 public void onClick(View v) {
                     String title = "情報提供直前の活動内容は？";  //s 追加ここから
                     String[] selection = {
-                            "テレビ", "PC", "スマホ", "家事", "移動", "会話", "休憩",  "自由記述"
+                            "テレビ", "PC", "スマホ", "家事", "移動", "会話", "ゲーム","休憩",  "自由記述"
                     };  //s 追加ここまで
                     ListDialogFragment fragment = ListDialogFragment.newInstance(title, selection);  //s 変更；引数を上に分離
                     fragment.setTargetFragment(selfFragment, TASK_REQUEST_CODE);
