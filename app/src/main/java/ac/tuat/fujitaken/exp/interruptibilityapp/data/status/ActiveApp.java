@@ -22,7 +22,7 @@ public class ActiveApp {
     private static String prevActiveAppName = "";  //s 前回アクティブだったアプリの名前
     private static Set<String> ignoreAppPatternSet = new HashSet<String>() {  //s アプリ切替に含めないアプリ の 正規表現 の集合
         {
-            add(".*設定");
+//            add(".*設定");
             //add(".*操作記録.*");  //s アプリ名の適当設定ver
             add(Settings.getContext().getString(R.string.app_name));  //s 操作記録アプリのアプリ名
             //add("ZenUI Launcher");

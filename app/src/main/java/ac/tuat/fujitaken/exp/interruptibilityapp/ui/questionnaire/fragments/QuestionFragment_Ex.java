@@ -269,9 +269,9 @@ public class QuestionFragment_Ex extends DialogFragment{
             usePurposeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String title = "スマホの使用目的は？\n（なるべく始めの5つから選択）";
+                    String title = "スマホの使用目的は？\n（なるべく始めの下記から選択）";
                     String[] selection = {
-                            "時間・通知の確認",  "ブラウジング", "コミュニケーション", "ゲーム", "目的なし", "それ以外"
+                            "時間・通知の確認","情報消費","ブラウジング","コミュニケーション","ゲーム","記録・マネジメント","ショッピング・予約","設定","目的なし", "それ以外"
                     };
                     ListDialogFragment fragment = ListDialogFragment.newInstance(title, selection);
                     fragment.setTargetFragment(selfFragment, USE_PURPOSE_REQUEST_CODE);

@@ -97,7 +97,7 @@ public class MainService extends AccessibilityService {
         saveTask.couldStart(Constants.SAVE_LOOP_PERIOD, TimeUnit.MINUTES);  //s 定期的に端末にデータを保存する処理
 
         Toast.makeText(getApplicationContext(), "記録開始", Toast.LENGTH_SHORT).show();
-        WifiReceiver.sendIP(getApplicationContext());
+//        WifiReceiver.sendIP(getApplicationContext());
         //UDPConnection.startReceive();
 
         LogEx.d("Info", "MainService.onCreate_4e");  //s 追加

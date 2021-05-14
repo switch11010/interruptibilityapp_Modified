@@ -95,6 +95,7 @@ public class NotificationController {
             if (cancelAskTask) {
                 LogEx.w("NC.askTask", "通知配信を中断");
                 cancelAskTask = false;  //s 用は済んだので戻す
+                clearBuf();
                 return;
             }
 
@@ -103,9 +104,9 @@ public class NotificationController {
 //            Bundle bundle = new Bundle();
 //            bundle.putSerializable(EvaluationData.EVALUATION_DATA, lateData);
 //            interruptionNotification.cancelNotify(bundle);  //s 通知を配信する
-//            schedule = Executors.newSingleThreadScheduledExecutor();
-//            long delete = 60 * 1000;
-//            schedule.schedule(cancelTask, delete, TimeUnit.MILLISECONDS);
+            schedule = Executors.newSingleThreadScheduledExecutor();
+            long delete = 60 * 1000;
+            schedule.schedule(cancelTask, delete, TimeUnit.MILLISECONDS);
         }
     };
 
@@ -195,27 +196,29 @@ public class NotificationController {
      */
     //s InterruptTiming.eventTriggeredThread() で、状態遷移が検知されて通知を配信したいときに呼ばれる
     public void normalNotify(int event, EvaluationData line){
-        if(hasNotification){
+        if(hasNotification) {
             LogEx.e("NC.normalNotify", "通知が存在しているのに呼ばれた");  //s 追加
             return;
         }
         schedule = Executors.newSingleThreadScheduledExecutor();
         long delay = Constants.NOTIFICATION_THRESHOLD;
-        //ny 通知無視されたら流す
-        // schedule.schedule(askTask, delay, TimeUnit.MILLISECONDS);  //s delay (ms) 後に askTask 処理を開始する（通知無視の理由を聞く通知）
+//        ny 通知無視されたら流す
+        schedule.schedule(askTask, delay, TimeUnit.MILLISECONDS);  //s delay (ms) 後に askTask 処理を開始する（通知無視の理由を聞く通知）
         Bundle bundle = new Bundle();
-
         line.event = event;
         answerLine = line;
-
         line.setAnswer(answerData);
-
         bundle.putSerializable(EvaluationData.EVALUATION_DATA, line);
 
         //s 割込み拒否度の評価を要求する通知を配信する（本命）
         //delay = ( (event & Screen.UNLOCK) > 0 ? 10000 : 0 );  //s 追加：通知配信を遅延させるミリ秒数
-        //ny 情報提供開始から10秒後に評価アンケート配信
-        delay = 10000;
+        //ny 情報提供開始から5秒後に評価アンケート配信
+        if(event==272 || event==304){
+            delay = 0;
+        }
+        else{
+            delay = 5000;
+        }
 
         boolean isFailed = interruptionNotification.normalNotify(bundle, delay);  //s 変更：ロック解除時は10秒待機するように
 
@@ -229,7 +232,7 @@ public class NotificationController {
             cancelAskTask = true;  //s やっつけ
         }
 
-        hasNotification = true;
+        hasNotification=true;
         evaluationSave.lock = true;  //s 名前変更：rock → lock
     }
 

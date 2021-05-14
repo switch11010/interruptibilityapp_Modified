@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/abc_dialog_padding_material"
+    android:orientation="vertical"
+    style="@style/Theme.AppCompat.Light.Dialog">
+
+
+    <!-- s 割込み拒否度の評価　5つのボタンで直接選択できるようにしたver -->
+    <!-- ny 通知許容度の評価　ver -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="通知許容度"
+        android:id="@+id/interruptibilityText"
+        android:layout_gravity="center_horizontal" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="←忙しい"
+            android:id="@+id/interruptibilitySubTextL"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="大丈夫→"
+            android:id="@+id/interruptibilitySubTextR"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"/>
+
+    </RelativeLayout>
+
+    <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="1"
+        android:id="@+id/interrupt1"
+        android:background="@drawable/button_background"
+        android:textColor="#ffffff"
+        android:textSize="25sp" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="2"
+        android:id="@+id/interrupt2"
+        android:background="@drawable/button_background"
+        android:textColor="#ffffff"
+        android:textSize="25sp" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="3"
+        android:id="@+id/interrupt3"
+        android:background="@drawable/button_background"
+        android:textColor="#ffffff"
+        android:textSize="25sp" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="4"
+        android:id="@+id/interrupt4"
+        android:background="@drawable/button_background"
+        android:textColor="#ffffff"
+        android:textSize="25sp" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="5"
+        android:id="@+id/interrupt5"
+        android:background="@drawable/button_background"
+        android:textColor="#ffffff"
+        android:textSize="25sp" />
+
+</LinearLayout>
+
+
+
+
+
+    <!-- s 割込み拒否度の評価　リストが表示されるver（不使用） -->
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:id="@+id/interrupt"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/button_background"
+        android:textColor="#ffffff"
+        android:textSize="25sp"
+        android:maxLength="10"
+        android:visibility="gone"/>
+
+
+    <!-- s 直前の作業内容 -->
+    <TextView
+        android:id="@+id/taskText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="直前の活動内容"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="task"
+        android:id="@+id/task"
+        android:layout_below="@+id/interrupt"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/button_background"
+        android:textColor="#ffffff"
+        android:textSize="15sp"
+        android:maxLength="10" />
+
+
+    <!-- s 回答場所 -->
+    <TextView
+        android:id="@+id/locationText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="回答場所"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="location"
+        android:id="@+id/location"
+        android:layout_below="@+id/task"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/button_background"
+        android:textColor="#ffffff"
+        android:textSize="15sp"
+        android:maxLength="10" />
+
+
+    <!-- s 追加：スマホ使用目的 -->
+    <TextView
+        android:id="@+id/usePurposeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="スマホ使用目的"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="usePurpose"
+        android:id="@+id/usePurpose"
+        android:layout_below="@+id/location"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/button_background"
+        android:textColor="#ffffff"
+        android:textSize="15sp"
+        android:maxLength="10" />
+
+
+    <!-- s コメント -->
+    <TextView
+        android:id="@+id/commentText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="コメント"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/comment"
+        android:layout_below="@+id/task"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/button_background"
+        android:textColor="#ffffff"
+        android:textSize="15sp"
+        android:maxLength="10"
+        android:text="COMMENT" />
+
+</LinearLayout>

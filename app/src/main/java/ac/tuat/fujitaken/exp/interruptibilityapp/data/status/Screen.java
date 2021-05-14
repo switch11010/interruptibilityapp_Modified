@@ -101,8 +101,8 @@ public class Screen {
 
         //s 画面がオンになったか などのイベントの判断（オンとオフの両方 false もあり得る）
         boolean on = latestValue && !prevState && !(prevConnect && !connect) && !appName.equals(noteApp),  //s 今回入＆前回切＆（前回接続＆今回非接続）ではない＆通知が自分のではない
-        //off = !latestValue && prevState && sumOps > 0;  //s コメントアウト：今回切＆前回入＆無操作による画面切ではない
-        off = !latestValue && prevState && (prevUnlocked && sumOps > 0 || bufferL != null && !prevUnlocked && sumOpsL > 0);  //s 変更：ロック画面での無操作画面切に対応
+        off = !latestValue && prevState && sumOps > 0;  //s コメントアウト：今回切＆前回入＆無操作による画面切ではない //ny 今回はこれ
+//        off = !latestValue && prevState && (prevUnlocked && sumOps > 0 || bufferL != null && !prevUnlocked && sumOpsL > 0);  //s 変更：ロック画面での無操作画面切に対応
         boolean unlock = nowUnlocked && !prevUnlocked;  //s 追加：ロックが解除された
         boolean lock = !nowUnlocked && prevUnlocked;  //s 追加：ロックが設定された
         if(on){  //s 手動でオンにしたor通知でオンになった…？
