@@ -27,6 +27,8 @@ public interface DataReceiver {
                 VIEW_SCROLLED = "VIEW_SCROLLED",
                 VIEW_TEXT_CHANGED = "VIEW_TEXT_CHANGED",
                 VIEW_TEXT_SELECTION_CHANGED = "VIEW_TEXT_SELECTION_CHANGED",
+                FOCUS_INPUT = "FOCUS_INPUT",
+                //TYPE_TOUCH_INTERACTION_START = "TYPE_TOUCH_INTERACTION_START",
 
                 APPLICATION = "APPLICATION",
 
@@ -66,6 +68,8 @@ public interface DataReceiver {
                 VIEW_SCROLLED,
                 VIEW_TEXT_CHANGED,
                 VIEW_TEXT_SELECTION_CHANGED,
+                FOCUS_INPUT,
+                //TYPE_TOUCH_INTERACTION_START,
 
                 MAGNETIC_FIELD,
                 GYROSCOPE,

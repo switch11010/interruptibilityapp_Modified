@@ -248,16 +248,16 @@ public class InterruptTiming implements RegularThread.ThreadListener {
 
         EventCounter counter = Settings.getEventCounter();
         //eventが正常値以外なら確率0を返す
-        if(counter.getEvaluations(event) == null) {  //s 返り値の Integer オブジェクトが null になった場合
-            LogEx.e("InterruptTiming.calcP", "リストに無いイベント：" + Integer.toBinaryString(event));  //s 追加
-            return 0;
-        }
-
-        //s 追加：まだ1回も画面を点灯させていなかったら 確率を 0 にする（サービス開始直後の消灯を飛ばすのが目的）
-//        if (screen.getScreenOnCount() == 0) {
-//            LogEx.w("InterruptTiming.calcP", "まだ画面を点灯させたことがない");
+//        if(counter.getEvaluations(event) == null) {  //s 返り値の Integer オブジェクトが null になった場合
+//            LogEx.e("InterruptTiming.calcP", "リストに無いイベント：" + Integer.toBinaryString(event));  //s 追加
 //            return 0;
 //        }
+
+        //s 追加：まだ1回も画面を点灯させていなかったら 確率を 0 にする（サービス開始直後の消灯を飛ばすのが目的）
+        if (screen.getScreenOnCount() == 0) {
+            LogEx.w("InterruptTiming.calcP", "まだ画面を点灯させたことがない");
+            return 0;
+        }
 
         //対象となる遷移のサンプル数
         int s = counter.getEvaluations(event);  //s 今回のイベントの発生回数

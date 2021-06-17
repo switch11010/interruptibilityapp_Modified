@@ -8,7 +8,7 @@ package ac.tuat.fujitaken.exp.interruptibilityapp;
 public interface Constants {
     int MAIN_LOOP_PERIOD = 500,     //メインスレッドのループ間隔（ms）
             ACC_LOOP_PERIOD = 20,   //加速度用スレッドのループ間隔（ms）
-            SAVE_LOOP_PERIOD = 3,   //データ保存用スレッドのループ間隔（m）
+            SAVE_LOOP_PERIOD = 1,   //データ保存用スレッドのループ間隔（m）
 
             NOTIFICATION_THRESHOLD =  30 * 1000, //通知遷移と判断するまで時間（ms）  //s これを超えると通知とは関係ない遷移だと判断される
 

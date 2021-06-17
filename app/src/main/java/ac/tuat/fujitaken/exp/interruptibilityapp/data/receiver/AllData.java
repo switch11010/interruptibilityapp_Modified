@@ -74,8 +74,8 @@ public class AllData implements DataReceiver, RegularThread.ThreadListener {
     }
 
     //s MainService の onAccessibilityEvent() で呼ばれる
-    public void put(AccessibilityEvent event){
-        accessibilityEventReceiver.put(event);
+    public void put(AccessibilityEvent event, String focus){
+        accessibilityEventReceiver.put(event, focus);
     }
 
     public void release(){

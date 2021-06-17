@@ -5,8 +5,10 @@ import android.app.Notification;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
+import android.view.MotionEvent;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +23,7 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.StringData;
  * UIイベントを受け取るクラス
  * Created by hi on 2015/11/10.
  */
-class AccessibilityData implements DataReceiver {
+class AccessibilityData extends AppCompatActivity implements DataReceiver {
 
     @SuppressLint("UseSparseArrays")
     private Map<Integer, Data> current = new HashMap<>(),
@@ -38,6 +40,10 @@ class AccessibilityData implements DataReceiver {
             if(key == AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED){
                 current.put(key, new StringData(""));
                 latest.put(key, new StringData(""));
+            }
+            else if(key == 1024){
+                current.put(1024, new StringData(""));
+                latest.put(1024, new StringData(""));
             }
             else {
                 current.put(key, new IntData(0));
@@ -58,6 +64,8 @@ class AccessibilityData implements DataReceiver {
         names.put(AccessibilityEvent.TYPE_VIEW_SCROLLED, VIEW_SCROLLED);
         names.put(AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED, VIEW_TEXT_CHANGED);
         names.put(AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED, VIEW_TEXT_SELECTION_CHANGED);
+        names.put(1024, FOCUS_INPUT);
+//        names.put(AccessibilityEvent.TYPE_TOUCH_INTERACTION_START,TYPE_TOUCH_INTERACTION_START);
         return names;
     }
 
@@ -67,7 +75,7 @@ class AccessibilityData implements DataReceiver {
      */
     //s なんらかのイベントが発生して
     //s MainService.onAccessibilityEvent() が 呼ばれると AllData.put() を経由してここが呼ばれる
-    public void put(AccessibilityEvent event){
+    public void put(AccessibilityEvent event, String focus){
         //s 発生したイベントの種類を取得
         int type = event.getEventType();
 
@@ -97,12 +105,21 @@ class AccessibilityData implements DataReceiver {
             LogEx.d("NOTIFY", notifyApp);
             val.value = notifyApp;
         }
+//        else if(type ==  AccessibilityEvent.TYPE_VIEW_FOCUSED){
+//
+//            IntData val = (IntData) current.get(type);
+//            if (val != null) {
+//                val.value++;
+//            }
+//        }
         else {  //s イベントが通知の変更以外だった
             IntData val = (IntData) current.get(type);
             if (val != null) {
                 val.value++;
             }
         }
+        StringData val1 = (StringData) current.get(1024);
+        val1.value = focus;
     }
 
     @Override  //s DataReceiver からの implements
@@ -124,6 +141,10 @@ class AccessibilityData implements DataReceiver {
                 StringData val = ((StringData)data);
                 ((StringData) temp).value = val.value;
                 val.value = "";
+            }
+            else if(entry.getKey() == 1024){
+                StringData val = ((StringData)data);
+                ((StringData) temp).value = val.value;
             }
             else {
                 IntData val = ((IntData)data);

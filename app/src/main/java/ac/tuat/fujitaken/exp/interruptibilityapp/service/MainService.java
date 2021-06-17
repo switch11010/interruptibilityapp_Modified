@@ -2,9 +2,14 @@ package ac.tuat.fujitaken.exp.interruptibilityapp.service;
 
 import android.accessibilityservice.AccessibilityService;
 import android.content.Context;
+import android.os.Build;
 import android.os.PowerManager;
+import android.support.annotation.RequiresApi;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Toast;
 
 import java.util.concurrent.TimeUnit;
@@ -103,14 +108,50 @@ public class MainService extends AccessibilityService {
         LogEx.d("Info", "MainService.onCreate_4e");  //s 追加
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     //s なんらかの Accessibility イベントが発生すると呼ばれる関数
     //s どの種類のイベントで呼ばれるかは設定ファイルに記載：res/xml/accessibility_service_config.xml
     //s 途中 AllData.put() を経由して AccessibilityData.put() が呼ばれる
     public void onAccessibilityEvent(AccessibilityEvent event) {
         //AccessibilityServiceイベントをレシーバに受け渡し
-        allData.put(event);
+        String focus = "";
+        AccessibilityNodeInfo root = this.getRootInActiveWindow();
+        if(root != null){
+            if( root.findFocus(AccessibilityNodeInfo.FOCUS_INPUT) != null){
+                try{
+                    focus = root.findFocus(AccessibilityNodeInfo.FOCUS_INPUT).getClassName().toString();
+                }
+                catch (Exception e){
+                    focus = "None";
+                    LogEx.d("FindFocus",e.getLocalizedMessage());
+                }
+            }
+            else{
+                focus = "None";
+            }
+        }
+        allData.put(event, focus);
     }
+
+//    public boolean onTouchEvent(MotionEvent event) {
+//        LogEx.d("test","タッチ中！");
+//        //イベントの種類によって処理を振り分ける
+//        switch (event.getAction()) {
+//
+//            //画面にタッチした時の処理
+//            case MotionEvent.ACTION_DOWN: {
+//                LogEx.d("test","タッチ中！");
+//                break;
+//            }
+//            //画面のタッチが終わった時の処理
+//            case MotionEvent.ACTION_UP: {
+//                LogEx.d("test","notタッチ中！");
+//                break;
+//            }
+//        }
+//        return true;
+//    }
 
     @Override
     public void onInterrupt() {}
