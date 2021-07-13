@@ -450,7 +450,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
         LogEx.d("calcP", "eventCount3: " + eventCount3);
         LogEx.d("calcP", "eventCount4: " + eventCount4);
         if (p >= 0) {
-            return p*0.5;  //s 確率が設定されたならそれを返して終了
+            return p*0.3;  //s 確率が設定されたならそれを返して終了
         }
         //s 追加ここまで
         //s p に確率が設定されなかった 歩行 とかは 以下の旧計算式で計算する

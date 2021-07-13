@@ -12,7 +12,7 @@ public interface Constants {
 
             NOTIFICATION_THRESHOLD =  30 * 1000, //通知遷移と判断するまで時間（ms）  //s これを超えると通知とは関係ない遷移だと判断される
 
-            NOTIFICATION_SLEEP = 5 * 1000,  //最低通知間隔（ms）
+            NOTIFICATION_SLEEP = 5 * 1000,  //最低イベント検出間隔（ms）
 
             NOTIFICATION_INTERVAL = 7 * 60 * 1000,  //最低通知間隔（ms）
             STORAGE_FREE_SPACE_LIMITATION = 100*1000*1000,  //ログ保存のために最低確保するストレージサイズ

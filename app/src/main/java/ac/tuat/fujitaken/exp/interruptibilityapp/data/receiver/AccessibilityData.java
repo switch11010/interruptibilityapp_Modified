@@ -87,9 +87,9 @@ class AccessibilityData extends AppCompatActivity implements DataReceiver {
             if (notification == null || notification.when <= System.currentTimeMillis() - Constants.APP_TIME_LIMITATION) {
                 return;  //s 通知が無い？ or 使用履歴を辿る限界の設定よりも古いもの だった
             }
-            if (notification.sound == null && notification.vibrate == null) {
-                return;
-            }
+//            if (notification.sound == null && notification.vibrate == null) {
+//                return;
+//            }
             try {  //s 通知を出したアプリの名前を取得してるっぽい…？（適当）
                 CharSequence packageName = event.getPackageName();
                 PackageInfo activityInfo = packageManager.getPackageInfo(packageName.toString(), PackageManager.GET_ACTIVITIES);
