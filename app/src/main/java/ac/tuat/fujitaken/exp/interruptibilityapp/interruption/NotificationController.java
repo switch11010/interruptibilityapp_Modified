@@ -228,7 +228,6 @@ public class NotificationController {
             saveEvent(event, line);  //s そもそも通知を配信しようとしなかったことにする
             line.task = "";
             line.location = "";
-            //schedule.shutdownNow();  //s なんかうまくいかない
             cancelAskTask = true;  //s やっつけ
         }
 
@@ -238,33 +237,6 @@ public class NotificationController {
 
     public InterruptTiming getTiming() {
         return timing;
-    }
-
-    //s UDPConnection.notify() で呼ばれるが使用されていない
-    public void normalNotify(){
-        if(hasNotification){
-            return;
-        }
-
-        RowData lll = timing.getAllData().getLatestLine();
-        EvaluationData line = new EvaluationData();
-        line.setValue(lll);
-        LogEx.d("Time", lll.time + "ms");
-
-        schedule = Executors.newSingleThreadScheduledExecutor();
-        long delay = Constants.NOTIFICATION_THRESHOLD;
-        schedule.schedule(askTask, delay, TimeUnit.MILLISECONDS);
-        Bundle bundle = new Bundle();
-
-        line.event = PC.FROM_PC | Screen.SCREEN_ON | Notify.NOTIFICATION;
-        answerLine = line;
-
-        line.setAnswer(answerData);
-
-        bundle.putSerializable(EvaluationData.EVALUATION_DATA, line);
-        interruptionNotification.normalNotify(bundle);
-        hasNotification = true;
-        evaluationSave.lock = true;  //s 名前変更：rock → lock
     }
 
     //通知は出さないが，イベントを記録する

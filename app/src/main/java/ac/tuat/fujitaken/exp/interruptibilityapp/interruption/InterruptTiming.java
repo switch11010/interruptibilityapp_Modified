@@ -97,7 +97,10 @@ public class InterruptTiming implements RegularThread.ThreadListener {
             mAllData.scan();  //s WifiReceiver.scan()：よくわからない
         }
         boolean isTimePassedNoActive = line.time - prevTimeNoActive > Constants.NOTIFICATION_INTERVAL;  //s 前の通知から一定時間経過
-        if(isTimePassedNoActive == true) NoActiveThread(eventFlag, evaluationData);
+        if(isTimePassedNoActive == true){
+            final int NoActive = 1 << 10;
+            NoActiveThread(NoActive, evaluationData);
+        }
 
     }
 
