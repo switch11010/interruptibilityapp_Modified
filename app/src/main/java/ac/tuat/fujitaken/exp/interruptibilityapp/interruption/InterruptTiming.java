@@ -108,23 +108,24 @@ public class InterruptTiming implements RegularThread.ThreadListener {
         int n = notify.judge(((StringData)map.get(DataReceiver.NOTIFICATION)).value);  //s 新しい通知の有無
         int a = activeApp.judge(mAllData.getData());  //s 追加：アプリの切り替えの有無
 
-        final int eventFlag = w | s | n ;  //s 歩行・画面・通知 での状態変化のイベントのフラグ
-        //final int eventFlag = w | s | n | a;   //ny 追加：アプリ遷移
+        //final int eventFlag = w | s | n ;  //s 歩行・画面・通知 での状態変化のイベントのフラグ
+        final int eventFlag = s | n | a;   //ny 追加：アプリ遷移
         EvaluationData evaluationData = new EvaluationData();  //s なんか RowData のやつ
         evaluationData.setValue(line);
         notificationController.save(evaluationData);  //s 通知配信無しでそのまま csv に書き込む？
 
         //if((eventFlag & (Walking.WALK_START | Walking.WALK_STOP | Screen.SCREEN_ON | Screen.SCREEN_OFF)) > 0) {  //s コメントアウト
-        int eventFlagToNotify = Walking.WALK_START | Walking.WALK_STOP | Screen.SCREEN_ON | Screen.SCREEN_OFF;  //s 分離
-        eventFlagToNotify = eventFlagToNotify | Screen.UNLOCK;  //s 追加
-        //eventFlagToNotify = eventFlagToNotify | Screen.UNLOCK | ActiveApp.APP_SWITCH;  //ny 追加
+        //int eventFlagToNotify = Walking.WALK_START | Walking.WALK_STOP | Screen.SCREEN_ON | Screen.SCREEN_OFF;  //s 分離
+        //eventFlagToNotify = eventFlagToNotify | Screen.UNLOCK;  //s 追加
+        int eventFlagToNotify = Screen.SCREEN_ON | Screen.SCREEN_OFF | ActiveApp.APP_SWITCH;  //ny 追加
         if((eventFlag & eventFlagToNotify) > 0) {  //s 変更：ロック解除の追加（ロックはオフで兼用）
             eventTriggeredThread(eventFlag, evaluationData);
             mAllData.scan();  //s WifiReceiver.scan()：よくわからない
-        } else if ( Settings.getAppSettings().isNoteOnAppChangeMode() && a > 0 ) {  //s 追加ここから：アプリの切り替えがあった場合、状態遷移として扱う
-            eventTriggeredThread(a, evaluationData);  //s 他のイベントのフラグと混ぜると面倒くさいことになりそうなのでとりあえず単独でやる
-            mAllData.scan();  //s 追加ここまで
         }
+//        } else if ( Settings.getAppSettings().isNoteOnAppChangeMode() && a > 0 ) {  //s 追加ここから：アプリの切り替えがあった場合、状態遷移として扱う
+//            eventTriggeredThread(a, evaluationData);  //s 他のイベントのフラグと混ぜると面倒くさいことになりそうなのでとりあえず単独でやる
+//            mAllData.scan();  //s 追加ここまで
+//        }
     }
 
     //s 状態遷移のイベントが発生した際に呼ばれる Thread
@@ -185,6 +186,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                     boolean pResult = rnd < p || p > 0 && forceNote;  //s 確率に当選、または、確率(>0)で false でも Setting_Ex の 通知を強制 がオンなら通知を配信
                     boolean isTimePassed = line.time - prevTime > Constants.NOTIFICATION_INTERVAL;  //s 前の通知から一定時間経過
                     boolean isTimePassedTmp = line.time - prevTimeTmp > Constants.NOTIFICATION_SLEEP;  //ny 前のトリガイベントから一定時間経過
+
                     LogEx.d("InterruptTiming.eTT", "rnd: " + rnd);
                     LogEx.d("InterruptTiming.eTT", "通知配信判断: " + (pResult && isTimePassed) );
                     LogEx.d("InterruptTiming.eTT", "├ rnd<p 確率当選？: " + pResult);

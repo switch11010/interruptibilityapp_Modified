@@ -2,6 +2,7 @@ package ac.tuat.fujitaken.exp.interruptibilityapp.ui.main;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -67,7 +68,10 @@ public class MainActivity extends ActionBarActivity
         dbHelper = new WiPSDBHelper(getApplicationContext());
 
         check();
+
     }
+
+
 
     @Override
     protected void onDestroy() {

@@ -1,17 +1,21 @@
 package ac.tuat.fujitaken.exp.interruptibilityapp.service;
 
 import android.accessibilityservice.AccessibilityService;
+import android.app.ActionBar;
+import android.app.ActivityManager;
+import android.app.usage.UsageEvents;
+import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.PowerManager;
 import android.support.annotation.RequiresApi;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Toast;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.Constants;
@@ -25,12 +29,16 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.flow.RegularThread;
 import ac.tuat.fujitaken.exp.interruptibilityapp.flow.SaveTask;
 import ac.tuat.fujitaken.exp.interruptibilityapp.interruption.InterruptTiming;
 
+
+import static android.content.ContentValues.TAG;
+
 /**
  * AccessibilityService
  * UI操作，ウィンドウの変化，通知を受け取る
  * 他のイベント，センサーはイベントレシーバに任せている
  * 終了処理を忘れずに
  */
+@RequiresApi(api = Build.VERSION_CODES.DONUT)
 public class MainService extends AccessibilityService {
 
     //CPUのスリープをロックする
@@ -44,6 +52,7 @@ public class MainService extends AccessibilityService {
     //データ
     private AccelerometerData accelerometerData;
     private AllData allData;
+
 
     @Override
     protected void onServiceConnected() {
@@ -70,7 +79,7 @@ public class MainService extends AccessibilityService {
          * 各インスタンスの初期化
          */
         loop_50 = new RegularThread();  //s ACC_LOOP_PERIOD(20ms) おき
-        loop_1  = new RegularThread();  //s MAIN_LOOP_PERIOD(500ms) おき
+        loop_1 = new RegularThread();  //s MAIN_LOOP_PERIOD(500ms) おき
 
         accelerometerData = new AccelerometerData(getApplicationContext());  //s getApplicationContext()：ApplicationのContext だか何かが返ってくるやつらしい
         allData = new AllData(getApplicationContext(), accelerometerData);
@@ -83,7 +92,7 @@ public class MainService extends AccessibilityService {
         final SaveData save_50;  //s 再代入禁止なローカル変数の宣言
         if (Settings.getAppSettings().isAccSave()) {
             save_50 = new SaveData("Acc", accelerometerData.getHeader());
-            loop_50.setListener(()-> save_50.addLine(accelerometerData.newLine()));
+            loop_50.setListener(() -> save_50.addLine(accelerometerData.newLine()));
             saveTask.addData(save_50);
         }
 
@@ -115,24 +124,24 @@ public class MainService extends AccessibilityService {
     //s 途中 AllData.put() を経由して AccessibilityData.put() が呼ばれる
     public void onAccessibilityEvent(AccessibilityEvent event) {
         //AccessibilityServiceイベントをレシーバに受け渡し
-        String focus = "";
+        String focus = "None";
         AccessibilityNodeInfo root = this.getRootInActiveWindow();
-        if(root != null){
-            if( root.findFocus(AccessibilityNodeInfo.FOCUS_INPUT) != null){
-                try{
+        if (root != null) {
+            if (root.findFocus(AccessibilityNodeInfo.FOCUS_INPUT) != null) {
+                try {
                     focus = root.findFocus(AccessibilityNodeInfo.FOCUS_INPUT).getClassName().toString();
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     focus = "None";
-                    LogEx.d("FindFocus",e.getLocalizedMessage());
+                    LogEx.d("FindFocus", e.getLocalizedMessage());
                 }
-            }
-            else{
+            } else {
                 focus = "None";
             }
         }
+
         allData.put(event, focus);
     }
+
 
 //    public boolean onTouchEvent(MotionEvent event) {
 //        LogEx.d("test","タッチ中！");
