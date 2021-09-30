@@ -116,54 +116,6 @@ public class UDPConnection {
     }
 
     static private DatagramSocket receiveClient;
-/*
-    public static void startReceive(){
-        receiver = true;
-        Thread thread = new Thread(()-> {
-            AppSettings settings = Settings.getAppSettings();
-            int port = settings.getPort()-1;
-
-            try {
-                receiveClient = new DatagramSocket(port);
-                receiveClient.setSoTimeout(0);
-                while (receiver) {
-                    byte receivedBuff[] = new byte[64];
-                    DatagramPacket receivedPacket = new DatagramPacket(receivedBuff, receivedBuff.length);
-                    LogEx.d("Notify", "スタート");
-                    receiveClient.receive(receivedPacket);
-                    String message = new String(receivedPacket.getData(), "UTF-8");
-                    message = message.substring(0, message.indexOf('\0'));
-                    notify(message);
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (receiveClient != null) {
-                    receiveClient.close();
-                }
-            }
-        });
-        thread.start();
-    }
-
-    public static void stop(){
-        receiver = false;
-        if(receiveClient != null){
-            receiveClient.close();
-        }
-    }*/
-
-    private static void notify(String message){
-        NotificationController controller = NotificationController.getInstance();
-        InterruptTiming timing = controller.getTiming();
-        if(System.currentTimeMillis() - timing.getPrevTime() <= Constants.NOTIFICATION_INTERVAL){
-            return;
-        }
-
-        LogEx.d("Notify", "強制通知");
-        controller.normalNotify();
-    }
 
     //s PC から何か受信するっぽい（そのまま）
     //s InterruptTiming.eventTriggeredThread() で this.sendRequest() の直後に呼ばれる

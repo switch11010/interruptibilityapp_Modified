@@ -39,6 +39,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
     long prevTime;  //s このクラスの他では NotificationController の ブロードキャストレシーバ から 通知回答時に格納される
     long prevTimeTmp; //前回通知のトリガイベントの発生時刻
     long prevTimeNoActive; //非遷移用
+    long prevTimeOn; //前回ON
     //通知コントローラ．
     private NotificationController notificationController;
 
@@ -109,6 +110,9 @@ public class InterruptTiming implements RegularThread.ThreadListener {
         double rnd = Math.random();
         double p = 0.2;
         boolean pResult = rnd < p;
+        LogEx.d("InterruptTiming.eTT", "rnd: " + rnd);
+        LogEx.d("InterruptTiming.eTT", "通知配信判断: " + pResult );
+        LogEx.d("InterruptTiming.eTT", "└非遷移条件");
         if(pResult == true){
             notificationController.normalNotify(eventFlag, line);  //s 通知を配信する
         }
@@ -125,12 +129,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                         noteFlag = note    //通知モード
                                 && !NotificationController.hasNotification; //待機状態の通知なし
 
-//                LogEx.d("InterruptTiming.eTT", "----------------------------------------");  //s 追加ここから（デバッグ）
-//                if (!noteFlag) {
-//                    LogEx.d("InterruptTiming.eTT", "通知を配信しない判断");
-//                    LogEx.d("InterruptTiming.eTT", "!noteMode: " + !note);
-//                    LogEx.d("InterruptTiming.eTT", "NC.hasNotification: " + NotificationController.hasNotification);
-//                }  //s 追加ここまで
+                prevTimeNoActive = System.currentTimeMillis();
 
                 String str = "イベント発生：" + Integer.toBinaryString(event);
                 str += " -> " + Settings.getEventCounter().getEventName(event);
@@ -161,7 +160,6 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                             LogEx.e("forceNoteMode", "通知の配信を強制 がオン");
                         }  //s 変更・追加：だいたいこの辺まで
                         prevTimeTmp = System.currentTimeMillis();
-                        prevTimeNoActive = System.currentTimeMillis();
                         notificationController.normalNotify(event, line);  //s 通知を配信する
                         eval = true;
                     }
@@ -277,18 +275,22 @@ public class InterruptTiming implements RegularThread.ThreadListener {
         //ny 追加（11/18）一旦確率変更
         switch (eventPattern) {
             case 1:
+                prevTimeOn = System.currentTimeMillis();
                 p = (double)(eventCount2 + eventCount3) / (eventCount1 + eventCount2 + eventCount3);
                 break;
             case 2:
-                //int min13 = Math.min(eventCount1, eventCount3);
-                //p = (double)min13 / (eventCount2 + min13);
-                //p = (p + 2) / 3;
                 p = (double)(eventCount1 + eventCount3) / (eventCount1 + eventCount2 + eventCount3);
                 break;
             case 3:
-                //p = (double)eventCount1 / (eventCount1 + eventCount3);
-                //p = (p + 1) / 2;
-                p = (double)(eventCount1 + eventCount2) / (eventCount1 + eventCount2 + eventCount3);
+                boolean isTimePassedOn = System.currentTimeMillis() - prevTimeOn > Constants.FROM_ON_TIME;  //s 前ONから一定時間経過
+                if(isTimePassedOn  == true){
+                    p = (double)(eventCount1 + eventCount2) / (eventCount1 + eventCount2 + eventCount3);
+                }
+                else
+                {
+                    p = 0;
+                }
+
                 break;
         }
         LogEx.d("calcP", "eventPattern: " + eventPattern);
@@ -296,7 +298,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
         LogEx.d("calcP", "eventCount2: " + eventCount2);
         LogEx.d("calcP", "eventCount3: " + eventCount3);
         if (p >= 0) {
-            return p * 0.1;
+            return p * 0.2;
         }
         return 1;
     }

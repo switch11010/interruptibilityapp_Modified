@@ -60,7 +60,9 @@ public class EventCounter {
             SP_TO_PC_BY_NOTE_LOCK = "SP_TO_PC_BY_NOTE_LOCK",
 
             //s アプリ切り替え（特別枠）
-            APP_SWITCH = "APP_SWITCH";  //s 追加ここまで
+            APP_SWITCH = "APP_SWITCH",  //s 追加ここまで
+
+            NO_ACTIVE = "NO_ACTIVE";  //ny 非遷移
 
     //s 状態遷移となるビットの組み合わせによる フラグの定義
     //s 使われている場所は InterruptTiming と 下の EVENT_KEYS_FROM_FLAGS のキー のみ
@@ -103,7 +105,10 @@ public class EventCounter {
             SP_TO_PC_BY_NOTE_LOCK_FLAG = SP_TO_PC_BY_NOTE_FLAG | Screen.LOCK,
 
             //s アプリ切り替え（特別枠）
-            APP_SWITCH_FLAG = ActiveApp.APP_SWITCH;  //s 追加ここまで
+            APP_SWITCH_FLAG = ActiveApp.APP_SWITCH,  //s 追加ここまで
+
+            NO_ACTIVE_FLAG = 1 << 10;
+
     //s ビット対応表
     //s                                 ８ ７ ６ ５ ４ ３ ２ １ ０
     //s                                 ロ ロ Ｐ 通 画 画 歩 歩 空
@@ -178,6 +183,8 @@ public class EventCounter {
 
             //s アプリ切り替え（特別枠）
             put(APP_SWITCH_FLAG, APP_SWITCH);  //s 追加ここまで
+
+            put(NO_ACTIVE_FLAG, NO_ACTIVE);
         }
     };
 

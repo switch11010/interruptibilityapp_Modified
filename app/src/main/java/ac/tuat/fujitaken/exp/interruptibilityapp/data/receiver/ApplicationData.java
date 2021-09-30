@@ -101,14 +101,14 @@ public class ApplicationData implements DataReceiver {
                 UsageStats stats = map.get(map.lastKey());
                 packageName = stats.getPackageName();
             }
-            if(!packageName.equals(prevPackegeName)) {
-                for (UsageStats usageStats : list) {
-                    if (usageStats.getTotalTimeInForeground() > 0) {
-                        Log.d(TAG, "packageName: " + usageStats.getPackageName() + "\ttotalTimeDisplayed: " + usageStats.getTotalTimeInForeground()
-                                + "\tfirstTime: " + getStringDate(usageStats.getFirstTimeStamp()) + "\tlastTime: " + getStringDate(usageStats.getLastTimeUsed()));
-                    }
-                }
-            }
+//            if(!packageName.equals(prevPackegeName)) {
+//                for (UsageStats usageStats : list) {
+//                    if (usageStats.getTotalTimeInForeground() > 0) {
+//                        Log.d(TAG, "packageName: " + usageStats.getPackageName() + "\ttotalTimeDisplayed: " + usageStats.getTotalTimeInForeground()
+//                                + "\tfirstTime: " + getStringDate(usageStats.getFirstTimeStamp()) + "\tlastTime: " + getStringDate(usageStats.getLastTimeUsed()));
+//                    }
+//                }
+//            }
         }
        
         prevlist=list;
@@ -123,17 +123,6 @@ public class ApplicationData implements DataReceiver {
         return df.format(date);
     }
 
-    //ny:追加
-//    @RequiresApi(api = Build.VERSION_CODES.N)
-//    public static List<UsageStats> subtract(List<UsageStats> list1, List<UsageStats> list2) {
-//        final HashSet<UsageStats> list2Set = new HashSet<>(list2);
-//        final List<UsageStats> resultList = list1.stream()
-//                .filter(p -> {
-//                    return (! list2Set.contains(p));
-//                })
-//                .collect(Collectors.toList());
-//        return resultList;
-//    }
 
     @SuppressWarnings("deprecation")
     void getCurrentApplication(){
@@ -155,8 +144,8 @@ public class ApplicationData implements DataReceiver {
         }
         try {
             PackageInfo info = packageManager.getPackageInfo(key, PackageManager.GET_ACTIVITIES);
-            int test = packageManager.getPackageUid(key, PackageManager.GET_ACTIVITIES);
-            Log.d(TAG, String.valueOf(test));
+//            int test = packageManager.getPackageUid(key, PackageManager.GET_ACTIVITIES);
+//            Log.d(TAG, String.valueOf(test));
             CharSequence label = info.applicationInfo.loadLabel(packageManager);
             value = label.toString();
             value = value.replace(",", "，");
