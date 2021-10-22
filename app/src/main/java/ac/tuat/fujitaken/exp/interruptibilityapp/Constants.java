@@ -15,6 +15,7 @@ public interface Constants {
             NOTIFICATION_SLEEP = 5 * 1000,  //最低イベント検出間隔（ms)
             FROM_ON_TIME = 30 * 1000,
             NOTIFICATION_INTERVAL = 7 * 60 * 1000,  //最低通知間隔（ms）
+            NOTIFICATION_INTERVAL_AS = 5 * 60 * 1000,  //非遷移条件（ms）
             STORAGE_FREE_SPACE_LIMITATION = 100*1000*1000,  //ログ保存のために最低確保するストレージサイズ
             APP_TIME_LIMITATION = 60 * 60 * 1000,    //アプリ使用履歴を遡って参照する最大時間
             DEFAULT_PORT = 0,       //通信ポート番号の初期値

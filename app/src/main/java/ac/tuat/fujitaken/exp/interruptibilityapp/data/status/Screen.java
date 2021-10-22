@@ -28,7 +28,7 @@ public class Screen {
     public static final int UNLOCK = 1 << 7;  //s 追加：ロック解除イベントを表すフラグのビット
     public static final int   LOCK = 1 << 8;  //s 追加：ロック設定イベントを表すフラグのビット（ロック解除状態からの遷移）
 
-    private boolean prevState = true;  //s 前回の画面点灯状態
+    public boolean prevState = true;  //s 前回の画面点灯状態
     private List<Integer> buffer = new ArrayList<>();  //s 画面を操作したかどうかの履歴を記憶するキュー？
     private int sumOps = 0;                            //s ↑の buffer 内に格納されている ops の合計数
     private List<Integer> bufferL = null;  //s 追加：ロック画面での判定に利用する
@@ -100,7 +100,7 @@ public class Screen {
         }  //s 追加ここまで
 
         //s 画面がオンになったか などのイベントの判断（オンとオフの両方 false もあり得る）
-        boolean on = latestValue && !prevState && !(prevConnect && !connect) && !appName.equals(noteApp),  //s 今回入＆前回切＆（前回接続＆今回非接続）ではない＆通知が自分のではない
+        boolean on = latestValue && !prevState && !appName.equals(noteApp),  //s 今回入＆前回切＆（前回接続＆今回非接続）ではない＆通知が自分のではない
         off = !latestValue && prevState && sumOps > 0;  //s コメントアウト：今回切＆前回入＆無操作による画面切ではない //ny 今回はこれ
 //        off = !latestValue && prevState && (prevUnlocked && sumOps > 0 || bufferL != null && !prevUnlocked && sumOpsL > 0);  //s 変更：ロック画面での無操作画面切に対応
         boolean unlock = nowUnlocked && !prevUnlocked;  //s 追加：ロックが解除された

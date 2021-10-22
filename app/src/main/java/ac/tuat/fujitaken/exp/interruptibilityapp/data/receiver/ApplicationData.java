@@ -144,8 +144,6 @@ public class ApplicationData implements DataReceiver {
         }
         try {
             PackageInfo info = packageManager.getPackageInfo(key, PackageManager.GET_ACTIVITIES);
-//            int test = packageManager.getPackageUid(key, PackageManager.GET_ACTIVITIES);
-//            Log.d(TAG, String.valueOf(test));
             CharSequence label = info.applicationInfo.loadLabel(packageManager);
             value = label.toString();
             value = value.replace(",", "，");

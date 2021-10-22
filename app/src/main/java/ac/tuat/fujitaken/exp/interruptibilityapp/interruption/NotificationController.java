@@ -213,14 +213,14 @@ public class NotificationController {
         //s 割込み拒否度の評価を要求する通知を配信する（本命）
         //delay = ( (event & Screen.UNLOCK) > 0 ? 10000 : 0 );  //s 追加：通知配信を遅延させるミリ秒数
         //ny 情報提供開始から5秒後に評価アンケート配信
-        if(event==272 || event==304){
+        if(event==272 || event==304 || event == 1024){
             delay = 0;
         }
         else{
             delay = 5000;
         }
 
-        boolean isFailed = interruptionNotification.normalNotify(bundle, delay);  //s 変更：ロック解除時は10秒待機するように
+        boolean isFailed = interruptionNotification.normalNotify(bundle, delay);
 
         // 追加：通知の遅延配信に失敗（被り）したら askTask のスケジュールを停止する
         if (isFailed) {

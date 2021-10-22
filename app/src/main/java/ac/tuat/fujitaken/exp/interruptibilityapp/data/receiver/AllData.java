@@ -1,6 +1,8 @@
 package ac.tuat.fujitaken.exp.interruptibilityapp.data.receiver;
 
 import android.content.Context;
+import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 
 import java.util.Comparator;
@@ -8,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.IntData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.flow.RegularThread;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.Data;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.save.RowData;
@@ -27,6 +30,9 @@ public class AllData implements DataReceiver, RegularThread.ThreadListener {
     private SensorReceiver sensorReceiver;
     private WalkDetection walkDetection;
     private WifiReceiver wifiReceiver;
+    private MemoryData memoryDataReceiver;
+
+
 
     //データ参照用のマップ
     private Map<String, Integer> names = new HashMap<>();
@@ -43,7 +49,8 @@ public class AllData implements DataReceiver, RegularThread.ThreadListener {
         phoneState = new PhoneState(context);
         sensorReceiver = new SensorReceiver(context);
         walkDetection = new WalkDetection(accelerometerData);
-        wifiReceiver = new WifiReceiver(context);
+        memoryDataReceiver = new MemoryData(context);
+        //wifiReceiver = new WifiReceiver(context);
 
         //s NAMES[]：implements元の DataReceiver で宣言してあるString[]型の定数
         //s これを privateな連想配列のキー として設定
@@ -60,14 +67,22 @@ public class AllData implements DataReceiver, RegularThread.ThreadListener {
             }
         });
 
+
         data.putAll(accessibilityEventReceiver.getData());  //s putAll()：連想配列の全要素コピー
         data.putAll(applicationInfoReceiver.getData());
         data.putAll(broadcastEventReceiver.getData());
         data.putAll(phoneState.getData());
         data.putAll(sensorReceiver.getData());
         data.putAll(walkDetection.getData());
-        data.putAll(wifiReceiver.getData());
+        //data.putAll(wifiReceiver.getData());
+        data.putAll(memoryDataReceiver.getData());
+
+
     }
+
+    public void setMemoryData(){
+        memoryDataReceiver.setTotalmemory();
+    };
 
     public WalkDetection getWalkDetection(){
         return walkDetection;
@@ -119,7 +134,7 @@ public class AllData implements DataReceiver, RegularThread.ThreadListener {
     @Override  //s クラス RegularThread からの implements
     public void run() {
         if(walkDetection.isWalkingNext()){
-            wifiReceiver.scan();
+            //wifiReceiver.scan();
         }
         accessibilityEventReceiver.refresh();
         applicationInfoReceiver.getCurrentApplication();

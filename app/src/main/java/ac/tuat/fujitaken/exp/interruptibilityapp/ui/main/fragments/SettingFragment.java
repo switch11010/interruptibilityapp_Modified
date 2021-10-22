@@ -83,7 +83,7 @@ public class SettingFragment extends Fragment {
         ipText = (EditText)root.findViewById(R.id.ip_address);
         spText = (EditText)root.findViewById(R.id.sp_id);
         portText = (EditText)root.findViewById(R.id.port_num);
-        togglePC = (ToggleButton)root.findViewById(R.id.togglePC);
+        //togglePC = (ToggleButton)root.findViewById(R.id.togglePC);
         toggleSD = (ToggleButton)root.findViewById(R.id.toggleSD);
 
         return root;
@@ -97,11 +97,11 @@ public class SettingFragment extends Fragment {
 
         saveSwitch.setChecked(settings.isAccSave());
         noteSwitch.setChecked(settings.isNoteMode());
-        ipText.setText(settings.getIpAddress());
+        ipText.setText(String.valueOf(settings.getIpAddress()));
         spText.setText(String.valueOf(settings.getId()));
         portText.setText(String.valueOf(settings.getPort()));
         //togglePC.setChecked(settings.isPcMode());  //s コメントアウト
-        togglePC.setChecked(false);  //s 変更：常時 OFF に（通知が来ない原因になる）
+        //togglePC.setChecked(false);  //s 変更：常時 OFF に（通知が来ない原因になる）
         toggleSD.setChecked(settings.isSaveMode());
 
         volume.setProgress(settings.getVolume());
@@ -123,7 +123,7 @@ public class SettingFragment extends Fragment {
         portText.setEnabled(state);
         volume.setEnabled(state);
         //togglePC.setEnabled(state);  //s コメントアウト
-        togglePC.setEnabled(false);  //s 変更：常時 Unable に（通知が来ない原因になる）
+       // togglePC.setEnabled(false);  //s 変更：常時 Unable に（通知が来ない原因になる）
         toggleSD.setEnabled(state);
         exist.setVisibility(state? View.INVISIBLE: View.VISIBLE);
     }
@@ -135,7 +135,7 @@ public class SettingFragment extends Fragment {
         AppSettings settings = Settings.getAppSettings();
         settings.setAccSave(saveSwitch.isChecked());
         settings.setNoteMode(noteSwitch.isChecked());
-        settings.setPcMode(togglePC.isChecked());
+        //settings.setPcMode(togglePC.isChecked());
         settings.setSaveMode(toggleSD.isChecked());
         settings.setIpAddress(ipText.getText().toString());
         settings.setId(Integer.parseInt(spText.getText().toString()));

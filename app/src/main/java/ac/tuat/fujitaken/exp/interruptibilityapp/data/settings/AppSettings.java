@@ -8,6 +8,8 @@ import android.preference.PreferenceManager;
 
 import ac.tuat.fujitaken.exp.interruptibilityapp.Constants;
 
+import static java.lang.Float.parseFloat;
+
 /**
  *
  * Created by hi on 2017/02/07.
@@ -30,7 +32,7 @@ public class AppSettings extends Application{  //s extends Application を抜い
 
     //s 設定の情報を記憶するフィールド　ゲッタを通してこれにアクセスすることで設定を読み出せる
     private boolean accSave, noteMode, pcMode, saveMode;
-    private int port, id, volume;
+    private int  volume, port, id;
     private String ipAddress;
     private SharedPreferences preferences;
     private boolean forceNoteMode;  //s 追加ここから
@@ -44,9 +46,9 @@ public class AppSettings extends Application{  //s extends Application を抜い
         noteMode = preferences.getBoolean(NOTE, true);
         pcMode = preferences.getBoolean(PC_MODE, false);
         saveMode = preferences.getBoolean(SAVE_MODE, false);
-        ipAddress = preferences.getString(IP_ADDRESS, "");
-        port = preferences.getInt(PORT, Constants.DEFAULT_PORT);
-        id = preferences.getInt(SP_ID, Constants.DEFAULT_SP_ID);
+        ipAddress = preferences.getString(IP_ADDRESS, "0.3");
+        port = preferences.getInt(PORT, 0);
+        id = preferences.getInt(SP_ID, 0);
         AudioManager manager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
         if (manager != null) {
             volume = preferences.getInt(VOLUME, manager.getStreamVolume(AudioManager.STREAM_NOTIFICATION));
@@ -54,7 +56,7 @@ public class AppSettings extends Application{  //s extends Application を抜い
         forceNoteMode = preferences.getBoolean(FORCE_NOTE, false);  //s 追加ここから
         noNoteOnWalkMode = preferences.getBoolean(NO_NOTE_ON_WALK, true);
         lockScreenOffSec = preferences.getInt(LOCK_SCREEN_OFF_SEC, 0);
-        noteOnAppChangeMode = preferences.getBoolean(NOTE_ON_APP_CHANGE, false);  //s 追加ここまで
+        noteOnAppChangeMode = preferences.getBoolean(NOTE_ON_APP_CHANGE, true);  //s 追加ここまで
     }
 
     //s 設定の変更をフィールドに反映させる
@@ -62,18 +64,12 @@ public class AppSettings extends Application{  //s extends Application を抜い
     public void setAccSave(boolean b) {
         this.accSave = b;
     }
-    public void setId(int i) {
-        this.id = i;
-    }
-    public void setIpAddress(String s) {
-        this.ipAddress = s;
-    }
+    public void setId(int i) { this.id = i; }
+    public void setIpAddress(String s) {this.ipAddress = s;}
     public void setNoteMode(boolean b) {
         this.noteMode = b;
     }
-    public void setPort(int i) {
-        this.port = i;
-    }
+    public void setPort(int i) {this.port = i;}
     public void setVolume(int i) {
         this.volume = i;
     }

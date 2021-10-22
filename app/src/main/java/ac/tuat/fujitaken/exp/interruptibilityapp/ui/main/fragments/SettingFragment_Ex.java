@@ -162,10 +162,10 @@ public class SettingFragment_Ex extends Fragment {
 
         /*saveSwitch.setChecked(settings.isAccSave());
         noteSwitch.setChecked(settings.isNoteMode());*/
-        forceNoteSwitch.setChecked(settings.isForceNoteMode());
-        noNoteOnWalkSwitch.setChecked(settings.isNoNoteOnWalkMode());
-        lockScreenOffSecText.setText(String.valueOf(settings.getLockScreenOffSec()));
-        noteOnAppChangeSwitch.setChecked(settings.isNoteOnAppChangeMode());
+//        forceNoteSwitch.setChecked(settings.isForceNoteMode());
+//        noNoteOnWalkSwitch.setChecked(settings.isNoNoteOnWalkMode());
+//        lockScreenOffSecText.setText(String.valueOf(settings.getLockScreenOffSec()));
+//        noteOnAppChangeSwitch.setChecked(settings.isNoteOnAppChangeMode());
         /*ipText.setText(settings.getIpAddress());
         spText.setText(String.valueOf(settings.getId()));
         portText.setText(String.valueOf(settings.getPort()));
@@ -205,10 +205,10 @@ public class SettingFragment_Ex extends Fragment {
         AppSettings settings = Settings.getAppSettings();
         /*settings.setAccSave(saveSwitch.isChecked());
         settings.setNoteMode(noteSwitch.isChecked());*/
-        settings.setForceNoteMode(forceNoteSwitch.isChecked());
-        settings.setNoNoteOnWalkMode(noNoteOnWalkSwitch.isChecked());
-        settings.setLockScreenOffSec(Integer.parseInt(lockScreenOffSecText.getText().toString()));
-        settings.setNoteOnAppChangeMode(noteOnAppChangeSwitch.isChecked());
+//        settings.setForceNoteMode(forceNoteSwitch.isChecked());
+//        settings.setNoNoteOnWalkMode(noNoteOnWalkSwitch.isChecked());
+//        settings.setLockScreenOffSec(Integer.parseInt(lockScreenOffSecText.getText().toString()));
+//        settings.setNoteOnAppChangeMode(noteOnAppChangeSwitch.isChecked());
         /*settings.setPcMode(togglePC.isChecked());
         settings.setSaveMode(toggleSD.isChecked());
         settings.setIpAddress(ipText.getText().toString());

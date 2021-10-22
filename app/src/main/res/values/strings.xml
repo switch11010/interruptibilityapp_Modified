@@ -48,10 +48,10 @@
     <string name="note_mode">通知モード</string>
     <string name="ACC_mode">加速度保存</string>
     <string name="Volume">通知音量</string>
-    <string name="id">スマホID</string>
-    <string name="ip">通信相手IP</string>
+    <string name="id">B</string>
+    <string name="ip">A</string>
     <string name="run">サービス実行中</string>
-    <string name="port">送信ポート</string>
+    <string name="port">C</string>
     <string name="pc_n">PC関係の遷移\nでのみ通知</string>
     <string name="sd">SDカード</string>
     <string name="pc">ToggleButton</string>

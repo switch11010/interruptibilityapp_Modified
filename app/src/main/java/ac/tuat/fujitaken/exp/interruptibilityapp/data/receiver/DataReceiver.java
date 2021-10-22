@@ -32,6 +32,8 @@ public interface DataReceiver {
 
                 APPLICATION = "APPLICATION",
 
+                TOTAL_MEMORY = "TOTAL_MEMORY",
+
                 HEADSET_PLUG = "HEADSET_PLUG",
                 POWER_CONNECTED = "POWER_CONNECTED",
                 SCREEN_ON = "SCREEN_ON",
@@ -69,6 +71,7 @@ public interface DataReceiver {
                 VIEW_TEXT_CHANGED,
                 VIEW_TEXT_SELECTION_CHANGED,
                 FOCUS_INPUT,
+                TOTAL_MEMORY,
                 //TYPE_TOUCH_INTERACTION_START,
 
                 MAGNETIC_FIELD,

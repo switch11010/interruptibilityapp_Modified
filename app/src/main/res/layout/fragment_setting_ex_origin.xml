@@ -1,0 +1,248 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.main.fragments.SettingFragment_Ex">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- 最上部：apkファイル置き場を開くボタン -->
+        <TextView
+            android:id="@+id/currentVersionName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignStart="@+id/forceNoteSwitch"
+            android:layout_alignLeft="@+id/forceNoteSwitch"
+            android:layout_marginTop="30dp"
+            android:text="@string/ver0_0_0" />
+        <Button
+            android:id="@+id/checkUpdateButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="15dp"
+            android:text="@string/check_version" />
+
+
+        <!-- 1段目：遠慮せずに通知をガシガシ出すオプション -->
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/forceNoteSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/checkUpdateButton"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:text="@string/force"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/forceNoteSwitch"
+            android:layout_alignStart="@+id/forceNoteSwitch"
+            android:layout_alignLeft="@+id/forceNoteSwitch"
+            android:layout_alignParentTop="false"
+            android:layout_marginTop="0dp"
+            android:text="@string/force2" />
+
+
+        <!-- 2段目：歩行で通知を出さないオプション -->
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/noNoteOnWalkSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView3"
+            android:layout_alignStart="@+id/textView3"
+            android:layout_alignLeft="@+id/textView3"
+            android:layout_marginTop="30dp"
+            android:text="@string/walk"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/noNoteOnWalkSwitch"
+            android:layout_alignStart="@+id/noNoteOnWalkSwitch"
+            android:layout_alignLeft="@+id/noNoteOnWalkSwitch"
+            android:layout_alignParentTop="false"
+            android:layout_marginTop="5dp"
+            android:text="@string/walk2" />
+
+
+        <!-- 3段目：ロック画面の消灯時間の手動設定 -->
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView4"
+            android:layout_alignStart="@+id/textView4"
+            android:layout_alignLeft="@+id/textView4"
+            android:layout_alignParentTop="false"
+            android:layout_marginTop="30dp"
+            android:text="@string/lock_off"
+            android:textColor="@android:color/black"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/lockScreenOffSecText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView4"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_toEndOf="@+id/textView5"
+            android:layout_toRightOf="@+id/textView5"
+            android:ems="2"
+            android:hint="@string/second"
+            android:inputType="numberDecimal" />
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView5"
+            android:layout_alignStart="@+id/textView5"
+            android:layout_alignLeft="@+id/textView5"
+            android:layout_alignParentTop="false"
+            android:layout_marginTop="5dp"
+            android:text="@string/auto_off" />
+
+
+        <!-- 4段目：電池最適化の設定画面を表示 -->
+        <TextView
+            android:id="@+id/textView7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView6"
+            android:layout_alignStart="@+id/textView6"
+            android:layout_alignLeft="@+id/textView6"
+            android:layout_alignParentTop="false"
+            android:layout_marginTop="30dp"
+            android:text="@string/optimize_battery"
+            android:textColor="@android:color/black"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/moveBatterySaverSettingsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView6"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="20dp"
+            android:layout_toEndOf="@+id/textView7"
+            android:layout_toRightOf="@+id/textView7"
+            android:text="@string/hyouji" />
+
+        <TextView
+            android:id="@+id/textView8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView7"
+            android:layout_alignStart="@+id/textView7"
+            android:layout_alignLeft="@+id/textView7"
+            android:layout_alignParentTop="false"
+            android:layout_marginTop="5dp"
+            android:text="@string/sleep" />
+
+
+        <!-- 5段目：アプリ切り替えで通知を出すオプション -->
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/noteOnAppChangeSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView8"
+            android:layout_alignStart="@+id/textView8"
+            android:layout_alignLeft="@+id/textView8"
+            android:layout_marginTop="30dp"
+            android:text="@string/AS"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/textView9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/noteOnAppChangeSwitch"
+            android:layout_alignStart="@+id/noteOnAppChangeSwitch"
+            android:layout_alignLeft="@+id/noteOnAppChangeSwitch"
+            android:layout_alignParentTop="false"
+            android:layout_marginTop="5dp"
+            android:text="@string/AS2" />
+
+
+        <!-- 6段目：電池最適化の設定画面を表示 -->
+        <TextView
+            android:id="@+id/textView10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView9"
+            android:layout_alignStart="@+id/textView9"
+            android:layout_alignLeft="@+id/textView9"
+            android:layout_alignParentTop="false"
+            android:layout_marginTop="30dp"
+            android:text="@string/silent"
+            android:textColor="@android:color/black"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/moveNotificationPolicySettingsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView9"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="20dp"
+            android:layout_toEndOf="@+id/textView10"
+            android:layout_toRightOf="@+id/textView10"
+            android:text="@string/hyouji" />
+
+        <TextView
+            android:id="@+id/textView11"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView10"
+            android:layout_alignStart="@+id/textView10"
+            android:layout_alignLeft="@+id/textView10"
+            android:layout_alignParentTop="false"
+            android:layout_marginTop="5dp"
+            android:text="@string/silent2" />
+
+
+        <!-- ぶるぶる -->
+        <!--
+        <TextView
+            android:id="@+id/noUseSwitchText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/noUseSwitch"
+            android:layout_alignStart="@+id/noUseSwitch"
+            android:layout_alignLeft="@+id/noUseSwitch"
+            android:layout_alignParentTop="false"
+            android:layout_marginTop="5dp"
+            android:text="押すなよ？絶対押すなよ？？" />
+
+
+
+         最下部の余白（フッター的な）
+        <TextView
+            android:id="@+id/footer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/noUseSwitchText"
+            android:layout_alignStart="@+id/noUseSwitchText"
+            android:layout_alignLeft="@+id/noUseSwitchText"
+            android:layout_alignParentBottom="false"
+            android:text="\n" />
+        -->
+
+    </RelativeLayout>
+</ScrollView>
+

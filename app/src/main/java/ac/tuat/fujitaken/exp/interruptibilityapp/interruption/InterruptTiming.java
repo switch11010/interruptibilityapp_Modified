@@ -26,6 +26,9 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.Walking;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.ActiveApp;  //s 追加：アクティブなアプリ
 import ac.tuat.fujitaken.exp.interruptibilityapp.flow.RegularThread;
 
+import static java.lang.Double.parseDouble;
+import static java.lang.Float.parseFloat;
+
 
 /**
  * 通知タイミング検出用
@@ -50,6 +53,8 @@ public class InterruptTiming implements RegularThread.ThreadListener {
     private boolean note;
     private AllData mAllData;
 
+    private boolean first5m; //ny 遷移から5分の最初のフラグ
+
 
     //コンストラクタ
     //s MainService.onCreate() から呼ばれる
@@ -58,12 +63,15 @@ public class InterruptTiming implements RegularThread.ThreadListener {
         //設定ファイルからモードを確認
         note = Settings.getAppSettings().isNoteMode();
 
-        prevTime = System.currentTimeMillis()- Constants.NOTIFICATION_INTERVAL;
-        prevTimeTmp = System.currentTimeMillis()- Constants.NOTIFICATION_SLEEP;
+        prevTime = System.currentTimeMillis();
+        prevTimeTmp = System.currentTimeMillis();
+        prevTimeNoActive = System.currentTimeMillis();
+        prevTimeOn = 0;
         notificationController = NotificationController.getInstance(allData, this);
 
         screen = new Screen(context);
         activeApp = new ActiveApp(); //ny 追加
+        first5m = true;
     }
 
     //s MainService.onDestroy() から呼ばれる
@@ -85,6 +93,8 @@ public class InterruptTiming implements RegularThread.ThreadListener {
         final RowData line = mAllData.newLine();
         Map<String, Data> map = mAllData.getData();
 
+        mAllData.setMemoryData();
+
         int s = screen.judge(mAllData.getData());     //s 画面の点灯消灯の有無
         int a = activeApp.judge(mAllData.getData());  //s 追加：アプリの切り替えの有無
 
@@ -95,30 +105,36 @@ public class InterruptTiming implements RegularThread.ThreadListener {
         int eventFlagToNotify = Screen.SCREEN_ON | Screen.SCREEN_OFF | ActiveApp.APP_SWITCH;  //ny 追加
         if((eventFlag & eventFlagToNotify) > 0) {  //s 変更：ロック解除の追加（ロックはオフで兼用）
             eventTriggeredThread(eventFlag, evaluationData);
-            mAllData.scan();  //s WifiReceiver.scan()：よくわからない
+            first5m = true;
         }
-        boolean isTimePassedNoActive = line.time - prevTimeNoActive > Constants.NOTIFICATION_INTERVAL;  //s 前の通知から一定時間経過
-        if(isTimePassedNoActive == true){
-            final int NoActive = 1 << 10;
-            NoActiveThread(NoActive, evaluationData);
+        else{
+            boolean isTimePassedNoActive = line.time - prevTimeNoActive > Constants.NOTIFICATION_INTERVAL_AS;  //ny 前の遷移から一定時間経過
+            boolean isTimePassed = line.time - prevTime > Constants.NOTIFICATION_INTERVAL;  //s 前の通知から一定時間経過
+            if(isTimePassedNoActive == true && isTimePassed == true && screen.prevState == true && first5m == true){
+                final int NoActive = 1 << 10;
+                NoActiveThread(NoActive, evaluationData);
+                first5m = false;
+            }
         }
-
     }
 
     private void NoActiveThread(final int eventFlag, final EvaluationData line)
     {
+        AppSettings settings = Settings.getAppSettings();
         double rnd = Math.random();
-        double p = 0.2;
+        double p = (double)settings.getPort()/10;
         boolean pResult = rnd < p;
         LogEx.d("InterruptTiming.eTT", "rnd: " + rnd);
+        LogEx.d("InterruptTiming.eTT", "p: " + p);
         LogEx.d("InterruptTiming.eTT", "通知配信判断: " + pResult );
         LogEx.d("InterruptTiming.eTT", "└非遷移条件");
-        if(pResult == true){
-            notificationController.normalNotify(eventFlag, line);  //s 通知を配信する
+        if(pResult == true) {
+            notificationController.normalNotify(eventFlag, line);  //ny 通知を配信する
         }
-        else {
-            prevTimeNoActive = System.currentTimeMillis();
+        else{
+            notificationController.saveEvent(eventFlag, line);  //ny 通知は配信しないが、記録には残しておく
         }
+        prevTimeNoActive = System.currentTimeMillis();
     }
 
     //s 状態遷移のイベントが発生した際に呼ばれる Thread
@@ -155,7 +171,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                     LogEx.d("InterruptTiming.eTT", "└ 前回通知から間を空けた？: " + isTimePassed);
                     LogEx.d("InterruptTiming.eTT", "└ 前回トリガイベントから間を空けた？: " + isTimePassedTmp);
 
-                    if ( pResult && isTimePassed && isTimePassedTmp) {  //s pcOpsFlag(event)：変更前のなごり（よくわかっていない）
+                    if ( pResult && isTimePassed && isTimePassedTmp) {
                         if (forceNote) {
                             LogEx.e("forceNoteMode", "通知の配信を強制 がオン");
                         }  //s 変更・追加：だいたいこの辺まで
@@ -189,12 +205,6 @@ public class InterruptTiming implements RegularThread.ThreadListener {
         AppSettings settings = Settings.getAppSettings();  //s 変更：下から移動
 
         EventCounter counter = Settings.getEventCounter();
-
-        //s 追加：まだ1回も画面を点灯させていなかったら 確率を 0 にする（サービス開始直後の消灯を飛ばすのが目的）
-        if (screen.getScreenOnCount() == 0) {
-            LogEx.w("InterruptTiming.calcP", "まだ画面を点灯させたことがない");
-            return 0;
-        }
 
         //対象となる遷移のサンプル数
         int s = counter.getEvaluations(event);  //s 今回のイベントの発生回数
@@ -285,12 +295,12 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                 boolean isTimePassedOn = System.currentTimeMillis() - prevTimeOn > Constants.FROM_ON_TIME;  //s 前ONから一定時間経過
                 if(isTimePassedOn  == true){
                     p = (double)(eventCount1 + eventCount2) / (eventCount1 + eventCount2 + eventCount3);
+                    p = p * settings.getId()/10;
                 }
                 else
                 {
                     p = 0;
                 }
-
                 break;
         }
         LogEx.d("calcP", "eventPattern: " + eventPattern);
@@ -298,7 +308,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
         LogEx.d("calcP", "eventCount2: " + eventCount2);
         LogEx.d("calcP", "eventCount3: " + eventCount3);
         if (p >= 0) {
-            return p * 0.2;
+            return p * parseDouble(settings.getIpAddress());
         }
         return 1;
     }

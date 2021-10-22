@@ -59,16 +59,6 @@
         android:layout_below="@+id/noteSwitch"
         android:layout_centerHorizontal="true" />
 
-    <TextView
-        android:text="@string/id"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/sp_id_text"
-        android:textSize="20sp"
-        android:layout_alignBaseline="@+id/sp_id"
-        android:layout_alignBottom="@+id/sp_id"
-        android:layout_toStartOf="@+id/isExistService" />
-
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -77,16 +67,6 @@
         android:layout_below="@+id/ip_address"
         android:layout_alignStart="@+id/ip_address"
         android:inputType="number" />
-
-    <TextView
-        android:text="@string/ip"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/ip_address_text"
-        android:textSize="20sp"
-        android:layout_alignBaseline="@+id/ip_address"
-        android:layout_alignBottom="@+id/ip_address"
-        android:layout_toStartOf="@+id/moveSettings" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -119,32 +99,45 @@
         android:id="@+id/port_num"
         android:inputType="number" />
 
-    <TextView
-        android:text="@string/port"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView2"
-        android:textSize="20sp"
-        android:layout_alignBaseline="@+id/port_num"
-        android:layout_alignBottom="@+id/port_num"
-        android:layout_alignStart="@+id/ip_address_text" />
-
 
     <!-- s 追加ここから -->
     <!-- ny 一旦コメントアウト　-->
 
     <TextView
-        android:id="@+id/togglePCNote"
+        android:id="@+id/sp_id_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="-84dp"
-        android:layout_marginLeft="-84dp"
-        android:layout_marginBottom="46dp"
-        android:layout_toEndOf="@+id/togglePC"
-        android:layout_toRightOf="@+id/togglePC"
-        android:text="@string/pc_n"
-        android:textSize="12sp" />
+        android:layout_alignBaseline="@id/sp_id"
+        android:layout_alignBottom="@+id/sp_id"
+        android:layout_marginEnd="2dp"
+        android:layout_marginBottom="9dp"
+        android:layout_toStartOf="@+id/moveSettings"
+        android:text="@string/id"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/ip_address_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/ip_address"
+        android:layout_alignBottom="@+id/ip_address"
+        android:layout_marginEnd="2dp"
+        android:layout_marginBottom="9dp"
+        android:layout_toStartOf="@+id/moveSettings"
+        android:text="@string/ip"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/port_num"
+        android:layout_alignStart="@+id/ip_address_text"
+        android:layout_alignBottom="@+id/port_num"
+        android:layout_marginStart="0dp"
+        android:layout_marginBottom="9dp"
+        android:text="@string/port"
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/toggleSDNote"
@@ -158,14 +151,6 @@
         android:layout_toLeftOf="@+id/toggleSD"
         android:text="@string/sd"
         android:textSize="12sp" />
-
-    <ToggleButton
-        android:id="@+id/togglePC"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:text="@string/pc" />
 
     <ToggleButton
         android:id="@+id/toggleSD"

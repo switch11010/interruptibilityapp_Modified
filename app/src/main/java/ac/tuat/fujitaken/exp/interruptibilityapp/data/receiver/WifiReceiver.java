@@ -25,7 +25,6 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.RSSI;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.WifiData;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.DeviceSettings;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.settings.Settings;
-import ac.tuat.fujitaken.exp.interruptibilityapp.interruption.UDPConnection;
 
 /**
  *
@@ -99,7 +98,7 @@ public class WifiReceiver extends BroadcastReceiver implements DataReceiver {
         WifiManager manager = settings.getManager();
         WifiInfo wINfo = manager.getConnectionInfo();
         int ipAdr = wINfo.getIpAddress();
-        UDPConnection.sendIP(ipAdr);
+        //UDPConnection.sendIP(ipAdr);
     }
 
     public void sendIP(){

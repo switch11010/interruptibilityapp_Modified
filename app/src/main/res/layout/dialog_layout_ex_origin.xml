@@ -10,12 +10,11 @@
     <!-- s 割込み拒否度の評価　5つのボタンで直接選択できるようにしたver -->
     <!-- ny 通知許容度の評価　ver -->
     <TextView
+        android:id="@+id/interruptibilityText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="通知許容度"
-        android:id="@+id/interruptibilityText"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

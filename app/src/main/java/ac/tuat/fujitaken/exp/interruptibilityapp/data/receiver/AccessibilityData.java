@@ -97,7 +97,7 @@ class AccessibilityData extends AppCompatActivity implements DataReceiver {
                 notifyApp = appLabel.toString();
                 notifyApp = notifyApp.replace(",", "，");
                 notifyApp = notifyApp.replace("\n", "，");
-                if(notification.sound == null && notification.vibrate == null){
+                if(notification.sound == null || notification.vibrate == null){
                     notifyApp = notifyApp + "_silent";
                 }
             } catch (PackageManager.NameNotFoundException e) {
