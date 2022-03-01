@@ -24,7 +24,7 @@ import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.PC;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.status.Screen;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.questionnaire.InterruptionNotification;
 import ac.tuat.fujitaken.exp.interruptibilityapp.ui.questionnaire.QuestionActivity;
-import ac.tuat.fujitaken.exp.interruptibilityapp.ui.questionnaire.fragments.QuestionFragment;
+import ac.tuat.fujitaken.exp.interruptibilityapp.ui.questionnaire.fragments.QuestionFragment_Ex;
 
 /**
  * 通知制御クラス
@@ -41,6 +41,7 @@ public class NotificationController {
     private EvaluationData answerData,
             lateData,
             cancelData,
+            cancelDataFragment,
             answerLine;
     private InterruptTiming timing;
 
@@ -59,13 +60,13 @@ public class NotificationController {
             if(QuestionActivity.UPDATE_CANCEL.equals(action)){
                 schedule.shutdownNow();
             }
-            else if(QuestionFragment.BROADCAST_CANCEL_ACTION.equals(action)){
-                cancelTask.run();
+            else if(QuestionFragment_Ex.BROADCAST_CANCEL_ACTION.equals(action)){
+                cancelTaskFlagment.run();
             }
             else{
                 Bundle bundle = intent.getExtras();
                 //通知へ30秒以内に回答したときの処理
-                if(QuestionFragment.BROADCAST_ANSWER_ACTION.equals(action)){
+                if(QuestionFragment_Ex.BROADCAST_ANSWER_ACTION.equals(action)){
                     answerData = (EvaluationData)bundle.getSerializable(EvaluationData.EVALUATION_DATA);
                     timing.prevTime = System.currentTimeMillis();
                     if (answerData != null) {
@@ -75,7 +76,7 @@ public class NotificationController {
                     }
                 }
                 //通知への回答期間を過ぎたときの処理
-                else if(QuestionFragment.BROADCAST_ASK_ACTION.equals(action)){
+                else if(QuestionFragment_Ex.BROADCAST_ASK_ACTION.equals(action)){
                     lateData = (EvaluationData)bundle.getSerializable(EvaluationData.EVALUATION_DATA);
                     if (lateData != null) {
                         answerLine.setAnswer(lateData.clone());
@@ -121,6 +122,15 @@ public class NotificationController {
         }
     };
 
+    private Runnable cancelTaskFlagment = new Runnable() {
+        @Override
+        public void run() {
+            interruptionNotification.cancel();
+            answerLine.setAnswer(cancelDataFragment.clone());
+            clearBuf();
+        }
+    };
+
     /**
      * 記録のバッファを開放する処理
      */
@@ -155,8 +165,9 @@ public class NotificationController {
         evaluationSave = new SaveData("Evaluation", "AnswerTime,Timing,News,Interrupt,Task,Location,UsePurpose,Comment,Event," + allData.getHeader());
         interruptionNotification = new InterruptionNotification(Settings.getContext());
         IntentFilter filter = new IntentFilter();
-        filter.addAction(QuestionFragment.BROADCAST_ANSWER_ACTION);
-        filter.addAction(QuestionFragment.BROADCAST_ASK_ACTION);
+        filter.addAction(QuestionFragment_Ex.BROADCAST_ANSWER_ACTION);
+        filter.addAction(QuestionFragment_Ex.BROADCAST_ASK_ACTION);
+        filter.addAction(QuestionFragment_Ex.BROADCAST_CANCEL_ACTION);
         filter.addAction(QuestionActivity.UPDATE_CANCEL);
 
         answerData = new EvaluationData();
@@ -171,6 +182,9 @@ public class NotificationController {
         lateData.evaluation = -3;
         cancelData = new EvaluationData();
         cancelData.evaluation = -2;
+        cancelDataFragment = new EvaluationData();
+        cancelDataFragment.evaluation = -3;
+
 
         localBroadcastManager = LocalBroadcastManager.getInstance(Settings.getContext());
         localBroadcastManager.registerReceiver(receiver, filter);

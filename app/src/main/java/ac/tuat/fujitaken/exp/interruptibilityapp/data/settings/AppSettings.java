@@ -46,9 +46,10 @@ public class AppSettings extends Application{  //s extends Application を抜い
         noteMode = preferences.getBoolean(NOTE, true);
         pcMode = preferences.getBoolean(PC_MODE, false);
         saveMode = preferences.getBoolean(SAVE_MODE, false);
-        ipAddress = preferences.getString(IP_ADDRESS, "0.3");
-        port = preferences.getInt(PORT, 0);
-        id = preferences.getInt(SP_ID, 0);
+        ipAddress = preferences.getString(IP_ADDRESS, "0.5");
+        id = preferences.getInt(SP_ID, 5);
+        port = preferences.getInt(PORT, 1);
+
         AudioManager manager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
         if (manager != null) {
             volume = preferences.getInt(VOLUME, manager.getStreamVolume(AudioManager.STREAM_NOTIFICATION));

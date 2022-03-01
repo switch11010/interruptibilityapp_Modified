@@ -153,7 +153,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                 LogEx.w("EvalData prevTime", new java.util.Date(prevTime).toString());
                 LogEx.w("EvalData line.time", new java.util.Date(line.time).toString());  //s 追加ここまで
 
-                if (noteFlag) {
+                if (noteFlag && Settings.getEventCounter().getEventName(event) != "" ) {
                     double p = calcP(event);
                     LogEx.d("EVENT_P", "time " + (line.time - prevTime));
                     LogEx.d("EVENT_P", "P " + p);
@@ -166,7 +166,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
                     boolean isTimePassedTmp = line.time - prevTimeTmp > Constants.NOTIFICATION_SLEEP;  //ny 前のトリガイベントから一定時間経過
 
                     LogEx.d("InterruptTiming.eTT", "rnd: " + rnd);
-                    LogEx.d("InterruptTiming.eTT", "通知配信判断: " + (pResult && isTimePassed) );
+                    LogEx.d("InterruptTiming.eTT", "通知配信判断: " + (pResult && isTimePassed && isTimePassedTmp) );
                     LogEx.d("InterruptTiming.eTT", "├ rnd<p 確率当選？: " + pResult);
                     LogEx.d("InterruptTiming.eTT", "└ 前回通知から間を空けた？: " + isTimePassed);
                     LogEx.d("InterruptTiming.eTT", "└ 前回トリガイベントから間を空けた？: " + isTimePassedTmp);
@@ -287,6 +287,7 @@ public class InterruptTiming implements RegularThread.ThreadListener {
             case 1:
                 prevTimeOn = System.currentTimeMillis();
                 p = (double)(eventCount2 + eventCount3) / (eventCount1 + eventCount2 + eventCount3);
+                p = p * settings.getId()/10 * 1.3;
                 break;
             case 2:
                 p = (double)(eventCount1 + eventCount3) / (eventCount1 + eventCount2 + eventCount3);

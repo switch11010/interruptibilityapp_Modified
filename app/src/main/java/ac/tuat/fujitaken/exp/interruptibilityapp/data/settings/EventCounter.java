@@ -107,6 +107,7 @@ public class EventCounter {
             //s アプリ切り替え（特別枠）
             APP_SWITCH_FLAG = ActiveApp.APP_SWITCH,  //s 追加ここまで
 
+
             NO_ACTIVE_FLAG = 1 << 10;
 
     //s ビット対応表

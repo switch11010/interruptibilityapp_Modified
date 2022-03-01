@@ -7,6 +7,7 @@ import android.util.Log;
 import java.util.HashMap;
 import java.util.Map;
 
+import ac.tuat.fujitaken.exp.interruptibilityapp.LogEx;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.Data;
 import ac.tuat.fujitaken.exp.interruptibilityapp.data.base.IntData;
 
@@ -33,6 +34,7 @@ class MemoryData implements DataReceiver {
         ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
         activityManager.getMemoryInfo(memoryInfo);
         this.totalmemory.value = (int)(memoryInfo.availMem/1024/1024);
+//        LogEx.d("memory",String.valueOf(this.totalmemory.value));
         data.put(TOTAL_MEMORY, this.totalmemory);
     }
 }

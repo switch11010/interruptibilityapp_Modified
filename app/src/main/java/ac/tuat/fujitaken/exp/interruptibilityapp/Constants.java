@@ -18,8 +18,8 @@ public interface Constants {
             NOTIFICATION_INTERVAL_AS = 5 * 60 * 1000,  //非遷移条件（ms）
             STORAGE_FREE_SPACE_LIMITATION = 100*1000*1000,  //ログ保存のために最低確保するストレージサイズ
             APP_TIME_LIMITATION = 60 * 60 * 1000,    //アプリ使用履歴を遡って参照する最大時間
-            DEFAULT_PORT = 0,       //通信ポート番号の初期値
-            DEFAULT_SP_ID = 0,         //通信相手IDの初期値
+            DEFAULT_PORT = 1,       //通信ポート番号の初期値
+            DEFAULT_SP_ID = 5,         //通信相手IDの初期値
             PC_OPERATION_LIMITATION = 60 * 1000,    //PC作業と判断するための時間
             SCREEN_OFF_TIME = 2* 60 * 1000,
             UDP_TIMEOUT = 150;

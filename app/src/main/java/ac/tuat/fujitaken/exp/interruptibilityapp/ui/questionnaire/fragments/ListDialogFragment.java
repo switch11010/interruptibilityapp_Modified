@@ -54,7 +54,7 @@ public class ListDialogFragment extends DialogFragment {
         Bundle bundle = getArguments();
         title = bundle.getString(TITLE, "");
         contents = bundle.getStringArray(CONTENTS);
-        mode = getTargetRequestCode() != QuestionFragment.INTERRUPTIBILITY_REQUEST_CODE;
+        mode = getTargetRequestCode() != QuestionFragment_Ex.INTERRUPTIBILITY_REQUEST_CODE;
 
     }
 
